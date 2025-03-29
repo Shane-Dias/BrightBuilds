@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Delius&family=Lilita+One&family=Orbitron:wght@400..900&family=Smooch+Sans:wght@100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient {
+  background: linear-gradient(-45deg, #001f3f, #0074d9, #7fdbff, #39cccc);
+  background-size: 400% 400%;
+}
+
+.animate-gradient {
+  animation: gradientBG 8s ease infinite;
+}
+
+.black-ops-one-regular {
+  font-family: "Black Ops One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
