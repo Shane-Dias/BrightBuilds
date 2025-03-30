@@ -52,3 +52,27 @@ exports.getProjects = async (req, res, next) => {
     });
   }
 };
+
+exports.getProjectById = async (req, res, next) => {
+  try {
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        error: "Project not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: project,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
