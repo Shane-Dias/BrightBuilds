@@ -20,3 +20,16 @@
 // type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 // webkitRelativePath: ""
 // [[Prototype]]: File
+
+//backend structure
+// backend/
+// │── server.js      # Main server file
+// │── config/        # Database configuration
+// │   ├── db.js
+// │── models/        # Mongoose models
+// │   ├── Project.js
+// │── routes/        # API routes
+// │   ├── projectRoutes.js
+// │── controllers/   # Controllers for handling logic
+// │   ├── projectController.js
+// │── .env           # Environment variables

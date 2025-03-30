@@ -1,12 +1,13 @@
 const express = require("express");
+const router = express.Router();
+const upload = require("../middleware/upload");
 const {
-  getProjects,
   createProject,
+  getProjects,
 } = require("../controllers/projectController");
 
-const router = express.Router();
+router.route("/create").post(upload, createProject);
 
-router.get("/", getProjects);
-router.post("/", createProject);
+router.route("/").get(getProjects);
 
 module.exports = router;

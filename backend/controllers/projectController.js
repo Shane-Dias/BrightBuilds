@@ -1,24 +1,58 @@
 const Project = require("../models/Project");
 
-const getProjects = async (req, res) => {
+// @desc    Create a new project
+// @route   POST /api/create
+// @access  Public
+exports.createProject = async (req, res, next) => {
+  try {
+    // Handle file uploads
+    const mediaPaths = req.files ? req.files.map((file) => file.path) : [];
+
+    // Create new project
+    const project = new Project({
+      title: req.body.title,
+      description: req.body.description,
+      github: req.body.github,
+      hostedLink: req.body.hostedLink,
+      media: mediaPaths,
+      mentor: req.body.mentor,
+      sdgs: JSON.parse(req.body.sdgs),
+      teammates: JSON.parse(req.body.teammates),
+      techStack: JSON.parse(req.body.techStack),
+    });
+
+    await project.save();
+
+    res.status(201).json({
+      success: true,
+      data: project,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+};
+
+// @desc    Get all projects
+// @route   GET /api/projects
+// @access  Public
+exports.getProjects = async (req, res, next) => {
   try {
     const projects = await Project.find();
-    res.json(projects);
+    res.status(200).json({
+      success: true,
+      count: projects.length,
+      data: projects,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
   }
 };
 
-const createProject = async (req, res) => {
-  const { title, description } = req.body;
-
-  try {
-    const newProject = new Project({ title, description });
-    await newProject.save();
-    res.status(201).json(newProject);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-module.exports = { getProjects, createProject };
+// You can add more controller methods here as needed
