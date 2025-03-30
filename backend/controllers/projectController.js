@@ -16,6 +16,7 @@ exports.createProject = async (req, res, next) => {
       hostedLink: req.body.hostedLink,
       media: mediaPaths,
       mentor: req.body.mentor,
+      category: req.body.category, 
       sdgs: JSON.parse(req.body.sdgs),
       teammates: JSON.parse(req.body.teammates),
       techStack: JSON.parse(req.body.techStack),

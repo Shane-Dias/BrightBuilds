@@ -20,7 +20,7 @@ const projectSchema = new mongoose.Schema({
   media: [String], // We'll store file paths or URLs here
   mentor: {
     type: String,
-    required: false,
+    required: true,
   },
   sdgs: {
     type: [String],
@@ -33,6 +33,12 @@ const projectSchema = new mongoose.Schema({
   techStack: {
     type: [String],
     required: true,
+  },
+  category: {
+    // Add this new field
+    type: String,
+    required: true,
+    enum: ["Game", "Website", "Video", "Documentary", "Digital Art"], // Optional: restricts to specific values
   },
   likes: {
     type: Number,

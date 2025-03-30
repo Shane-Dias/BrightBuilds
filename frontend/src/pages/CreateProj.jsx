@@ -45,7 +45,6 @@ export default function ProjectUploadForm() {
   const [teammates, setTeammates] = useState([]);
   const [mentor, setMentor] = useState("");
   const [notification, setNotification] = useState(null);
-  const [category, setCategory] = useState("");
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -53,6 +52,7 @@ export default function ProjectUploadForm() {
     hostedLink: "",
     newTeammate: "", // Add this
     newMentor: "", // Add this
+    category: "",
   });
 
   // New state for expandable sections
@@ -251,7 +251,7 @@ export default function ProjectUploadForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.description || media.length === 0 || !category) {
+    if (!form.title || !form.description || media.length === 0) {
       setNotification({
         message:
           "Please fill in all required fields including category and upload at least one media file.",
@@ -274,13 +274,17 @@ export default function ProjectUploadForm() {
       formData.append("sdgs", JSON.stringify(sdgs));
       formData.append("teammates", JSON.stringify(teammates));
       formData.append("techStack", JSON.stringify(techStack));
-      formData.append("category", JSON.stringify(category));
+      formData.append("category", form.category);
 
       // Append each media file
       media.forEach((file) => {
         formData.append("media", file);
       });
-      console.log(formData);
+
+      // Debug FormData before sending
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
 
       // Send to backend
       const response = await fetch("http://localhost:5000/api/create", {
@@ -488,8 +492,8 @@ export default function ProjectUploadForm() {
           </h1>
           <select
             className="w-full p-3 border border-blue-400 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
             required
           >
             <option value="">Select a category</option>
@@ -499,10 +503,9 @@ export default function ProjectUploadForm() {
             <option value="Documentary">Documentary</option>
             <option value="Digital Art">Digital Art</option>
           </select>
-
-          {category && (
+          {form.category && (
             <p className="mt-2 text-lg text-green-600 font-medium">
-              Selected Category: {category}
+              Selected Category: {form.category}
             </p>
           )}
         </div>
