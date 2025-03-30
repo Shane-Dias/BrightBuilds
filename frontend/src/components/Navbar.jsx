@@ -76,7 +76,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-8">
           {[
             { name: "Home", path: "/", icon: Home },
-            { name: "Projects", path: "/projects", icon: Grid },
+            { name: "Projects", path: "/api/projects", icon: Grid },
             { name: "Leaderboards", path: "/leaderboards", icon: Award },
           ].map((link) => (
             <NavLink

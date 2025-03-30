@@ -1,4 +1,4 @@
-const Project = require("../models/Project");
+const Project = require("../models/Project_schema");
 
 // @desc    Create a new project
 // @route   POST /api/create
@@ -16,7 +16,7 @@ exports.createProject = async (req, res, next) => {
       hostedLink: req.body.hostedLink,
       media: mediaPaths,
       mentor: req.body.mentor,
-      category: req.body.category, 
+      category: req.body.category,
       sdgs: JSON.parse(req.body.sdgs),
       teammates: JSON.parse(req.body.teammates),
       techStack: JSON.parse(req.body.techStack),
@@ -37,23 +37,21 @@ exports.createProject = async (req, res, next) => {
   }
 };
 
-// @desc    Get all projects
-// @route   GET /api/projects
-// @access  Public
 exports.getProjects = async (req, res, next) => {
   try {
-    const projects = await Project.find();
+    // Only fetch projects with status: "approved"
+    const projects = await Project.find({ status: "approved" });
+
     res.status(200).json({
       success: true,
       count: projects.length,
       data: projects,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       success: false,
       error: "Server Error",
     });
   }
 };
-
-// You can add more controller methods here as needed

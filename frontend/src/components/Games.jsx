@@ -12,76 +12,32 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const gamesData = [
-  {
-    id: 1,
-    title: "Snake Multiplayer",
-    description: "A multiplayer snake game built using Pygame",
-    ratings: 4.5,
-    sdg: "SDG 3: Good Health and Well-being",
-    views: 1200,
-    createdAt: new Date(2024, 2, 15),
-    thumbnail:
-      "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT1ZrWDH4RlL9gWEah5r401YHw5MEEiuYRIoORMG-zfXod7SGt_9tQODFor7su83yMwDdW7-95eH6GsZFGwZYCVT9h8yjtOwgRLiFvYi-TY",
-    githubLink: "https://github.com/username/snake-multiplayer",
-    hostedLink: "https://snake-game.example.com",
-    likes: 42,
-    userHasLiked: false,
-  },
-  {
-    id: 2,
-    title: "Climate Change Simulator",
-    description: "An interactive game exploring environmental challenges",
-    ratings: 4.8,
-    sdg: "SDG 13: Climate Action",
-    views: 2500,
-    createdAt: new Date(2024, 3, 1),
-    thumbnail:
-      "https://uwaterloo.ca/climate-institute/sites/default/files/styles/large/public/uploads/images/illuminate_mitigation_screen.png?itok=68i_tLHY",
-    githubLink: "https://github.com/username/climate-simulator",
-    hostedLink: "https://climate-sim.example.com",
-    likes: 78,
-    userRating: null,
-    userHasLiked: false,
-  },
-  {
-    id: 3,
-    title: "Space Exploration Adventure",
-    description:
-      "Educational space exploration game with scientific challenges",
-    ratings: 4.2,
-    sdg: "SDG 4: Quality Education",
-    views: 1800,
-    createdAt: new Date(2024, 1, 10),
-    thumbnail:
-      "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1718870/capsule_616x353.jpg?t=1721124425",
-    githubLink: "https://github.com/username/space-adventure",
-    hostedLink: "https://space-game.example.com",
-    likes: 35,
-    userRating: null,
-    userHasLiked: false,
-  },
-];
-
-const Games = () => {
+const Games = ({ projects = [] }) => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
     sdg: "",
     sortBy: "ratings",
   });
-  const [games, setGames] = useState(gamesData);
+  const [games, setGames] = useState(projects);
   const [hoveredGame, setHoveredGame] = useState(null);
 
-  const handleLike = (gameId) => {
+  // Initialize with props
+  React.useEffect(() => {
+    setGames(projects);
+  }, [projects]);
+
+  const handleLike = (projectId) => {
     setGames((prevGames) =>
-      prevGames.map((game) =>
-        game.id === gameId
+      prevGames.map((project) =>
+        project._id === projectId
           ? {
-              ...game,
-              likes: game.userHasLiked ? game.likes - 1 : game.likes + 1,
-              userHasLiked: !game.userHasLiked,
+              ...project,
+              likes: project.userHasLiked
+                ? project.likes - 1
+                : project.likes + 1,
+              userHasLiked: !project.userHasLiked,
             }
-          : game
+          : project
       )
     );
   };
@@ -89,31 +45,56 @@ const Games = () => {
   const filteredAndSortedGames = useMemo(() => {
     let result = [...games];
 
-    // Filter and sort logic remains the same
     if (filter.sdg) {
-      result = result.filter((game) => game.sdg === filter.sdg);
+      result = result.filter((project) => project.sdgs.includes(filter.sdg));
     }
 
     switch (filter.sortBy) {
       case "ratings":
-        result.sort((a, b) => b.ratings - a.ratings);
+        result.sort((a, b) => b.rating - a.rating);
         break;
       case "newest":
-        result.sort((a, b) => b.createdAt - a.createdAt);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "mostViewed":
-        result.sort((a, b) => b.views - a.views);
+        // Add views field to your schema if needed
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
       case "mostLiked":
-        result.sort((a, b) => b.likes - a.likes);
+        result.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
     }
 
     return result;
   }, [filter, games]);
 
-  const viewDetails = (gameId) => {
-    navigate(`/details/${gameId}`);
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
+  };
+
+  // Extract unique SDGs from projects
+  const uniqueSdgs = useMemo(() => {
+    const allSdgs = games.flatMap((project) => project.sdgs || []);
+    return [...new Set(allSdgs)];
+  }, [games]);
+
+  if (projects.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        No game projects found
+      </div>
+    );
+  }
+
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+
+    // Replace backslashes with forward slashes
+    mediaPath = mediaPath.replace(/\\/g, "/");
+
+    // Return full URL (adjust if backend URL is different)
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   return (
@@ -141,7 +122,7 @@ const Games = () => {
                 className="w-full bg-gray-800/80 text-white px-4 py-3 rounded-xl border border-white/10 appearance-none pr-10 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="">All Sustainable Development Goals</option>
-                {[...new Set(gamesData.map((game) => game.sdg))].map((sdg) => (
+                {uniqueSdgs.map((sdg) => (
                   <option key={sdg} value={sdg}>
                     {sdg}
                   </option>
@@ -193,7 +174,7 @@ const Games = () => {
         >
           {filteredAndSortedGames.map((game) => (
             <motion.div
-              key={game.id}
+              key={game._id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 visible: {
@@ -202,7 +183,7 @@ const Games = () => {
                   transition: { type: "spring", stiffness: 300 },
                 },
               }}
-              onMouseEnter={() => setHoveredGame(game.id)}
+              onMouseEnter={() => setHoveredGame(game._id)}
               onMouseLeave={() => setHoveredGame(null)}
               className="relative group perspective-1000"
             >
@@ -210,11 +191,18 @@ const Games = () => {
                 {/* Game Thumbnail with Zoom Effect */}
                 <div className="relative overflow-hidden">
                   <motion.img
-                    src={game.thumbnail}
+                    src={
+                      game.media && game.media.length > 0
+                        ? getImageUrl(game.media[0])
+                        : "/api/placeholder/400/320"
+                    }
                     alt={game.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/400/320";
+                    }}
                   />
                 </div>
 
@@ -226,7 +214,7 @@ const Games = () => {
                     </h3>
                     <div className="flex items-center text-yellow-400">
                       <Star size={20} fill="currentColor" className="mr-1" />
-                      <span>{game.ratings.toFixed(1)}</span>
+                      <span>{game.rating.toFixed(1)}</span>
                     </div>
                   </div>
 
@@ -237,10 +225,12 @@ const Games = () => {
                   {/* SDG and Likes */}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                      {game.sdg}
+                      {game.sdgs && game.sdgs.length > 0
+                        ? game.sdgs[0]
+                        : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(game.id)}
+                      onClick={() => handleLike(game._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
@@ -255,7 +245,7 @@ const Games = () => {
                   {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <motion.button
-                      onClick={() => viewDetails(game.id)}
+                      onClick={() => viewDetails(game._id)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -275,7 +265,7 @@ const Games = () => {
                       </motion.button>
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                         <a
-                          href={game.githubLink}
+                          href={game.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
