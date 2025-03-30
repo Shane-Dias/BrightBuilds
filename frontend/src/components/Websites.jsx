@@ -10,74 +10,29 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const websitesData = [
-  {
-    id: 1,
-    title: "Community Health Tracker",
-    description: "A web platform for tracking local health initiatives",
-    author: "HealthTech Innovators",
-    sdg: "SDG 3: Good Health and Well-being",
-    views: 1500,
-    createdAt: new Date(2024, 2, 15),
-    ratings: 4.5,
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQybg9t16UiNiIas-dOsV8ci8UOMEPb1uAaA&s",
-    githubLink: "https://github.com/username/health-tracker",
-    hostedLink: "https://health-tracker.example.com",
-    likes: 42,
-    userHasLiked: false,
-  },
-  {
-    id: 2,
-    title: "Urban Green Spaces Mapper",
-    description:
-      "Interactive map of urban green spaces and environmental resources",
-    author: "Urban Sustainability Team",
-    sdg: "SDG 11: Sustainable Cities and Communities",
-    views: 2200,
-    createdAt: new Date(2024, 1, 20),
-    ratings: 4.7,
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYUWTtlUCnJlj5-sLhMmNzpS63mLakdC_I3A&s",
-    githubLink: "https://github.com/username/green-spaces",
-    hostedLink: "https://green-spaces.example.com",
-    likes: 78,
-    userHasLiked: false,
-  },
-  {
-    id: 3,
-    title: "Education Resource Portal",
-    description: "Platform connecting students with learning resources",
-    author: "EdTech Collective",
-    sdg: "SDG 4: Quality Education",
-    views: 1800,
-    createdAt: new Date(2024, 3, 1),
-    ratings: 4.3,
-    thumbnail:
-      "https://i.pinimg.com/736x/76/0c/84/760c84b81b3cf4e4bcb4579e15275c76.jpg",
-    githubLink: "https://github.com/username/education-portal",
-    hostedLink: "https://education-portal.example.com",
-    likes: 35,
-    userHasLiked: false,
-  },
-];
-
-const Websites = () => {
+const Websites = ({ projects = [] }) => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
     sdg: "",
     sortBy: "ratings",
   });
-  const [websites, setWebsites] = useState(websitesData);
+  const [websites, setWebsites] = useState(projects);
   const [hoveredWebsite, setHoveredWebsite] = useState(null);
+
+  // Initialize with props
+  React.useEffect(() => {
+    setWebsites(projects);
+  }, [projects]);
 
   const handleLike = (websiteId) => {
     setWebsites((prevWebsites) =>
       prevWebsites.map((website) =>
-        website.id === websiteId
+        website._id === websiteId
           ? {
               ...website,
-              likes: website.userHasLiked ? website.likes - 1 : website.likes + 1,
+              likes: website.userHasLiked
+                ? website.likes - 1
+                : website.likes + 1,
               userHasLiked: !website.userHasLiked,
             }
           : website
@@ -88,23 +43,23 @@ const Websites = () => {
   const filteredAndSortedWebsites = useMemo(() => {
     let result = [...websites];
 
-    // Filter and sort logic
     if (filter.sdg) {
-      result = result.filter((website) => website.sdg === filter.sdg);
+      result = result.filter((website) => website.sdgs.includes(filter.sdg));
     }
 
     switch (filter.sortBy) {
       case "ratings":
-        result.sort((a, b) => b.ratings - a.ratings);
+        result.sort((a, b) => b.rating - a.rating);
         break;
       case "newest":
-        result.sort((a, b) => b.createdAt - a.createdAt);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "mostViewed":
-        result.sort((a, b) => b.views - a.views);
+        // Add views field to your schema if needed
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
       case "mostLiked":
-        result.sort((a, b) => b.likes - a.likes);
+        result.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
     }
 
@@ -113,6 +68,31 @@ const Websites = () => {
 
   const viewDetails = (websiteId) => {
     navigate(`/details/${websiteId}`);
+  };
+
+  // Extract unique SDGs from projects
+  const uniqueSdgs = useMemo(() => {
+    const allSdgs = websites.flatMap((project) => project.sdgs || []);
+    return [...new Set(allSdgs)];
+  }, [websites]);
+
+  if (projects.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        No website projects found
+      </div>
+    );
+  }
+
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+
+    // Replace backslashes with forward slashes
+    mediaPath = mediaPath.replace(/\\/g, "/");
+
+    // Return full URL (adjust if backend URL is different)
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   return (
@@ -140,13 +120,11 @@ const Websites = () => {
                 className="w-full bg-gray-800/80 text-white px-4 py-3 rounded-xl border border-white/10 appearance-none pr-10 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="">All Sustainable Development Goals</option>
-                {[...new Set(websitesData.map((website) => website.sdg))].map(
-                  (sdg) => (
-                    <option key={sdg} value={sdg}>
-                      {sdg}
-                    </option>
-                  )
-                )}
+                {uniqueSdgs.map((sdg) => (
+                  <option key={sdg} value={sdg}>
+                    {sdg}
+                  </option>
+                ))}
               </select>
               <Filter
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
@@ -194,7 +172,7 @@ const Websites = () => {
         >
           {filteredAndSortedWebsites.map((website) => (
             <motion.div
-              key={website.id}
+              key={website._id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 visible: {
@@ -203,7 +181,7 @@ const Websites = () => {
                   transition: { type: "spring", stiffness: 300 },
                 },
               }}
-              onMouseEnter={() => setHoveredWebsite(website.id)}
+              onMouseEnter={() => setHoveredWebsite(website._id)}
               onMouseLeave={() => setHoveredWebsite(null)}
               className="relative group perspective-1000"
             >
@@ -211,11 +189,18 @@ const Websites = () => {
                 {/* Website Thumbnail with Zoom Effect */}
                 <div className="relative overflow-hidden">
                   <motion.img
-                    src={website.thumbnail}
+                    src={
+                      website.media && website.media.length > 0
+                        ? getImageUrl(website.media[0])
+                        : "/api/placeholder/400/320"
+                    }
                     alt={website.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/400/320";
+                    }}
                   />
                 </div>
 
@@ -227,7 +212,7 @@ const Websites = () => {
                     </h3>
                     <div className="flex items-center text-yellow-400">
                       <Star size={20} fill="currentColor" className="mr-1" />
-                      <span>{website.ratings.toFixed(1)}</span>
+                      <span>{website.rating.toFixed(1)}</span>
                     </div>
                   </div>
 
@@ -238,15 +223,17 @@ const Websites = () => {
                   {/* SDG and Likes */}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                      {website.sdg}
+                      {website.sdgs && website.sdgs.length > 0
+                        ? website.sdgs[0]
+                        : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(website.id)}
+                      onClick={() => handleLike(website._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
                         size={18}
-                        fill={website.userHasLiked ? "currentColor" : "none"} 
+                        fill={website.userHasLiked ? "currentColor" : "none"}
                         className="mr-1"
                       />
                       {website.likes}
@@ -256,7 +243,7 @@ const Websites = () => {
                   {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <motion.button
-                      onClick={() => viewDetails(website.id)}
+                      onClick={() => viewDetails(website._id)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -276,7 +263,7 @@ const Websites = () => {
                       </motion.button>
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                         <a
-                          href={website.githubLink}
+                          href={website.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
