@@ -8,76 +8,34 @@ import {
   ExternalLink,
   Globe,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const documentariesData = [
-  {
-    id: 1,
-    title: "Urban Renewable Energy Revolution",
-    description: "Exploring sustainable energy solutions in urban environments",
-    author: "Green City Innovators",
-    sdg: "SDG 7: Affordable and Clean Energy",
-    views: 1750,
-    createdAt: new Date(2024, 2, 15),
-    ratings: 4.6,
-    thumbnail:
-      "https://i0.wp.com/indianinfrastructure.com/wp-content/uploads/2019/10/24-1.jpg?resize=678%2C381&ssl=1",
-    githubLink: "https://github.com/username/renewable-energy-doc",
-    hostedLink: "https://energy-documentary.example.com",
-    likes: 42,
-    userHasLiked: false,
-  },
-  {
-    id: 2,
-    title: "Digital Inclusion Across Generations",
-    description: "Bridging the digital divide for elderly populations",
-    author: "Tech Equity Project",
-    sdg: "SDG 10: Reduced Inequalities",
-    views: 2100,
-    createdAt: new Date(2024, 1, 20),
-    ratings: 4.8,
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtevc09xcISrDaDeR4qhtWp8vkKRuvyCgQrA&s",
-    githubLink: "https://github.com/username/digital-inclusion-doc",
-    hostedLink: "https://digital-inclusion.example.com",
-    likes: 78,
-    userHasLiked: false,
-  },
-  {
-    id: 3,
-    title: "Water Security in Changing Climates",
-    description: "Investigating water resource management challenges",
-    author: "Global Water Research Team",
-    sdg: "SDG 6: Clean Water and Sanitation",
-    views: 1900,
-    createdAt: new Date(2024, 3, 1),
-    ratings: 4.4,
-    thumbnail:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMBD3C0fBoTxcjlHJy-6_VgO9_ejKRGzsVCA&s",
-    githubLink: "https://github.com/username/water-security-doc",
-    hostedLink: "https://water-security.example.com",
-    likes: 35,
-    userHasLiked: false,
-  },
-];
-
-const Documentaries = () => {
+const Documentaries = ({ projects = [] }) => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     sdg: "",
     sortBy: "ratings",
   });
-  const [documentaries, setDocumentaries] = useState(documentariesData);
+  const [documentaries, setDocumentaries] = useState(projects);
   const [hoveredDocumentary, setHoveredDocumentary] = useState(null);
 
-  const handleLike = (docId) => {
+  // Initialize with props
+  React.useEffect(() => {
+    setDocumentaries(projects);
+  }, [projects]);
+
+  const handleLike = (projectId) => {
     setDocumentaries((prevDocs) =>
-      prevDocs.map((doc) =>
-        doc.id === docId
+      prevDocs.map((project) =>
+        project._id === projectId
           ? {
-              ...doc,
-              likes: doc.userHasLiked ? doc.likes - 1 : doc.likes + 1,
-              userHasLiked: !doc.userHasLiked,
+              ...project,
+              likes: project.userHasLiked
+                ? project.likes - 1
+                : project.likes + 1,
+              userHasLiked: !project.userHasLiked,
             }
-          : doc
+          : project
       )
     );
   };
@@ -85,32 +43,56 @@ const Documentaries = () => {
   const filteredAndSortedDocumentaries = useMemo(() => {
     let result = [...documentaries];
 
-    // Filter and sort logic
     if (filter.sdg) {
-      result = result.filter((doc) => doc.sdg === filter.sdg);
+      result = result.filter((project) => project.sdgs.includes(filter.sdg));
     }
 
     switch (filter.sortBy) {
       case "ratings":
-        result.sort((a, b) => b.ratings - a.ratings);
+        result.sort((a, b) => b.rating - a.rating);
         break;
       case "newest":
-        result.sort((a, b) => b.createdAt - a.createdAt);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "mostViewed":
-        result.sort((a, b) => b.views - a.views);
+        // Add views field to your schema if needed
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
       case "mostLiked":
-        result.sort((a, b) => b.likes - a.likes);
+        result.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
     }
 
     return result;
   }, [filter, documentaries]);
 
-  const viewDetails = (docId) => {
-    // Placeholder for navigation or modal
-    console.log(`Viewing details for documentary ${docId}`);
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
+  };
+
+  // Extract unique SDGs from projects
+  const uniqueSdgs = useMemo(() => {
+    const allSdgs = documentaries.flatMap((project) => project.sdgs || []);
+    return [...new Set(allSdgs)];
+  }, [documentaries]);
+
+  if (projects.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        No documentary projects found
+      </div>
+    );
+  }
+
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+
+    // Replace backslashes with forward slashes
+    mediaPath = mediaPath.replace(/\\/g, "/");
+
+    // Return full URL (adjust if backend URL is different)
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   return (
@@ -138,13 +120,11 @@ const Documentaries = () => {
                 className="w-full bg-gray-800/80 text-white px-4 py-3 rounded-xl border border-white/10 appearance-none pr-10 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="">All Sustainable Development Goals</option>
-                {[...new Set(documentariesData.map((doc) => doc.sdg))].map(
-                  (sdg) => (
-                    <option key={sdg} value={sdg}>
-                      {sdg}
-                    </option>
-                  )
-                )}
+                {uniqueSdgs.map((sdg) => (
+                  <option key={sdg} value={sdg}>
+                    {sdg}
+                  </option>
+                ))}
               </select>
               <Filter
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
@@ -190,9 +170,9 @@ const Documentaries = () => {
             },
           }}
         >
-          {filteredAndSortedDocumentaries.map((doc) => (
+          {filteredAndSortedDocumentaries.map((documentary) => (
             <motion.div
-              key={doc.id}
+              key={documentary._id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 visible: {
@@ -201,7 +181,7 @@ const Documentaries = () => {
                   transition: { type: "spring", stiffness: 300 },
                 },
               }}
-              onMouseEnter={() => setHoveredDocumentary(doc.id)}
+              onMouseEnter={() => setHoveredDocumentary(documentary._id)}
               onMouseLeave={() => setHoveredDocumentary(null)}
               className="relative group perspective-1000"
             >
@@ -209,11 +189,18 @@ const Documentaries = () => {
                 {/* Documentary Thumbnail with Zoom Effect */}
                 <div className="relative overflow-hidden">
                   <motion.img
-                    src={doc.thumbnail}
-                    alt={doc.title}
+                    src={
+                      documentary.media && documentary.media.length > 0
+                        ? getImageUrl(documentary.media[0])
+                        : "/api/placeholder/400/320"
+                    }
+                    alt={documentary.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/400/320";
+                    }}
                   />
                 </div>
 
@@ -221,40 +208,44 @@ const Documentaries = () => {
                   {/* Documentary Title and Rating */}
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-2xl font-bold text-white">
-                      {doc.title}
+                      {documentary.title}
                     </h3>
                     <div className="flex items-center text-yellow-400">
                       <Star size={20} fill="currentColor" className="mr-1" />
-                      <span>{doc.ratings.toFixed(1)}</span>
+                      <span>{documentary.rating.toFixed(1)}</span>
                     </div>
                   </div>
 
                   <p className="text-sm text-gray-300 mb-4 flex-grow">
-                    {doc.description}
+                    {documentary.description}
                   </p>
 
                   {/* SDG and Likes */}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                      {doc.sdg}
+                      {documentary.sdgs && documentary.sdgs.length > 0
+                        ? documentary.sdgs[0]
+                        : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(doc.id)}
+                      onClick={() => handleLike(documentary._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
                         size={18}
-                        fill={doc.userHasLiked ? "currentColor" : "none"}
+                        fill={
+                          documentary.userHasLiked ? "currentColor" : "none"
+                        }
                         className="mr-1"
                       />
-                      {doc.likes}
+                      {documentary.likes}
                     </button>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <motion.button
-                      onClick={() => viewDetails(doc.id)}
+                      onClick={() => viewDetails(documentary._id)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -274,7 +265,7 @@ const Documentaries = () => {
                       </motion.button>
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                         <a
-                          href={doc.githubLink}
+                          href={documentary.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
@@ -282,7 +273,7 @@ const Documentaries = () => {
                           GitHub Repo
                         </a>
                         <a
-                          href={doc.hostedLink}
+                          href={documentary.hostedLink}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"

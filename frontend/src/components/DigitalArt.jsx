@@ -8,77 +8,34 @@ import {
   ExternalLink,
   Globe,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const digitalArtData = [
-  {
-    id: 1,
-    title: "Climate Change Visualization",
-    description:
-      "Digital art piece depicting global environmental transformation",
-    author: "Eco Visual Artists",
-    sdg: "SDG 13: Climate Action",
-    views: 1600,
-    createdAt: new Date(2024, 2, 10),
-    ratings: 4.5,
-    thumbnail:
-      "https://www.noaa.gov/sites/default/files/styles/landscape_width_1275/public/2022-03/PHOTO-Climate-Collage-Diagonal-Design-NOAA-Communications-NO-NOAA-Logo.jpg",
-    githubLink: "https://github.com/username/climate-visualization",
-    hostedLink: "https://climate-art.example.com",
-    likes: 42,
-    userHasLiked: false,
-  },
-  {
-    id: 2,
-    title: "Interconnected Communities",
-    description: "Artistic representation of global social connectivity",
-    author: "Global Unity Creators",
-    sdg: "SDG 17: Partnerships for the Goals",
-    views: 1900,
-    createdAt: new Date(2024, 1, 25),
-    ratings: 4.7,
-    thumbnail:
-      "https://www.liverpool.ac.uk/media/livacuk/centre-for-innovation-in-education/staff-guides/learning-communities/people-interconnected-by-lines-banner.jpg",
-    githubLink: "https://github.com/username/interconnected-communities",
-    hostedLink: "https://global-unity-art.example.com",
-    likes: 78,
-    userHasLiked: false,
-  },
-  {
-    id: 3,
-    title: "Future of Education",
-    description: "Innovative visual narrative of learning technologies",
-    author: "EdTech Visionaries",
-    sdg: "SDG 4: Quality Education",
-    views: 1750,
-    createdAt: new Date(2024, 3, 5),
-    ratings: 4.3,
-    thumbnail:
-      "https://rahuleducation.org/wp-content/uploads/2022/02/future-education-scaled.jpg",
-    githubLink: "https://github.com/username/future-education-art",
-    hostedLink: "https://edtech-visualization.example.com",
-    likes: 35,
-    userHasLiked: false,
-  },
-];
-
-const DigitalArt = () => {
+const DigitalArt = ({ projects = [] }) => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     sdg: "",
     sortBy: "ratings",
   });
-  const [artworks, setArtworks] = useState(digitalArtData);
+  const [artworks, setArtworks] = useState(projects);
   const [hoveredArtwork, setHoveredArtwork] = useState(null);
 
-  const handleLike = (artId) => {
+  // Initialize with props
+  React.useEffect(() => {
+    setArtworks(projects);
+  }, [projects]);
+
+  const handleLike = (projectId) => {
     setArtworks((prevArtworks) =>
-      prevArtworks.map((art) =>
-        art.id === artId
+      prevArtworks.map((project) =>
+        project._id === projectId
           ? {
-              ...art,
-              likes: art.userHasLiked ? art.likes - 1 : art.likes + 1,
-              userHasLiked: !art.userHasLiked,
+              ...project,
+              likes: project.userHasLiked
+                ? project.likes - 1
+                : project.likes + 1,
+              userHasLiked: !project.userHasLiked,
             }
-          : art
+          : project
       )
     );
   };
@@ -86,32 +43,56 @@ const DigitalArt = () => {
   const filteredAndSortedArtworks = useMemo(() => {
     let result = [...artworks];
 
-    // Filter and sort logic
     if (filter.sdg) {
-      result = result.filter((art) => art.sdg === filter.sdg);
+      result = result.filter((project) => project.sdgs.includes(filter.sdg));
     }
 
     switch (filter.sortBy) {
       case "ratings":
-        result.sort((a, b) => b.ratings - a.ratings);
+        result.sort((a, b) => b.rating - a.rating);
         break;
       case "newest":
-        result.sort((a, b) => b.createdAt - a.createdAt);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "mostViewed":
-        result.sort((a, b) => b.views - a.views);
+        // Add views field to your schema if needed
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
       case "mostLiked":
-        result.sort((a, b) => b.likes - a.likes);
+        result.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
     }
 
     return result;
   }, [filter, artworks]);
 
-  const viewDetails = (artId) => {
-    // Placeholder for navigation or modal
-    console.log(`Viewing details for artwork ${artId}`);
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
+  };
+
+  // Extract unique SDGs from projects
+  const uniqueSdgs = useMemo(() => {
+    const allSdgs = artworks.flatMap((project) => project.sdgs || []);
+    return [...new Set(allSdgs)];
+  }, [artworks]);
+
+  if (projects.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        No digital art projects found
+      </div>
+    );
+  }
+
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+
+    // Replace backslashes with forward slashes
+    mediaPath = mediaPath.replace(/\\/g, "/");
+
+    // Return full URL (adjust if backend URL is different)
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   return (
@@ -139,13 +120,11 @@ const DigitalArt = () => {
                 className="w-full bg-gray-800/80 text-white px-4 py-3 rounded-xl border border-white/10 appearance-none pr-10 focus:ring-2 focus:ring-blue-500 transition-all"
               >
                 <option value="">All Sustainable Development Goals</option>
-                {[...new Set(digitalArtData.map((art) => art.sdg))].map(
-                  (sdg) => (
-                    <option key={sdg} value={sdg}>
-                      {sdg}
-                    </option>
-                  )
-                )}
+                {uniqueSdgs.map((sdg) => (
+                  <option key={sdg} value={sdg}>
+                    {sdg}
+                  </option>
+                ))}
               </select>
               <Filter
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
@@ -191,9 +170,9 @@ const DigitalArt = () => {
             },
           }}
         >
-          {filteredAndSortedArtworks.map((art) => (
+          {filteredAndSortedArtworks.map((artwork) => (
             <motion.div
-              key={art.id}
+              key={artwork._id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 visible: {
@@ -202,7 +181,7 @@ const DigitalArt = () => {
                   transition: { type: "spring", stiffness: 300 },
                 },
               }}
-              onMouseEnter={() => setHoveredArtwork(art.id)}
+              onMouseEnter={() => setHoveredArtwork(artwork._id)}
               onMouseLeave={() => setHoveredArtwork(null)}
               className="relative group perspective-1000"
             >
@@ -210,11 +189,18 @@ const DigitalArt = () => {
                 {/* Artwork Thumbnail with Zoom Effect */}
                 <div className="relative overflow-hidden">
                   <motion.img
-                    src={art.thumbnail}
-                    alt={art.title}
+                    src={
+                      artwork.media && artwork.media.length > 0
+                        ? getImageUrl(artwork.media[0])
+                        : "/api/placeholder/400/320"
+                    }
+                    alt={artwork.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/400/320";
+                    }}
                   />
                 </div>
 
@@ -222,40 +208,42 @@ const DigitalArt = () => {
                   {/* Artwork Title and Rating */}
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-2xl font-bold text-white">
-                      {art.title}
+                      {artwork.title}
                     </h3>
                     <div className="flex items-center text-yellow-400">
                       <Star size={20} fill="currentColor" className="mr-1" />
-                      <span>{art.ratings.toFixed(1)}</span>
+                      <span>{artwork.rating.toFixed(1)}</span>
                     </div>
                   </div>
 
                   <p className="text-sm text-gray-300 mb-4 flex-grow">
-                    {art.description}
+                    {artwork.description}
                   </p>
 
                   {/* SDG and Likes */}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                      {art.sdg}
+                      {artwork.sdgs && artwork.sdgs.length > 0
+                        ? artwork.sdgs[0]
+                        : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(art.id)}
+                      onClick={() => handleLike(artwork._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
                         size={18}
-                        fill={art.userHasLiked ? "currentColor" : "none"}
+                        fill={artwork.userHasLiked ? "currentColor" : "none"}
                         className="mr-1"
                       />
-                      {art.likes}
+                      {artwork.likes}
                     </button>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <motion.button
-                      onClick={() => viewDetails(art.id)}
+                      onClick={() => viewDetails(artwork._id)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex-1 bg-violet-500 hover:bg-violet-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -275,7 +263,7 @@ const DigitalArt = () => {
                       </motion.button>
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                         <a
-                          href={art.githubLink}
+                          href={artwork.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
@@ -283,7 +271,7 @@ const DigitalArt = () => {
                           GitHub Repo
                         </a>
                         <a
-                          href={art.hostedLink}
+                          href={artwork.hostedLink}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
