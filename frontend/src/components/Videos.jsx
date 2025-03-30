@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Star,
@@ -10,76 +10,32 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const videosData = [
-  {
-    id: 1,
-    title: "Ocean Conservation Journey",
-    description: "Documentary exploring marine ecosystem preservation",
-    author: "Blue Planet Collective",
-    sdg: "SDG 14: Life Below Water",
-    views: 1600,
-    createdAt: new Date(2024, 2, 15),
-    ratings: 4.7,
-    thumbnail:
-      "https://almarwater.com/wp-content/uploads/2023/08/tecnolog-as-sotenibles-cabecera.jpg",
-    githubLink: "https://github.com/username/ocean-conservation",
-    hostedLink: "https://ocean-documentary.example.com",
-    likes: 42,
-    userHasLiked: false,
-  },
-  {
-    id: 2,
-    title: "Women in STEM Narratives",
-    description: "Inspiring stories of women breaking barriers in science",
-    author: "Empowerment Documentarians",
-    sdg: "SDG 5: Gender Equality",
-    views: 2300,
-    createdAt: new Date(2024, 1, 20),
-    ratings: 4.9,
-    thumbnail:
-      "https://d117h1jjiq768j.cloudfront.net/images/default-source/blogs/2021/2021-03/webinar-promo-fb-tw-li-1200x628-1-text-smaller.png?sfvrsn=d99c8ea9_0",
-    githubLink: "https://github.com/username/women-in-stem",
-    hostedLink: "https://stem-narratives.example.com",
-    likes: 78,
-    userHasLiked: false,
-  },
-  {
-    id: 3,
-    title: "Sustainable Agriculture Insights",
-    description: "Exploring innovative farming techniques",
-    author: "AgriTech Storytellers",
-    sdg: "SDG 2: Zero Hunger",
-    views: 1900,
-    createdAt: new Date(2024, 3, 1),
-    ratings: 4.5,
-    thumbnail:
-      "https://enterprisewired.com/wp-content/uploads/2024/08/1-Sustainable-Farming-Practices.jpg",
-    githubLink: "https://github.com/username/agriculture-insights",
-    hostedLink: "https://agriculture-video.example.com",
-    likes: 35,
-    userHasLiked: false,
-  },
-];
-
-const Videos = () => {
+const Videos = ({ projects = [] }) => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
     sdg: "",
     sortBy: "ratings",
   });
-  const [videos, setVideos] = useState(videosData);
+  const [videos, setVideos] = useState(projects);
   const [hoveredVideo, setHoveredVideo] = useState(null);
 
-  const handleLike = (videoId) => {
+  // Initialize with props and update when props change
+  useEffect(() => {
+    setVideos(projects);
+  }, [projects]);
+
+  const handleLike = (projectId) => {
     setVideos((prevVideos) =>
-      prevVideos.map((video) =>
-        video.id === videoId
+      prevVideos.map((project) =>
+        project._id === projectId
           ? {
-              ...video,
-              likes: video.userHasLiked ? video.likes - 1 : video.likes + 1,
-              userHasLiked: !video.userHasLiked,
+              ...project,
+              likes: project.userHasLiked
+                ? project.likes - 1
+                : project.likes + 1,
+              userHasLiked: !project.userHasLiked,
             }
-          : video
+          : project
       )
     );
   };
@@ -87,31 +43,57 @@ const Videos = () => {
   const filteredAndSortedVideos = useMemo(() => {
     let result = [...videos];
 
-    // Filter and sort logic
+    // Filter by SDG
     if (filter.sdg) {
-      result = result.filter((video) => video.sdg === filter.sdg);
+      result = result.filter((project) => project.sdgs.includes(filter.sdg));
     }
 
+    // Sort based on selected criteria
     switch (filter.sortBy) {
       case "ratings":
-        result.sort((a, b) => b.ratings - a.ratings);
+        result.sort((a, b) => b.rating - a.rating);
         break;
       case "newest":
-        result.sort((a, b) => b.createdAt - a.createdAt);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "mostViewed":
-        result.sort((a, b) => b.views - a.views);
+        result.sort((a, b) => (b.views || 0) - (a.views || 0));
         break;
       case "mostLiked":
-        result.sort((a, b) => b.likes - a.likes);
+        result.sort((a, b) => (b.likes || 0) - (a.likes || 0));
         break;
     }
 
     return result;
   }, [filter, videos]);
 
-  const viewDetails = (videoId) => {
-    navigate(`/details/${videoId}`);
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
+  };
+
+  // Extract unique SDGs from projects
+  const uniqueSdgs = useMemo(() => {
+    const allSdgs = videos.flatMap((project) => project.sdgs || []);
+    return [...new Set(allSdgs)];
+  }, [videos]);
+
+  if (projects.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-400">
+        No video projects found
+      </div>
+    );
+  }
+
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+
+    // Replace backslashes with forward slashes
+    mediaPath = mediaPath.replace(/\\/g, "/");
+
+    // Return full URL (adjust if backend URL is different)
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   return (
@@ -139,13 +121,11 @@ const Videos = () => {
                 className="w-full bg-gray-800/80 text-white px-4 py-3 rounded-xl border border-white/10 appearance-none pr-10 focus:ring-2 focus:ring-red-500 transition-all"
               >
                 <option value="">All Sustainable Development Goals</option>
-                {[...new Set(videosData.map((video) => video.sdg))].map(
-                  (sdg) => (
-                    <option key={sdg} value={sdg}>
-                      {sdg}
-                    </option>
-                  )
-                )}
+                {uniqueSdgs.map((sdg) => (
+                  <option key={sdg} value={sdg}>
+                    {sdg}
+                  </option>
+                ))}
               </select>
               <Filter
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50"
@@ -193,7 +173,7 @@ const Videos = () => {
         >
           {filteredAndSortedVideos.map((video) => (
             <motion.div
-              key={video.id}
+              key={video._id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 visible: {
@@ -202,7 +182,7 @@ const Videos = () => {
                   transition: { type: "spring", stiffness: 300 },
                 },
               }}
-              onMouseEnter={() => setHoveredVideo(video.id)}
+              onMouseEnter={() => setHoveredVideo(video._id)}
               onMouseLeave={() => setHoveredVideo(null)}
               className="relative group perspective-1000"
             >
@@ -210,11 +190,18 @@ const Videos = () => {
                 {/* Video Thumbnail with Zoom Effect */}
                 <div className="relative overflow-hidden">
                   <motion.img
-                    src={video.thumbnail}
+                    src={
+                      video.media && video.media.length > 0
+                        ? getImageUrl(video.media[0])
+                        : "/api/placeholder/400/320"
+                    }
                     alt={video.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                     initial={{ scale: 1 }}
                     whileHover={{ scale: 1.1 }}
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/400/320";
+                    }}
                   />
                 </div>
 
@@ -226,7 +213,7 @@ const Videos = () => {
                     </h3>
                     <div className="flex items-center text-yellow-400">
                       <Star size={20} fill="currentColor" className="mr-1" />
-                      <span>{video.ratings.toFixed(1)}</span>
+                      <span>{video.rating.toFixed(1)}</span>
                     </div>
                   </div>
 
@@ -237,10 +224,12 @@ const Videos = () => {
                   {/* SDG and Likes */}
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                      {video.sdg}
+                      {video.sdgs && video.sdgs.length > 0
+                        ? video.sdgs[0]
+                        : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(video.id)}
+                      onClick={() => handleLike(video._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
@@ -255,7 +244,7 @@ const Videos = () => {
                   {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <motion.button
-                      onClick={() => viewDetails(video.id)}
+                      onClick={() => viewDetails(video._id)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -275,7 +264,7 @@ const Videos = () => {
                       </motion.button>
                       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                         <a
-                          href={video.githubLink}
+                          href={video.github}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
