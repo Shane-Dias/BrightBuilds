@@ -1,8 +1,5 @@
 const Project = require("../models/Project_schema");
 
-// @desc    Create a new project
-// @route   POST /api/create
-// @access  Public
 exports.createProject = async (req, res, next) => {
   try {
     // Handle file uploads
