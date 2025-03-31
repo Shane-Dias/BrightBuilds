@@ -72,17 +72,15 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(req.body)
+    console.log(req.body);
 
     // Check if user exists
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "Invalid email!" });
+    if (!user) return res.status(400).json({ message: "Invalid email!" });
 
     // Compare entered password with hashed password in DB
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid password!" });
+    if (!isMatch) return res.status(400).json({ message: "Invalid password!" });
 
     // Generate JWT Token (valid for 7 days)
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -107,5 +105,20 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getUserDetails = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract user ID from URL
 
+    // Find user by ID (or change to email if needed)
+    const user = await User.findById(id).select("-password"); // Exclude password
+
+    if (!user) return res.status(404).json({ message: "User not found!" });
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("❌ Error in getUserDetails:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserDetails };
