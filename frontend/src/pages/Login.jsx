@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Lock, User, LogIn, EyeOff, Eye } from "lucide-react";
 
 const LoginPage = () => {
@@ -7,17 +9,32 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate =useNavigate();
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(""); // To handle errors
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(""); // Reset error state
 
-    // Simulate login process
-    setTimeout(() => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/users/login", // Your backend API URL
+        { email: username, password }
+      );
+
+      // Handle successful login response
+      localStorage.setItem("token", response.data.token); // Store the token in localStorage
+      localStorage.setItem("role", response.data.user.role); // Store the token in localStorage
+      console.log("Login successful:", response.data);
+      navigate(`/student/${response.data.user.id}`);
+
+    } catch (err) {
       setIsLoading(false);
-      // Handle login logic here
-      console.log("Login attempt:", { username, password });
-    }, 1500);
+      setError(err.response?.data?.message || "Something went wrong!"); // Handle error
+      console.error("Login failed:", err);
+    }
   };
 
   // Framer Motion variants
