@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, User, LogIn, EyeOff, Eye } from "lucide-react";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ const LoginPage = () => {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/users/login", // Your backend API URL
-        { email: username, password }
+        { email: email, password }
       );
 
       // Handle successful login response
@@ -131,13 +131,13 @@ const LoginPage = () => {
             className="space-y-6"
           >
             <div className="space-y-4">
-              {/* Username field */}
+              {/* email field */}
               <motion.div variants={itemVariants} className="group">
                 <label
-                  htmlFor="username"
+                  htmlFor="email"
                   className="block text-sm font-medium text-gray-400 mb-1"
                 >
-                  Username
+                  Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -147,12 +147,12 @@ const LoginPage = () => {
                     whileFocus={{
                       boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
                     }}
-                    id="username"
+                    id="email"
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     required
                   />
                 </div>
