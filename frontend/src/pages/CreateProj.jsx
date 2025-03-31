@@ -316,7 +316,7 @@ export default function ProjectUploadForm() {
         setNotification(null);
       }, 5000);
       setTimeout(() => {
-        navigate("/student/1")
+        navigate("/student/1");
       }, 1500);
     }
   };
@@ -592,7 +592,10 @@ export default function ProjectUploadForm() {
         {/* Additional Project Links */}
         <div className="mt-6 grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-xl mb-2">GitHub Repository</label>
+            <div className="flex items-center gap-2">
+              <FaGithub />
+              <label className="block text-xl mb-2">GitHub Repository</label>
+            </div>
             <input
               type="url"
               className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -602,7 +605,10 @@ export default function ProjectUploadForm() {
             />
           </div>
           <div>
-            <label className="block text-xl mb-2">Hosted Project Link</label>
+            <div className="flex items-center gap-2">
+              <FaExternalLinkAlt />
+              <label className="block text-xl mb-2">Hosted Project Link</label>
+            </div>
             <input
               type="url"
               className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400"

@@ -1,12 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
-import { useCallback } from "react";
+import axios from "axios";
 
 const Leaderboards = () => {
   const [activeTab, setActiveTab] = useState("thisWeek");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch projects from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/projects");
+
+        // Ensure projects are correctly extracted
+        setProjects(
+          Array.isArray(response.data.data) ? response.data.data : []
+        );
+
+        console.log("Fetched Projects:", response.data.data); // Debugging log
+      } catch (err) {
+        setError(err);
+        console.error("Error fetching projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
@@ -15,6 +41,29 @@ const Leaderboards = () => {
   const particlesLoaded = useCallback(async (container) => {
     console.log("Particles container loaded", container);
   }, []);
+
+  // Get this week's projects (last 7 days)
+  const getThisWeekProjects = () => {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return projects
+      .filter(
+        (project) =>
+          new Date(project.createdAt) >= sevenDaysAgo &&
+          project.status === "approved"
+      )
+      .sort((a, b) => b.rating - a.rating || b.likes - a.likes)
+      .slice(0, 5); // Top 5 for this week
+  };
+
+  // Get overall top projects
+  const getOverallProjects = () => {
+    return projects
+      .filter((project) => project.status === "approved")
+      .sort((a, b) => b.rating - a.rating || b.likes - a.likes)
+      .slice(0, 10); // Top 10 overall
+  };
 
   return (
     <div className="relative bg-gradient-to-br from-gray-900 to-black min-h-screen overflow-hidden">
@@ -153,17 +202,84 @@ const Leaderboards = () => {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {activeTab === "thisWeek" && <Top5ThisWeek key="thisWeek" />}
-          {activeTab === "overall" && <Top10Overall key="overall" />}
-        </AnimatePresence>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-500 bg-opacity-20 border border-red-500 text-red-100 p-4 rounded-lg text-center">
+            Error loading projects. Please try again later.
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {activeTab === "thisWeek" && (
+              <ProjectList
+                key="thisWeek"
+                projects={getThisWeekProjects()}
+                title="Top Projects This Week"
+                emptyMessage="No projects from this week. Check back soon!"
+              />
+            )}
+            {activeTab === "overall" && (
+              <ProjectList
+                key="overall"
+                projects={getOverallProjects()}
+                title="Top Overall Projects"
+                emptyMessage="No projects available yet."
+              />
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </div>
   );
 };
 
+const ProjectList = ({ projects, title, emptyMessage }) => {
+  return (
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h2 className="text-2xl font-bold text-white mb-6 text-center">
+        {title}
+      </h2>
+
+      {projects.length === 0 ? (
+        <div className="text-center text-gray-400 p-8 bg-gray-800 bg-opacity-50 rounded-lg">
+          {emptyMessage}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-8">
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={project._id || index}
+              project={project}
+              rank={index + 1}
+            />
+          ))}
+        </div>
+      )}
+    </motion.section>
+  );
+};
+
 const ProjectCard = ({ project, rank }) => {
   const navigate = useNavigate();
+
+  // Map backend category to the frontend category format
+  const getCategoryKey = (category) => {
+    const map = {
+      Website: "website",
+      Game: "game",
+      Video: "video",
+      Documentary: "documentary",
+      "Digital Art": "digitalart",
+    };
+    return map[category] || "website"; // Default to website if not found
+  };
 
   const categoryColors = {
     game: "from-blue-500 to-indigo-600",
@@ -171,6 +287,30 @@ const ProjectCard = ({ project, rank }) => {
     video: "from-purple-500 to-pink-600",
     documentary: "from-yellow-500 to-orange-600",
     digitalart: "from-red-500 to-pink-600",
+  };
+
+  // Map SDG names to numbers for the color mapping
+  const getSdgNumber = (sdgName) => {
+    const sdgMap = {
+      "No Poverty": 1,
+      "Zero Hunger": 2,
+      "Good Health and Well-being": 3,
+      "Quality Education": 4,
+      "Gender Equality": 5,
+      "Clean Water and Sanitation": 6,
+      "Affordable and Clean Energy": 7,
+      "Decent Work and Economic Growth": 8,
+      "Industry, Innovation, and Infrastructure": 9,
+      "Reduced Inequality": 10,
+      "Sustainable Cities and Communities": 11,
+      "Responsible Consumption and Production": 12,
+      "Climate Action": 13,
+      "Life Below Water": 14,
+      "Life on Land": 15,
+      "Peace, Justice and Strong Institutions": 16,
+      "Partnerships for the Goals": 17,
+    };
+    return sdgMap[sdgName] || 1;
   };
 
   const sdgInfo = {
@@ -193,6 +333,25 @@ const ProjectCard = ({ project, rank }) => {
     17: { name: "Partnerships", color: "bg-rose-500" },
   };
 
+  // Get the primary SDG for display (first one in the array)
+  const primarySdg =
+    project.sdgs && project.sdgs.length > 0 ? getSdgNumber(project.sdgs[0]) : 1;
+
+  // Get media URL (first image in the array)
+  const getMediaUrl = () => {
+    if (project.media && project.media.length > 0) {
+      // Convert relative path to absolute URL
+      const mediaPath = project.media[0];
+      return mediaPath.startsWith("http")
+        ? mediaPath
+        : `http://localhost:5000/${mediaPath.replace(/\\/g, "/")}`;
+    }
+    // Fallback image
+    return "https://via.placeholder.com/300x200?text=No+Image";
+  };
+
+  const categoryKey = getCategoryKey(project.category);
+
   return (
     <motion.div
       className="relative bg-gray-800 bg-opacity-80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-2xl border border-gray-700"
@@ -203,9 +362,7 @@ const ProjectCard = ({ project, rank }) => {
     >
       {/* Rank Badge with Gradient */}
       <div
-        className={`absolute -top-4 -left-4 w-16 h-16 rounded-full bg-gradient-to-br ${
-          categoryColors[project.category]
-        } flex items-center justify-center text-2xl font-bold text-white shadow-lg z-10`}
+        className={`absolute -top-4 -left-4 w-16 h-16 rounded-full bg-gradient-to-br ${categoryColors[categoryKey]} flex items-center justify-center text-2xl font-bold text-white shadow-lg z-10`}
       >
         {rank}
       </div>
@@ -214,9 +371,14 @@ const ProjectCard = ({ project, rank }) => {
       <div className="flex-shrink-0 w-full md:w-48 h-48 rounded-xl overflow-hidden shadow-lg relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-30"></div>
         <img
-          src={project.image}
+          src={getMediaUrl()}
           alt={project.title}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src =
+              "https://via.placeholder.com/300x200?text=Error+Loading+Image";
+          }}
         />
       </div>
 
@@ -224,12 +386,9 @@ const ProjectCard = ({ project, rank }) => {
         <div className="flex flex-wrap items-center gap-3 mb-3">
           <h3 className="text-2xl font-bold text-white">{project.title}</h3>
           <span
-            className={`bg-gradient-to-r ${
-              categoryColors[project.category]
-            } text-white text-xs px-3 py-1 rounded-full`}
+            className={`bg-gradient-to-r ${categoryColors[categoryKey]} text-white text-xs px-3 py-1 rounded-full`}
           >
-            {project.category.charAt(0).toUpperCase() +
-              project.category.slice(1)}
+            {project.category}
           </span>
 
           <div className="ml-auto flex items-center gap-2">
@@ -247,11 +406,7 @@ const ProjectCard = ({ project, rank }) => {
                   }`}
                   viewBox="0 0 20 20"
                 >
-                  {i < Math.floor(project.rating) ? (
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  ) : (
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  )}
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               ))}
             </div>
@@ -267,7 +422,7 @@ const ProjectCard = ({ project, rank }) => {
 
         <div className="flex flex-wrap gap-3 items-center">
           <motion.button
-            onClick={() => navigate(`/details/${project.id}`)}
+            onClick={() => navigate(`/details/${project._id}`)}
             className="px-6 py-2 bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-full hover:from-red-600 hover:to-yellow-600 transition-all shadow-lg flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -287,204 +442,29 @@ const ProjectCard = ({ project, rank }) => {
             View Details
           </motion.button>
 
+          <div className="flex items-center gap-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-red-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-white font-medium">{project.likes}</span>
+          </div>
+
           <div className="text-sm text-gray-400">
-            <span className="font-medium text-white">SDG {project.sdg}:</span>{" "}
-            {sdgInfo[project.sdg].name}
+            <span className="font-medium text-white">SDG:</span>{" "}
+            {project.sdgs && project.sdgs.length > 0 ? project.sdgs[0] : "N/A"}
           </div>
         </div>
       </div>
     </motion.div>
-  );
-};
-
-const Top5ThisWeek = () => {
-  const top5ThisWeek = [
-    {
-      id: 1,
-      title: "Epic Adventure Game",
-      category: "game",
-      rating: 4.9,
-      description:
-        "An immersive RPG with stunning graphics and engaging storyline that has taken the gaming community by storm this week. Players explore vast open worlds and make meaningful choices that affect the game's outcome.",
-      image: "https://source.unsplash.com/random/400x300/?game",
-      sdg: 4,
-    },
-    {
-      id: 2,
-      title: "E-commerce Platform",
-      category: "website",
-      rating: 4.8,
-      description:
-        "Revolutionary online shopping experience with AI-powered recommendations and seamless checkout process. Supports small businesses with zero-commission marketplace options.",
-      image: "https://source.unsplash.com/random/400x300/?ecommerce",
-      sdg: 8,
-    },
-    {
-      id: 3,
-      title: "Short Film: The Last Day",
-      category: "video",
-      rating: 4.7,
-      description:
-        "A thought-provoking short film about humanity's final hours before a global catastrophe. Powerful performances and stunning cinematography make this a must-watch.",
-      image: "https://source.unsplash.com/random/400x300/?film",
-      sdg: 13,
-    },
-    {
-      id: 4,
-      title: "Climate Change Documentary",
-      category: "documentary",
-      rating: 4.6,
-      description:
-        "Eye-opening documentary showcasing the real impacts of climate change across different continents. Features interviews with leading scientists and activists.",
-      image: "https://source.unsplash.com/random/400x300/?nature",
-      sdg: 13,
-    },
-    {
-      id: 5,
-      title: "Digital Art Collection",
-      category: "digitalart",
-      rating: 4.5,
-      description:
-        "Stunning collection of digital artworks exploring the intersection of technology and human emotion. Each piece is generated using custom AI algorithms trained by the artist.",
-      image: "https://source.unsplash.com/random/400x300/?art",
-      sdg: 9,
-    },
-  ];
-
-  return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-4xl mx-auto"
-    >
-      <div className="space-y-8">
-        {top5ThisWeek.map((project, index) => (
-          <ProjectCard key={project.id} project={project} rank={index + 1} />
-        ))}
-      </div>
-    </motion.section>
-  );
-};
-
-const Top10Overall = () => {
-  const top10Overall = [
-    {
-      id: 6,
-      title: "Virtual Reality Experience",
-      category: "game",
-      rating: 5.0,
-      description:
-        "Groundbreaking VR experience that has redefined immersive gaming with its innovative controls and stunning environments. Compatible with all major VR platforms.",
-      image: "https://source.unsplash.com/random/400x300/?vr",
-      sdg: 4,
-    },
-    {
-      id: 7,
-      title: "Social Network Platform",
-      category: "website",
-      rating: 4.95,
-      description:
-        "The most popular social network that connects millions worldwide with its intuitive interface and powerful features. Focused on meaningful connections.",
-      image: "https://source.unsplash.com/random/400x300/?social",
-      sdg: 10,
-    },
-    {
-      id: 8,
-      title: "Animated Series",
-      category: "video",
-      rating: 4.9,
-      description:
-        "Critically acclaimed animated series praised for its storytelling, animation quality, and character development. Three seasons available with more coming soon.",
-      image: "https://source.unsplash.com/random/400x300/?animation",
-      sdg: 5,
-    },
-    {
-      id: 9,
-      title: "Space Exploration Documentary",
-      category: "documentary",
-      rating: 4.85,
-      description:
-        "Comprehensive look at humanity's journey through space exploration with never-before-seen footage. Narrated by a renowned astrophysicist.",
-      image: "https://source.unsplash.com/random/400x300/?space",
-      sdg: 9,
-    },
-    {
-      id: 10,
-      title: "Generative AI Art",
-      category: "digitalart",
-      rating: 4.8,
-      description:
-        "Pioneering collection of AI-generated art that challenges traditional notions of creativity and authorship. Each piece is unique and algorithmically generated.",
-      image: "https://source.unsplash.com/random/400x300/?ai",
-      sdg: 9,
-    },
-    {
-      id: 11,
-      title: "Strategy Game",
-      category: "game",
-      rating: 4.75,
-      description:
-        "Complex strategy game that has maintained a loyal following for years due to its depth and balance. Regular updates keep the gameplay fresh.",
-      image: "https://source.unsplash.com/random/400x300/?strategy",
-      sdg: 16,
-    },
-    {
-      id: 12,
-      title: "News Aggregator",
-      category: "website",
-      rating: 4.7,
-      description:
-        "Award-winning news platform that uses machine learning to curate personalized news feeds for users. Focused on reducing misinformation.",
-      image: "https://source.unsplash.com/random/400x300/?news",
-      sdg: 10,
-    },
-    {
-      id: 13,
-      title: "Music Video",
-      category: "video",
-      rating: 4.65,
-      description:
-        "Visually stunning music video that went viral for its innovative cinematography and storytelling. Over 500 million views worldwide.",
-      image: "https://source.unsplash.com/random/400x300/?music",
-      sdg: 5,
-    },
-    {
-      id: 14,
-      title: "Wildlife Documentary",
-      category: "documentary",
-      rating: 4.6,
-      description:
-        "Breathtaking documentary series capturing rare wildlife behavior in remote locations around the world. Filmed over 5 years on 6 continents.",
-      image: "https://source.unsplash.com/random/400x300/?wildlife",
-      sdg: 15,
-    },
-    {
-      id: 15,
-      title: "3D Sculpture Series",
-      category: "digitalart",
-      rating: 4.55,
-      description:
-        "Collection of digital 3D sculptures that blend organic forms with futuristic elements in surprising ways. Available as NFTs and physical prints.",
-      image: "https://source.unsplash.com/random/400x300/?sculpture",
-      sdg: 9,
-    },
-  ];
-
-  return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="grid md:grid-cols-2 gap-8">
-        {top10Overall.map((project, index) => (
-          <ProjectCard key={project.id} project={project} rank={index + 1} />
-        ))}
-      </div>
-    </motion.section>
   );
 };
 

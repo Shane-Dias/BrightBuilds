@@ -47,7 +47,7 @@ const projectSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    default: 0,
+    default: 0.1,
   },
   status: {
     type: String,
