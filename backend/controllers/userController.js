@@ -25,8 +25,12 @@ const registerUser = async (req, res) => {
     } = req.body;
 
     // Check if the email already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email, fullName });
     if (existingUser)
+      return res.status(400).json({ message: "Email already used!" });
+
+    const existingUserName = await User.findOne({ fullName });
+    if (existingUserName)
       return res.status(400).json({ message: "User already exists!" });
 
     // Hash the password before saving

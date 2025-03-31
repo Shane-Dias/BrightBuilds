@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   User,
   Mail,
@@ -74,6 +76,7 @@ const SignupPage = () => {
   };
 
   // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -108,21 +111,20 @@ const SignupPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        // Display error toast with the server message
+        toast.error(data.message || "Signup failed");
         throw new Error(data.message || "Signup failed");
       }
 
+      // Display success toast
+      toast.success("Signup successful! Welcome aboard!");
       console.log("Signup successful:", data);
-      // Handle successful signup (redirect, show message, etc.)
-      // Example:
-      navigate('/login');
-      // setSuccessMessage('Account created successfully!');
     } catch (error) {
       console.error("Signup error:", error);
-      // Handle error (show to user)
-      // Example:
-      // setErrorMessage(error.message || 'Signup failed. Please try again.');
+      // toast.error("An error occurred during signup");
     } finally {
       setIsLoading(false);
+      navigate("/login")
     }
   };
 
@@ -181,6 +183,7 @@ const SignupPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 py-12 pt-24">
+      <ToastContainer position="top-right" autoClose={5000} />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -290,7 +293,7 @@ const SignupPage = () => {
                   htmlFor="fullName"
                   className="block text-sm font-medium text-gray-400 mb-1"
                 >
-                  Full Name
+                  User Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -306,7 +309,7 @@ const SignupPage = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your full name"
+                    placeholder="Enter your user name"
                     required
                   />
                 </div>
