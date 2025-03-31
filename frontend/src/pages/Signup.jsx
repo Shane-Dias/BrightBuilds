@@ -12,7 +12,7 @@ import {
   Linkedin,
   Instagram,
   Twitter,
-  Youtube,
+  Github,
   Calendar,
   Upload,
   ChevronDown,
@@ -38,7 +38,7 @@ const SignupPage = () => {
     linkedin: "",
     instagram: "",
     twitter: "",
-    youtube: "",
+    github: "",
     password: "",
   });
 
@@ -734,29 +734,29 @@ const SignupPage = () => {
                   </div>
                 </motion.div>
 
-                {/* YouTube */}
+                {/* Github */}
                 <motion.div variants={itemVariants} className="group">
                   <label
-                    htmlFor="youtube"
+                    htmlFor="github"
                     className="block text-sm font-medium text-gray-400 mb-1"
                   >
-                    YouTube
+                    Github
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <Youtube size={18} className="text-gray-500" />
+                      <Github size={18} className="text-gray-500" />
                     </div>
                     <motion.input
                       whileFocus={{
                         boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
                       }}
-                      id="youtube"
-                      name="youtube"
+                      id="github"
+                      name="github"
                       type="text"
-                      value={formData.youtube}
+                      value={formData.github}
                       onChange={handleChange}
                       className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="youtube.com/c/channelname"
+                      placeholder="github.com/user-name"
                     />
                   </div>
                 </motion.div>

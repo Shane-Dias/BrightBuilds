@@ -29,7 +29,7 @@ function App() {
         <Route path="/faculty" element={<FacultyDashboard />} />
         <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/details" element={<Displaydetails />} />
+        <Route path="/userdetails/:id" element={<Displaydetails />} />
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

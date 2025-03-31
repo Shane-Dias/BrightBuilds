@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema(
     profileImage: { type: String, default: "" }, // Default empty string to avoid `undefined`
     instagram: { type: String, default: null },
     twitter: { type: String, default: null },
-    youtube: { type: String, default: null },
+    github: { type: String, default: null },
     linkedin: { type: String, default: null },
   },
   { timestamps: true }
