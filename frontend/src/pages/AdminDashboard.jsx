@@ -62,7 +62,7 @@ const AdminDashboard = () => {
 
   const handleUpdateProjectStatus = async (id, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/project/${id}/status`, { status });
+      await axios.put(`http://localhost:5000/api/admin/update-status/${id}`, { status });
       setProjects((prev) => prev.filter((project) => project._id !== id)); // Remove updated project from UI
     } catch (error) {
       console.error(`Error updating project status:`, error);

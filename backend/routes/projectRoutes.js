@@ -7,7 +7,7 @@ const {
   getProjects,
   getProjectById,
   getPendingProjects,
-  updateProjectStatus, // ✅ Import new function
+  updateProjectStatus, 
 } = require("../controllers/projectController");
 
 router.route("/create").post(upload.uploadMultiple, createProject);

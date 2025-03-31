@@ -58,16 +58,15 @@ exports.getPendingProjects = async (req, res) => {
   }
 };
 
-
-
-
 // 🟢 Get Project by ID
 exports.getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
 
     if (!project) {
-      return res.status(404).json({ success: false, message: "Project not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
     }
 
     res.status(200).json({ success: true, data: project });
@@ -82,25 +81,33 @@ exports.updateProjectStatus = async (req, res) => {
   try {
     const { status } = req.body; // Get the new status from the request body
 
-    // Validate status
+    // Validate status (allow only approved & rejected)
     if (!["approved", "rejected"].includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid status update" });
     }
 
-    // Find project by ID and update its status
+    // Update project status
     const project = await Project.findByIdAndUpdate(
       req.params.id,
-      { status },
-      { new: true }
+      { $set: { status } }, // Ensure only the status field updates
+      { new: true, runValidators: true } // Return updated project & run schema validations
     );
 
     if (!project) {
-      return res.status(404).json({ success: false, message: "Project not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
     }
 
-    res.status(200).json({ success: true, message: `Project marked as ${status}`, data: project });
+    res.status(200).json({
+      success: true,
+      message: `Project marked as ${status}`,
+      data: project,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating project status:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
