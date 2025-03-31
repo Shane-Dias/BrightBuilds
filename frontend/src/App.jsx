@@ -12,6 +12,7 @@ import Signup from "./pages/Signup";
 
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
+import Displaydetails from "./pages/Displaydetails";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/faculty" element={<FacultyDashboard />} />
         <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
+        <Route path="/details" element={<Displaydetails />} />
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

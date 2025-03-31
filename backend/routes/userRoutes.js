@@ -7,4 +7,4 @@ const { uploadSingle } = require("../middleware/upload"); // Destructure to get 
 router.post("/signup", uploadSingle, registerUser); // Use uploadSingle directly
 router.post("/login", loginUser);
 
-module.exports = router;
+  module.exports = router;
