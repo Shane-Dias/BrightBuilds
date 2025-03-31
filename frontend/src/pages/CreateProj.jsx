@@ -304,6 +304,9 @@ export default function ProjectUploadForm() {
         message: "Your project has been submitted to the Admin. Status Pending",
         type: "success",
       });
+      setTimeout(() => {
+        navigate("/student/1");
+      }, 1500);
     } catch (error) {
       console.error("Submission error:", error);
       setNotification({
@@ -315,9 +318,6 @@ export default function ProjectUploadForm() {
       setTimeout(() => {
         setNotification(null);
       }, 5000);
-      setTimeout(() => {
-        navigate("/student/1");
-      }, 1500);
     }
   };
 

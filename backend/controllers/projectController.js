@@ -50,7 +50,7 @@ exports.getProjects = async (req, res) => {
 
 exports.getPendingProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ status: "pending" }); // Only approved projects
+    const projects = await Project.find({ status: "pending" }); // Only pending projects
     res.status(200).json({ success: true, data: projects });
   } catch (error) {
     console.error(error);
