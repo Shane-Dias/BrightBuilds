@@ -8,7 +8,7 @@ const {
   getProjectById,
 } = require("../controllers/projectController");
 
-router.route("/create").post(upload, createProject);
+router.route("/create").post(upload.uploadMultiple, createProject);
 
 router.route("/projects").get(getProjects);
 
