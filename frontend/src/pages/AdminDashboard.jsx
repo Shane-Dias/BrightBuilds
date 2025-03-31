@@ -23,6 +23,8 @@ import {
   PieChart,
 } from "lucide-react";
 import { loadFull } from "tsparticles";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("userManagement");
@@ -33,58 +35,7 @@ const AdminDashboard = () => {
   const [expandedProject, setExpandedProject] = useState(null);
 
   // Sample data initialization
-  useEffect(() => {
-    // Mock data for projects
-    setProjects([
-      {
-        id: 1,
-        title: "Eco-Friendly App",
-        author: "Jane Doe",
-        type: "Mobile App",
-        sdgs: [7, 11, 13],
-        status: "pending",
-        description:
-          "An app that helps users track their carbon footprint and suggests eco-friendly alternatives.",
-        ratings: 4.5,
-        date: "2023-10-15",
-      },
-      {
-        id: 2,
-        title: "Clean Water Initiative",
-        author: "John Smith",
-        type: "Research",
-        sdgs: [6],
-        status: "approved",
-        description:
-          "A research project on improving water filtration systems in rural areas.",
-        ratings: 4.8,
-        date: "2023-09-22",
-      },
-      // Add more projects as needed
-    ]);
-
-    // Mock data for users
-    setUsers([
-      {
-        id: 1,
-        name: "Alex Johnson",
-        email: "alex@university.edu",
-        role: "student",
-        status: "active",
-        projects: 3,
-      },
-      {
-        id: 2,
-        name: "Dr. Sarah Williams",
-        email: "s.williams@university.edu",
-        role: "faculty",
-        status: "active",
-        projects: 5,
-      },
-      // Add more users as needed
-    ]);
-  }, []);
-
+  
   const particlesInit = async (engine) => {
     await loadFull(engine);
   };
@@ -92,32 +43,40 @@ const AdminDashboard = () => {
   const particlesLoaded = async (container) => {
     console.log("Particles loaded", container);
   };
-
-  const handleApproveProject = (projectId) => {
-    setProjects(
-      projects.map((project) =>
-        project.id === projectId ? { ...project, status: "approved" } : project
-      )
-    );
+ const navigate = useNavigate();
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
   };
 
-  const handleRejectProject = (projectId) => {
-    setProjects(
-      projects.map((project) =>
-        project.id === projectId ? { ...project, status: "rejected" } : project
-      )
-    );
+  useEffect(() => {
+    const fetchPendingProjects = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/admin/pendingprojects");
+        setProjects(response.data.data);
+      } catch (error) {
+        console.error("Error fetching pending projects:", error);
+      }
+    };
+    fetchPendingProjects();
+  }, []);
+
+  const handleUpdateProjectStatus = async (id, status) => {
+    try {
+      await axios.put(`http://localhost:5000/api/project/${id}/status`, { status });
+      setProjects((prev) => prev.filter((project) => project._id !== id)); // Remove updated project from UI
+    } catch (error) {
+      console.error(`Error updating project status:`, error);
+    }
   };
 
 
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.author.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSDG =
-      selectedSDG === "all" || project.sdgs.includes(Number(selectedSDG));
-    return matchesSearch && matchesSDG;
-  });
+  const filteredProjects = projects.filter((project) =>
+    (selectedSDG === "all" || project.sdgs.includes(Number(selectedSDG))) &&
+    project.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+
 
   const filteredUsers = users.filter(
     (user) =>
@@ -218,144 +177,118 @@ const AdminDashboard = () => {
 
       case "projectModeration":
         return (
-          <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-white">
-                Project Moderation
-              </h3>
-              <div className="flex space-x-4">
-                <div className="relative">
-                  <Filter
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <select
-                    className="pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600 appearance-none"
-                    value={selectedSDG}
-                    onChange={(e) => setSelectedSDG(e.target.value)}
-                  >
-                    <option value="all">All SDGs</option>
-                    {[
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                    ].map((sdg) => (
-                      <option key={sdg} value={sdg}>
-                        SDG {sdg}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="relative w-64">
-                  <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search projects..."
-                    className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+          <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+            <h3 className="text-2xl font-bold text-white">Project Moderation</h3>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <select
+                  className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none w-full sm:w-auto"
+                  value={selectedSDG}
+                  onChange={(e) => setSelectedSDG(e.target.value)}
+                >
+                  <option value="all">All SDGs</option>
+                  {[...Array(17)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>SDG {i + 1}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
             </div>
-
-            <div className="space-y-4">
-              {filteredProjects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gray-800/50 rounded-xl p-4 shadow"
+          </div>
+        
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((project) => (
+                <motion.div 
+                  key={project._id} 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600 transition-colors"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                     <div>
-                      <h4 className="text-lg font-medium text-white">
-                        {project.title}
-                      </h4>
-                      <p className="text-sm text-gray-400">
-                        by {project.author} • {project.type}
-                      </p>
+                      <h4 className="text-lg font-medium text-white">{project.title}</h4>
+                      <p className="text-sm text-gray-400">by {project.teammates}</p>
                     </div>
                     <div className="flex items-center space-x-4">
-                      <div className="flex space-x-1">
+                      <div className="flex flex-wrap gap-1 max-w-xs">
                         {project.sdgs.map((sdg) => (
-                          <span
-                            key={sdg}
-                            className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold"
+                          <span 
+                            key={sdg} 
+                            className="px-3 py-2 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white"
                           >
                             {sdg}
                           </span>
                         ))}
                       </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          project.status === "approved"
-                            ? "bg-green-500/20 text-green-400"
-                            : project.status === "rejected"
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-yellow-500/20 text-yellow-400"
-                        }`}
-                      >
-                        {project.status}
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        project.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                        project.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                        'bg-red-500/20 text-red-400'
+                      }`}>
+                        {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                       </span>
-                      <button
-                        onClick={() =>
-                          setExpandedProject(
-                            expandedProject === project.id ? null : project.id
-                          )
-                        }
-                        className="text-gray-400 hover:text-white"
+                      <button 
+                        onClick={() => setExpandedProject(expandedProject === project._id ? null : project._id)} 
+                        className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-700"
+                        aria-label={expandedProject === project._id ? "Collapse details" : "Expand details"}
                       >
-                        {expandedProject === project.id ? (
-                          <ChevronUp />
-                        ) : (
-                          <ChevronDown />
-                        )}
+                        {expandedProject === project._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                       </button>
                     </div>
                   </div>
-
-                  {expandedProject === project.id && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      transition={{ duration: 0.3 }}
+        
+                  {expandedProject === project._id && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }} 
+                      animate={{ opacity: 1, height: "auto" }} 
                       className="mt-4 pt-4 border-t border-gray-700"
                     >
-                      <p className="text-gray-300 mb-4">
-                        {project.description}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-400">
-                          Submitted on: {project.date} • Rating:{" "}
-                          {project.ratings}/5
+                      <p className="text-gray-300 mb-4 leading-relaxed">{project.description}</p>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        <div className="text-sm text-gray-400">Submitted on: {new Date(project.createdAt).toLocaleDateString('en-US', { year: 'numeric',month: 'short', day: 'numeric'})}</div>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleUpdateProjectStatus(project._id, "approved")}
+                            className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-green-400 font-medium flex items-center gap-2 transition-colors"
+                          >
+                            <CheckCircle2 size={16} /> Approve
+                          </button>
+                          <button
+                            onClick={() => handleUpdateProjectStatus(project._id, "rejected")}
+                            className="px-4 py-2 bg-red-600/30 hover:bg-red-600/50 rounded-lg text-red-400 font-medium flex items-center gap-2 transition-colors"
+                          >
+                            <XCircle size={16} /> Reject
+                          </button>
                         </div>
-                        {project.status === "pending" && (
-                          <div className="flex space-x-3">
-                            <button
-                              onClick={() => handleApproveProject(project.id)}
-                              className="flex items-center space-x-1 px-3 py-1.5 bg-green-600/30 hover:bg-green-600/40 rounded-lg text-green-400 transition-colors"
-                            >
-                              <CheckCircle2 size={16} />
-                              <span>Approve</span>
-                            </button>
-                            <button
-                              onClick={() => handleRejectProject(project.id)}
-                              className="flex items-center space-x-1 px-3 py-1.5 bg-red-600/30 hover:bg-red-600/40 rounded-lg text-red-400 transition-colors"
-                            >
-                              <XCircle size={16} />
-                              <span>Reject</span>
-                            </button>
-                          </div>
-                        )}
+
+
+                       
                       </div>
+                      <button onClick={() => viewDetails(project._id)} className="bg-black text-lg rounded-lg px-5 py-3 mt-4 ">View Details</button>
                     </motion.div>
                   )}
                 </motion.div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <div className="text-center py-10">
+                <Search className="mx-auto text-gray-500 mb-2" size={32} />
+                <p className="text-gray-400">No projects found matching your criteria</p>
+              </div>
+            )}
           </div>
+        </div>
         );
 
       case "reports":
