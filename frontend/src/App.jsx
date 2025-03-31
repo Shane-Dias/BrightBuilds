@@ -7,6 +7,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import CreateProj from "./pages/CreateProj";
 import ViewDetails from "./pages/ViewDetails";
 import Leaderboards from "./pages/Leaderboards";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
@@ -19,11 +21,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/create" element={<CreateProj/>} />
-       <Route path="/student/:id" element={<StudentDashBoardMy/>}/>
-       <Route path="/faculty" element={<FacultyDashboard/>}/>
-        <Route path="/details/:id" element={<ViewDetails/>} />
-        <Route path="/leaderboards" element={<Leaderboards/>} />
+        <Route path="/student/:id" element={<StudentDashBoardMy />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/create" element={<CreateProj />} />
+        <Route path="/faculty" element={<FacultyDashboard />} />
+        <Route path="/details/:id" element={<ViewDetails />} />
+        <Route path="/leaderboards" element={<Leaderboards />} />
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
