@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   User,
@@ -48,6 +49,8 @@ const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const roleOptions = ["Student", "Faculty"];
 
+  const navigate = useNavigate();
+
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,16 +74,56 @@ const SignupPage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate signup process
-    setTimeout(() => {
-      console.log("Signup details:", { ...formData, profileImage });
+    try {
+      // Create FormData object for file upload
+      const formDataToSend = new FormData();
+
+      // Append all form fields (without extra quotes)
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
+      });
+
+      // Append the profile image if it exists
+      if (profileImage) {
+        formDataToSend.append("profileImage", profileImage);
+      }
+
+      // Log what we're sending (for debugging)
+      console.log("Submitting:", {
+        ...formData,
+        profileImage: profileImage?.name || "None",
+      });
+
+      // Send to backend
+      const response = await fetch("http://localhost:5000/api/users/signup", {
+        method: "POST",
+        body: formDataToSend,
+        // headers are automatically set by browser for FormData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+
+      console.log("Signup successful:", data);
+      // Handle successful signup (redirect, show message, etc.)
+      // Example:
+      navigate('/login');
+      // setSuccessMessage('Account created successfully!');
+    } catch (error) {
+      console.error("Signup error:", error);
+      // Handle error (show to user)
+      // Example:
+      // setErrorMessage(error.message || 'Signup failed. Please try again.');
+    } finally {
       setIsLoading(false);
-      // Handle signup completion here
-    }, 1500);
+    }
   };
 
   // Gender options
