@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 const projectRoutes = require("./routes/projectRoutes");
+require('dotenv').config();
 
 const app = express();
 
@@ -13,8 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // MongoDB Connection
+// .connect("mongodb://127.0.0.1:27017/brightbuilds") //local server
+
 mongoose
-  .connect("mongodb://127.0.0.1:27017/brightbuilds")
+  .connect(process.env.MONGO_URI)   // atlas server
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 

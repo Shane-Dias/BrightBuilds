@@ -1,7 +1,6 @@
 # Node.js dependencies
 node_modules/
 package-lock.json
-uploads
 
 # Environment Variables
 .env

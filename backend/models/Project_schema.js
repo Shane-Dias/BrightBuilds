@@ -17,7 +17,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  media: [String], // We'll store file paths or URLs here
+  media: [String], // We'll store file paths 
   mentor: {
     type: String,
     required: true,
@@ -51,7 +51,7 @@ const projectSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
-    default: "pending",
+    default: "approved",  //change this to pending later when admin page is ready
   },
   createdAt: {
     type: Date,
