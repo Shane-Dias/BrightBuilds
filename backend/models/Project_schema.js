@@ -20,7 +20,8 @@ const projectSchema = new mongoose.Schema({
   media: [String], // We'll store file paths 
   mentor: {
     type: String,
-    required: true,
+    required: false,
+    default: "Not Assigned",
   },
   sdgs: {
     type: [String],

@@ -315,6 +315,9 @@ export default function ProjectUploadForm() {
       setTimeout(() => {
         setNotification(null);
       }, 5000);
+      setTimeout(() => {
+        navigate("/student/1")
+      }, 1500);
     }
   };
 
