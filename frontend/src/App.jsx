@@ -39,15 +39,47 @@ function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/details/:id" element={<ViewDetails />} />
+        <Route path="/details/:id" element={<ViewProjectDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/userdetails/:id" element={<Displaydetails />} />
+        <Route path="/userdetails/:id" element={<DisplayProfiledetails />} />
 
         {/* Protected Routes */}
-        <Route path="/faculty/:id" element={<ProtectedRoute element={<FacultyDashboard />} allowedRoles={["Faculty"]} />} />
-        <Route path="/student/:id" element={<ProtectedRoute element={<StudentDashBoardMy />} allowedRoles={["Student"]} />} />
-        <Route path="/create" element={<ProtectedRoute element={<CreateProj />} allowedRoles={["Student"]} />} />
-        <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={["Admin"]} />} />
+        <Route
+          path="/faculty/:id"
+          element={
+            <ProtectedRoute
+              element={<FacultyDashboard />}
+              allowedRoles={["Faculty"]}
+            />
+          }
+        />
+        <Route
+          path="/student/:id"
+          element={
+            <ProtectedRoute
+              element={<StudentDashBoardMy />}
+              allowedRoles={["Student"]}
+            />
+          }
+        />
+        <Route
+          path="/create"
+          element={
+            <ProtectedRoute
+              element={<CreateProj />}
+              allowedRoles={["Student"]}
+            />
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute
+              element={<AdminDashboard />}
+              allowedRoles={["Admin"]}
+            />
+          }
+        />
 
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
