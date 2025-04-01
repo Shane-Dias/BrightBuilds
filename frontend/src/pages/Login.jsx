@@ -28,7 +28,19 @@ const LoginPage = () => {
       localStorage.setItem("token", response.data.token); // Store the token in localStorage
       localStorage.setItem("role", response.data.user.role); // Store the token in localStorage
       console.log("Login successful:", response.data);
-      navigate(`/student/${response.data.user.id}`);
+
+      if(response.data.user.role==="Student"){
+        navigate(`/student/${response.data.user.id}`);
+      }else if(response.data.user.role==="Faculty"){
+        navigate(`/faculty/${response.data.user.id}`);
+      }
+      else if(response.data.user.role==="Admin"){
+        navigate(`/admin`);
+      }
+      else{
+        navigate(`/`);
+      }
+     
 
     } catch (err) {
       setIsLoading(false);
