@@ -164,7 +164,7 @@ const UserProfile = () => {
       <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-600 rounded-full filter blur-3xl opacity-20"></div>
 
       <h2
-        className={`text-5xl pt-8 font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-12 transition-opacity duration-2000 ease-in-out ${
+        className={`text-5xl pt-14 font-bold font-lilita text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-12 transition-opacity duration-2000 ease-in-out ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
       >
