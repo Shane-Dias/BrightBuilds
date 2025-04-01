@@ -20,6 +20,7 @@ const StudentDashboard = () => {
   const [username, setUsername] = useState("");
   const [projects, setProjects] = useState([]);
   const [userLikes, setUserLikes] = useState({});
+  const [profilePic, setprofilePic] = useState("")
 
   // Function to get proper image URL
   const getImageUrl = (mediaPath) => {
@@ -35,8 +36,10 @@ const StudentDashboard = () => {
           `http://localhost:5000/api/users/details/${id}`
         );
         const data = await res.json();
+        console.log(data);  
         if (data) {
           setUsername(data.fullName);
+          setprofilePic(data.profileImage);
           fetchProjects(data.fullName);
         }
       } catch (error) {
@@ -121,7 +124,7 @@ const StudentDashboard = () => {
 
   return (
     <>
-      <UserProfile />
+      <UserProfile userProfile={username} profilePic={profilePic}/>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
