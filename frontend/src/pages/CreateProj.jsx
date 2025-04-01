@@ -516,12 +516,12 @@ export default function ProjectUploadForm() {
         {/* Teammates & Mentor */}
         <div className="mt-6 grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-xl mb-2">Add Teammates</label>
+            <label className="block text-xl mb-2">Enter Names of Contributers </label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 className="flex-grow p-3 bg-gray-700 rounded-xl"
-                placeholder="Enter teammate name"
+                placeholder="Note: Name be the username of the contributer"
                 value={form.newTeammate}
                 onChange={(e) =>
                   setForm({ ...form, newTeammate: e.target.value })
@@ -559,12 +559,12 @@ export default function ProjectUploadForm() {
             )}
           </div>
           <div>
-            <label className="block text-xl mb-2">Assign Mentor</label>
+            <label className="block text-xl mb-2">Enter Mentor Name</label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 className="flex-grow p-3 bg-gray-700 rounded-xl"
-                placeholder="Enter mentor name"
+                placeholder="Note: Name should be the username of the mentor"
                 value={form.newMentor}
                 onChange={(e) =>
                   setForm({ ...form, newMentor: e.target.value })
