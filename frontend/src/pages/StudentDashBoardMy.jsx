@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Star,
@@ -12,89 +13,91 @@ import {
 import { useNavigate } from "react-router-dom";
 import UserProfile from "../components/UserProfile";
 
-const gamesData = [
-  {
-    id: 1,
-    title: "Snake Multiplayer",
-    description: "A multiplayer snake game built using Pygame",
-    ratings: 4.5,
-    sdg: "SDG 3: Good Health and Well-being",
-    views: 1200,
-    createdAt: new Date(2024, 2, 15),
-    thumbnail:
-      "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcT1ZrWDH4RlL9gWEah5r401YHw5MEEiuYRIoORMG-zfXod7SGt_9tQODFor7su83yMwDdW7-95eH6GsZFGwZYCVT9h8yjtOwgRLiFvYi-TY",
-    githubLink: "https://github.com/username/snake-multiplayer",
-    hostedLink: "https://snake-game.example.com",
-    likes: 42,
-    userHasLiked: false,
-    status: "approved",
-  },
-  {
-    id: 2,
-    title: "Climate Change Simulator",
-    description: "An interactive game exploring environmental challenges",
-    ratings: 4.8,
-    sdg: "SDG 13: Climate Action",
-    views: 2500,
-    createdAt: new Date(2024, 3, 1),
-    thumbnail:
-      "https://uwaterloo.ca/climate-institute/sites/default/files/styles/large/public/uploads/images/illuminate_mitigation_screen.png?itok=68i_tLHY",
-    githubLink: "https://github.com/username/climate-simulator",
-    hostedLink: "https://climate-sim.example.com",
-    likes: 78,
-    userRating: null,
-    userHasLiked: false,
-    status: "pending",
-  },
-  {
-    id: 3,
-    title: "Space Exploration Adventure",
-    description:
-      "Educational space exploration game with scientific challenges",
-    ratings: 4.2,
-    sdg: "SDG 4: Quality Education",
-    views: 1800,
-    createdAt: new Date(2024, 1, 10),
-    thumbnail:
-      "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1718870/capsule_616x353.jpg?t=1721124425",
-    githubLink: "https://github.com/username/space-adventure",
-    hostedLink: "https://space-game.example.com",
-    likes: 35,
-    userRating: null,
-    userHasLiked: false,
-    status: "rejected",
-  },
-];
-
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const [games, setGames] = useState(gamesData);
   const [hoveredGame, setHoveredGame] = useState(null);
+  const { id } = useParams();
+  const [username, setUsername] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [userLikes, setUserLikes] = useState({});
 
-  const handleLike = (gameId) => {
-    setGames((prevGames) =>
-      prevGames.map((game) =>
-        game.id === gameId
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+    mediaPath = mediaPath.replace(/\\/g, "/");
+    return `http://localhost:5000/${mediaPath}`;
+  };
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/users/details/${id}`
+        );
+        const data = await res.json();
+        if (data) {
+          setUsername(data.fullName);
+          fetchProjects(data.fullName);
+        }
+      } catch (error) {
+        console.error("Error fetching username:", error);
+      }
+    };
+
+    const fetchProjects = async (username) => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/projects/user/${username}`
+        );
+        const data = await res.json();
+        console.log(data);
+        if (data.success) {
+          setProjects(data.projects);
+          console.log(data.projects);
+
+          // Initialize user likes state for each project
+          const likesState = {};
+          data.projects.forEach((project) => {
+            likesState[project._id] = false;
+          });
+          setUserLikes(likesState);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchUsername();
+  }, [id]);
+
+  const handleLike = (projectId) => {
+    setProjects((prevProjects) =>
+      prevProjects.map((project) =>
+        project._id === projectId
           ? {
-              ...game,
-              likes: game.userHasLiked ? game.likes - 1 : game.likes + 1,
-              userHasLiked: !game.userHasLiked,
+              ...project,
+              likes: userLikes[projectId]
+                ? project.likes - 1
+                : project.likes + 1,
             }
-          : game
+          : project
       )
     );
+
+    setUserLikes((prev) => ({
+      ...prev,
+      [projectId]: !prev[projectId],
+    }));
   };
+
   const handleLogout = () => {
-    // Remove the token from localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-
-    // Redirect user to login page
     navigate("/login");
   };
 
-  const viewDetails = (gameId) => {
-    navigate(`/details/${gameId}`);
+  const viewDetails = (projectId) => {
+    navigate(`/details/${projectId}`);
   };
 
   // Status badge configuration
@@ -125,15 +128,12 @@ const StudentDashboard = () => {
         transition={{ duration: 0.5 }}
         className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-fit p-8 rounded-lg min-w-fit"
       >
-        <button onClick={handleLogout} style={{ color: "white" }}>
-          Logout
-        </button>
         <div className="relative z-10">
           <h1 className="text-5xl font-bold font-lilita text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12">
             Your Projects
           </h1>
 
-          {/* Games Grid */}
+          {/* Projects Grid */}
           <motion.div
             className="grid md:grid-cols-3 gap-8"
             initial="hidden"
@@ -149,9 +149,9 @@ const StudentDashboard = () => {
               },
             }}
           >
-            {games.map((game) => (
+            {projects.map((project) => (
               <motion.div
-                key={game.id}
+                key={project._id}
                 variants={{
                   hidden: { y: 20, opacity: 0 },
                   visible: {
@@ -160,16 +160,20 @@ const StudentDashboard = () => {
                     transition: { type: "spring", stiffness: 300 },
                   },
                 }}
-                onMouseEnter={() => setHoveredGame(game.id)}
+                onMouseEnter={() => setHoveredGame(project._id)}
                 onMouseLeave={() => setHoveredGame(null)}
                 className="relative group perspective-1000"
               >
-                <div className="relative bg-gray-800/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
-                  {/* Game Thumbnail with Zoom Effect and Status Badge */}
+                <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
+                  {/* Project Thumbnail with Zoom Effect and Status Badge */}
                   <div className="relative overflow-hidden">
                     <motion.img
-                      src={game.thumbnail}
-                      alt={game.title}
+                      src={
+                        project.media && project.media.length > 0
+                          ? getImageUrl(project.media[0])
+                          : "https://placehold.co/600x400/gray/white?text=No+Image"
+                      }
+                      alt={project.title}
                       className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
                       initial={{ scale: 1 }}
                       whileHover={{ scale: 1.1 }}
@@ -177,52 +181,86 @@ const StudentDashboard = () => {
                     {/* Status Badge */}
                     <div
                       className={`absolute top-2 left-2 ${
-                        statusConfig[game.status].color
-                      } text-black font-bold  text-lg px-2 py-1 rounded-full flex items-center`}
+                        statusConfig[project.status]?.color || "bg-gray-500"
+                      } text-black font-bold text-lg px-2 py-1 rounded-full flex items-center`}
                     >
-                      {statusConfig[game.status].icon}
-                      {statusConfig[game.status].text}
+                      {statusConfig[project.status]?.icon || (
+                        <Clock size={16} className="mr-1" />
+                      )}
+                      {statusConfig[project.status]?.text || "Unknown"}
                     </div>
                   </div>
 
                   <div className="p-5 flex flex-col h-full">
-                    {/* Game Title and Rating */}
+                    {/* Project Title and Rating */}
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-2xl font-bold text-white">
-                        {game.title}
+                      <h3 className="text-2xl font-bold text-white truncate">
+                        {project.title}
                       </h3>
                       <div className="flex items-center text-yellow-400">
                         <Star size={20} fill="currentColor" className="mr-1" />
-                        <span>{game.ratings.toFixed(1)}</span>
+                        <span>{project.rating?.toFixed(1) || "0.0"}</span>
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-300 mb-4 flex-grow">
-                      {game.description}
+                    <p className="text-sm text-gray-300 mb-4 flex-grow line-clamp-2">
+                      {project.description}
                     </p>
 
-                    {/* SDG and Likes */}
+                    {/* SDGs - Only showing first 2 */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {project.sdgs &&
+                        project.sdgs.slice(0, 2).map((sdg, index) => (
+                          <span
+                            key={index}
+                            className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full"
+                          >
+                            {sdg}
+                          </span>
+                        ))}
+                      {project.sdgs && project.sdgs.length > 2 && (
+                        <span className="text-xs text-gray-400 px-2 py-1">
+                          +{project.sdgs.length - 2} more
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {project.techStack &&
+                        project.techStack.map((tech, index) => (
+                          <span
+                            key={index}
+                            className="text-xs text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                    </div>
+
+                    {/* Likes and Team */}
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                        {game.sdg}
-                      </span>
+                      <div className="text-xs text-gray-400">
+                        Team: {project.teammates?.length || 0} members
+                      </div>
                       <button
-                        onClick={() => handleLike(game.id)}
+                        onClick={() => handleLike(project._id)}
                         className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                       >
                         <Heart
                           size={18}
-                          fill={game.userHasLiked ? "currentColor" : "none"}
+                          fill={
+                            userLikes[project._id] ? "currentColor" : "none"
+                          }
                           className="mr-1"
                         />
-                        {game.likes}
+                        {project.likes || 0}
                       </button>
                     </div>
 
                     {/* Action Buttons */}
                     <div className="flex space-x-3 mt-auto">
                       <motion.button
-                        onClick={() => viewDetails(game.id)}
+                        onClick={() => viewDetails(project._id)}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center"
@@ -242,7 +280,7 @@ const StudentDashboard = () => {
                         </motion.button>
                         <div className="absolute bottom-full left-0 mb-2 hidden group-hover/project:flex flex-col bg-gray-800 rounded-lg shadow-lg overflow-hidden z-10 w-full">
                           <a
-                            href={game.githubLink}
+                            href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
@@ -250,7 +288,7 @@ const StudentDashboard = () => {
                             GitHub Repo
                           </a>
                           <a
-                            href={game.hostedLink}
+                            href={project.hostedLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
@@ -265,6 +303,14 @@ const StudentDashboard = () => {
               </motion.div>
             ))}
           </motion.div>
+
+          {projects.length === 0 && (
+            <div className="text-center py-16 text-gray-400">
+              <p className="text-xl">
+                No projects found. Create your first project to get started!
+              </p>
+            </div>
+          )}
         </div>
       </motion.div>
     </>

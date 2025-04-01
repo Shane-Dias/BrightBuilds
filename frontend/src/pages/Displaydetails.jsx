@@ -41,7 +41,7 @@ const UserProfile = () => {
   const getUserDetails = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/details/${userId.id}`
+        `http://localhost:5000/api/users/details/${userId.id}`  //here
       );
       if (!response.ok) {
         throw new Error("User not found!");
