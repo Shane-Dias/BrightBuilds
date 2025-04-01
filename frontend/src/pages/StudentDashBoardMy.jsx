@@ -21,6 +21,13 @@ const StudentDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [userLikes, setUserLikes] = useState({});
 
+  // Function to get proper image URL
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+    mediaPath = mediaPath.replace(/\\/g, "/");
+    return `http://localhost:5000/${mediaPath}`;
+  };
+
   useEffect(() => {
     const fetchUsername = async () => {
       try {
@@ -157,13 +164,13 @@ const StudentDashboard = () => {
                 onMouseLeave={() => setHoveredGame(null)}
                 className="relative group perspective-1000"
               >
-                <div className="relative bg-gray-800/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
+                <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
                   {/* Project Thumbnail with Zoom Effect and Status Badge */}
                   <div className="relative overflow-hidden">
                     <motion.img
                       src={
                         project.media && project.media.length > 0
-                          ? project.media[0].replace("uploads\\", "/uploads/")
+                          ? getImageUrl(project.media[0])
                           : "https://placehold.co/600x400/gray/white?text=No+Image"
                       }
                       alt={project.title}
@@ -200,10 +207,10 @@ const StudentDashboard = () => {
                       {project.description}
                     </p>
 
-                    {/* SDGs and Tech Stack */}
+                    {/* SDGs - Only showing first 2 */}
                     <div className="flex flex-wrap gap-1 mb-3">
                       {project.sdgs &&
-                        project.sdgs.map((sdg, index) => (
+                        project.sdgs.slice(0, 2).map((sdg, index) => (
                           <span
                             key={index}
                             className="text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded-full"
@@ -211,6 +218,11 @@ const StudentDashboard = () => {
                             {sdg}
                           </span>
                         ))}
+                      {project.sdgs && project.sdgs.length > 2 && (
+                        <span className="text-xs text-gray-400 px-2 py-1">
+                          +{project.sdgs.length - 2} more
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-4">

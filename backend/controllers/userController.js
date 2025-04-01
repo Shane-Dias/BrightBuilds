@@ -121,4 +121,23 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserDetails };
+const getallUserDetails = async (req, res) => {
+  try {
+    console.log("User ID from token:", req.userId); // Debugging log
+
+    const user = await User.findById(req.userId).select("-password"); // Exclude password
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("❌ Error in getallUserDetails:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserDetails, getallUserDetails };
