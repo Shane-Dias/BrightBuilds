@@ -5,14 +5,14 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateProj from "./pages/CreateProj";
-import ViewDetails from "./pages/ViewDetails";
+import ViewProjectDetails from "./pages/ViewDetails";
 import Leaderboards from "./pages/Leaderboards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
-import Displaydetails from "./pages/Displaydetails";
+import DisplayProfiledetails from "./pages/Displaydetails";
 
 function App() {
   return (
@@ -27,9 +27,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/create" element={<CreateProj />} />
         <Route path="/faculty" element={<FacultyDashboard />} />
-        <Route path="/details/:id" element={<ViewDetails />} />
+        <Route path="/details/:id" element={<ViewProjectDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/userdetails/:id" element={<Displaydetails />} />
+        <Route path="/userdetails/:id" element={<DisplayProfiledetails />} />
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

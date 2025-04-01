@@ -49,7 +49,7 @@ const SignupPage = () => {
   const [genderOpen, setGenderOpen] = useState(false);
   const [roleOpen, setRoleOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const roleOptions = ["Student", "Faculty"];
+  const roleOptions = ["Student", "Faculty", "User"];
 
   const navigate = useNavigate();
 
@@ -119,12 +119,12 @@ const SignupPage = () => {
       // Display success toast
       toast.success("Signup successful! Welcome aboard!");
       console.log("Signup successful:", data);
+      navigate("/login")
     } catch (error) {
       console.error("Signup error:", error);
       // toast.error("An error occurred during signup");
     } finally {
       setIsLoading(false);
-      navigate("/login")
     }
   };
 
