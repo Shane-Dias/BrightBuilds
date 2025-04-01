@@ -9,27 +9,46 @@ import ViewProjectDetails from "./pages/ViewDetails";
 import Leaderboards from "./pages/Leaderboards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
 import DisplayProfiledetails from "./pages/Displaydetails";
+
+// Protected Route Component
+const ProtectedRoute = ({ element, allowedRoles }) => {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!allowedRoles.includes(role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return element;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
+        {/* Common Routes (Accessible to Everyone) */}
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/student/:id" element={<StudentDashBoardMy />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/create" element={<CreateProj />} />
-        <Route path="/faculty" element={<FacultyDashboard />} />
-        <Route path="/details/:id" element={<ViewProjectDetails />} />
+        <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/userdetails/:id" element={<DisplayProfiledetails />} />
+        <Route path="/userdetails/:id" element={<Displaydetails />} />
+
+        {/* Protected Routes */}
+        <Route path="/faculty/:id" element={<ProtectedRoute element={<FacultyDashboard />} allowedRoles={["Faculty"]} />} />
+        <Route path="/student/:id" element={<ProtectedRoute element={<StudentDashBoardMy />} allowedRoles={["Student"]} />} />
+        <Route path="/create" element={<ProtectedRoute element={<CreateProj />} allowedRoles={["Student"]} />} />
+        <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={["Admin"]} />} />
+
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
