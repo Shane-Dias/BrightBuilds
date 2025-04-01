@@ -5,13 +5,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateProj from "./pages/CreateProj";
-import ViewProjectDetails from "./pages/ViewDetails";
+import ViewDetails from "./pages/ViewDetails";
 import Leaderboards from "./pages/Leaderboards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
-import DisplayProfiledetails from "./pages/Displaydetails";
+import Displaydetails from "./pages/Displaydetails";
 
 // Protected Route Component
 const ProtectedRoute = ({ element, allowedRoles }) => {
