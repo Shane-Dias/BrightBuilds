@@ -11,55 +11,103 @@ const Navbar = () => {
   const [isLoading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
 
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-  const userId = localStorage.getItem("userId");
-
-  // Simplified API call with proper error handling
-  const getUserDetails = async (id) => {
+  // Get values from localStorage with error handling and defaults
+  const getLocalStorageItem = (key, defaultValue = null) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/users/details/${id}`
-      );
-      if (!response.ok) {
-        throw new Error("User not found!");
-      }
-      const data = await response.json();
-      return data;
+      const value = localStorage.getItem(key);
+      return value !== null ? value : defaultValue;
     } catch (error) {
-      console.error("Error fetching user details:", error);
-      return null;
+      console.error(`Error accessing localStorage for ${key}:`, error);
+      return defaultValue;
     }
   };
 
-  // Standardize image URL formatting
-  const getImageUrl = (mediaPath) => {
-    if (!mediaPath) return null;
-    mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+  const token = getLocalStorageItem("token");
+  const role = getLocalStorageItem("role");
+  const userId = getLocalStorageItem("userId");
+
+  const fetchUserDetails = async () => {
+    if (!token) return null;
+    
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:5000/api/users/details", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Server error:", errorData);
+        throw new Error(`Failed to fetch user details: ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data.user;
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Fetch user data on component mount
+  // Improved image URL handling with caching and error prevention
+  const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return null;
+    
+    // Handle both forward and backward slashes
+    const normalizedPath = mediaPath.replace(/\\/g, '/');
+    
+    // Remove any leading slashes to prevent double slashes in URL
+    const cleanPath = normalizedPath.replace(/^\//, '');
+    
+    // Add timestamp to prevent caching issues
+    return `http://localhost:5000/${cleanPath}?t=${Date.now()}`;
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (token && userId) {
-        setLoading(true);
-        try {
-          const data = await getUserDetails(userId);
-          if (data) {
-            setUserData(data);
+    let isMounted = true;
+    
+    const loadUserData = async () => {
+      if (!token) return;
+      
+      try {
+        const user = await fetchUserDetails();
+        
+        if (!isMounted) return;
+        
+        if (user) {
+          setUserData(user);
+          
+          // Only update localStorage if values actually changed
+          if (user.role && user.role !== getLocalStorageItem("role")) {
+            localStorage.setItem("role", user.role);
           }
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-        } finally {
-          setLoading(false);
+          
+          if (user._id && user._id !== getLocalStorageItem("userId")) {
+            localStorage.setItem("userId", user._id);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading user data:", err);
+        
+        // Handle invalid token by logging out
+        if (err.message?.includes("401")) {
+          handleLogout();
         }
       }
     };
-    fetchData();
-  }, [token, userId]);
+    
+    loadUserData();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [token]);
 
-  // Handle click outside dropdown to close it
+  // Click outside dropdown handler
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -73,60 +121,64 @@ const Navbar = () => {
     };
   }, []);
 
-  // Logout function
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userId");
-    setUserData(null);
-    navigate("/login");
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userId");
+      setUserData(null);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Force navigation even if localStorage clearing fails
+      navigate("/login");
+    }
   };
 
-  // Get profile options based on user role
   const getProfileOptions = () => {
-    switch (role) {
+    // Get user ID from state first, then fallback to localStorage
+    const currentUserId = userData?._id || userId;
+    
+    // Early return with limited options if no user ID is available
+    if (!currentUserId) {
+      return [
+        { name: "Logout", action: handleLogout, icon: LogOut }
+      ];
+    }
+    
+    const baseOptions = [
+      { name: "Profile", path: `/profile/${currentUserId}`, icon: User },
+      { name: "Logout", action: handleLogout, icon: LogOut },
+    ];
+
+    // Get role from state first, then fallback to localStorage
+    const currentRole = userData?.role || role;
+    
+    switch (currentRole) {
       case "Student":
         return [
-          {
-            name: "My Dashboard",
-            path: `/student/${userId}`,
-            icon: LayoutDashboard,
-          },
-          { name: "Profile", path: `/userdetails/${userId}`, icon: User },
-          { name: "Logout", action: handleLogout, icon: LogOut },
+          { name: "Dashboard", path: `/student/dashboard`, icon: LayoutDashboard },
+          ...baseOptions
         ];
       case "Faculty":
         return [
-          {
-            name: "My Dashboard",
-            path: `/faculty/${userId}`,
-            icon: LayoutDashboard,
-          },
-          { name: "Profile", path: `/userdetails/${userId}`, icon: User },
-          { name: "Logout", action: handleLogout, icon: LogOut },
+          { name: "Dashboard", path: `/faculty/dashboard`, icon: LayoutDashboard },
+          ...baseOptions
         ];
       case "Admin":
         return [
-          {
-            name: "My Dashboard",
-            path: `/admin`,
-            icon: LayoutDashboard,
-          },
-          { name: "Profile", path: `/userdetails/${userId}`, icon: User },
-          { name: "Logout", action: handleLogout, icon: LogOut },
+          { name: "Dashboard", path: `/admin/dashboard`, icon: LayoutDashboard },
+          ...baseOptions
         ];
       default:
-        return [
-          { name: "Profile", path: `/userdetails/${userId}`, icon: User },
-          { name: "Logout", action: handleLogout, icon: LogOut },
-        ];
+        return baseOptions;
     }
   };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md shadow-lg">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo and Website Name - Left Side */}
+        {/* Logo and Website Name */}
         <div className="flex items-center space-x-3 group">
           <motion.div
             initial={{ opacity: 0, scale: 0.5, rotate: -30 }}
@@ -180,7 +232,7 @@ const Navbar = () => {
           </motion.h1>
         </div>
         
-        {/* Navigation Links - Center */}
+        {/* Navigation Links */}
         <div className="flex items-center space-x-8">
           {[
             { name: "Home", path: "/", icon: Home },
@@ -202,7 +254,6 @@ const Navbar = () => {
                   <link.icon size={20} />
                   <span className="font-medium">{link.name}</span>
 
-                  {/* Glowing Underline */}
                   {isActive && (
                     <motion.div
                       layoutId="navbar-underline"
@@ -210,7 +261,6 @@ const Navbar = () => {
                     />
                   )}
 
-                  {/* Hover Glow Effect */}
                   <span
                     className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 
                     rounded-lg opacity-0 group-hover:opacity-100 
@@ -222,7 +272,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Login Button or User Profile - Right Side */}
+        {/* User Profile */}
         {!token ? (
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -257,16 +307,23 @@ const Navbar = () => {
                   <div className="h-full w-full bg-gray-700 flex items-center justify-center">
                     <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                   </div>
-                ) : userData && userData.profilePicture ? (
+                ) : userData?.profilePicture ? (
                   <img
                     src={getImageUrl(userData.profilePicture)}
                     alt="User Profile"
                     className="h-full w-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = ""; // Set to empty to show fallback div
-                      e.target.style.display = "none";
-                      e.target.parentNode.querySelector("div").style.display = "flex";
+                      e.target.src = ""; // Clear src to prevent infinite loop
+                      // Replace with fallback content
+                      e.target.parentNode.innerHTML = `
+                        <div class="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                        </div>
+                      `;
                     }}
                   />
                 ) : (
@@ -276,7 +333,7 @@ const Navbar = () => {
                 )}
               </div>
               <span className="text-white text-sm hidden md:block">
-                {userData?.name?.split(" ")[0] || ""}
+                {userData?.name?.split(" ")[0] || "User"}
               </span>
             </motion.div>
 
@@ -294,7 +351,7 @@ const Navbar = () => {
                     <p className="text-sm text-white font-medium truncate">
                       {userData.name || "User"}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{role || "User"}</p>
+                    <p className="text-xs text-gray-400 truncate">{userData.role || role || "User"}</p>
                   </div>
                 )}
                 <div className="py-1">
