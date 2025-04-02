@@ -5,13 +5,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateProj from "./pages/CreateProj";
-import ViewDetails from "./pages/ViewDetails";
+import ViewProjectDetails from "./pages/Displaydetails";
 import Leaderboards from "./pages/Leaderboards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
-import Displaydetails from "./pages/Displaydetails";
+import ViewDetails from "./pages/ViewDetails";
 
 // Protected Route Component
 const ProtectedRoute = ({ element, allowedRoles }) => {
@@ -41,7 +41,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/userdetails/:id" element={<Displaydetails />} />
+        <Route path="/userdetails/:id" element={<ViewProjectDetails />} />
 
         {/* Protected Routes */}
         <Route path="/faculty/:id" element={<ProtectedRoute element={<FacultyDashboard />} allowedRoles={["Faculty"]} />} />

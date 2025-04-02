@@ -9,7 +9,7 @@ import {
   Clock,
   XCircle
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { data, useNavigate, useParams } from "react-router-dom";
 import FacultyProfile from "../components/FacultyProfile";
 
 const FacultyDashboard = () => {
@@ -37,7 +37,11 @@ const FacultyDashboard = () => {
         console.log("Faculty details:", data);
   
         if (data && data.fullName) {
-          setFaculty(data.fullName);
+          console.log('mentor name',data.fullName);
+          
+          setFaculty(data);
+          console.log('faculty name from state',faculty);
+          
           await fetchMentorProjects(data.fullName); // Ensure it executes properly
         }
       } catch (error) {
@@ -47,7 +51,7 @@ const FacultyDashboard = () => {
   
     const fetchMentorProjects = async (mentorName) => {
       try {
-        const res = await fetch(`http://localhost:5000/api/projects/user/${mentorName}`);
+        const res = await fetch(`http://localhost:5000/api/projects/mentor/${mentorName}`);
         if (!res.ok) throw new Error("Failed to fetch mentor projects");
   
         const data = await res.json();

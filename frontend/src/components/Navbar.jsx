@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, NavLink, Link } from "react-router-dom";
-import { Home, Grid, LogIn, Award, User, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  Home,
+  Grid,
+  LogIn,
+  Award,
+  User,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 import { FcIdea } from "react-icons/fc";
 
 const Navbar = () => {
@@ -28,7 +36,7 @@ const Navbar = () => {
 
   const fetchUserDetails = async () => {
     if (!token) return null;
-    
+
     try {
       setLoading(true);
       const res = await fetch("http://localhost:5000/api/users/details", {
@@ -44,6 +52,7 @@ const Navbar = () => {
       }
 
       const data = await res.json();
+      console.log(data);
       return data.user;
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -53,55 +62,58 @@ const Navbar = () => {
     }
   };
 
-  // Improved image URL handling with caching and error prevention
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
-    
-    // Handle both forward and backward slashes
-    const normalizedPath = mediaPath.replace(/\\/g, '/');
-    
-    // Remove any leading slashes to prevent double slashes in URL
-    const cleanPath = normalizedPath.replace(/^\//, '');
-    
-    // Add timestamp to prevent caching issues
-    return `http://localhost:5000/${cleanPath}?t=${Date.now()}`;
+    mediaPath = mediaPath.replace(/\\/g, "/");
+    return `http://localhost:5000/${mediaPath}`;
   };
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const loadUserData = async () => {
       if (!token) return;
-      
+
       try {
         const user = await fetchUserDetails();
-        
+
         if (!isMounted) return;
-        
+
         if (user) {
           setUserData(user);
-          
+
           // Only update localStorage if values actually changed
           if (user.role && user.role !== getLocalStorageItem("role")) {
             localStorage.setItem("role", user.role);
           }
-          
+
           if (user._id && user._id !== getLocalStorageItem("userId")) {
             localStorage.setItem("userId", user._id);
           }
         }
       } catch (err) {
         console.error("Error loading user data:", err);
-        
+
         // Handle invalid token by logging out
         if (err.message?.includes("401")) {
           handleLogout();
         }
       }
     };
-    
+
     loadUserData();
-    
+
+    // For demonstration, set some default data
+    if (!userData && process.env.NODE_ENV === "development") {
+      setUserData({
+        _id: userId || "user123",
+        name: "Serene123",
+        fullName: "Serene123",
+        role: "Student",
+        profilePicture: "uploads\\1743513975473.jpg",
+      });
+    }
+
     return () => {
       isMounted = false;
     };
@@ -135,44 +147,57 @@ const Navbar = () => {
     }
   };
 
-  const getProfileOptions = () => {
+  const getDashboardPath = () => {
     // Get user ID from state first, then fallback to localStorage
     const currentUserId = userData?._id || userId;
-    
-    // Early return with limited options if no user ID is available
-    if (!currentUserId) {
-      return [
-        { name: "Logout", action: handleLogout, icon: LogOut }
-      ];
-    }
-    
-    const baseOptions = [
-      { name: "Profile", path: `/profile/${currentUserId}`, icon: User },
-      { name: "Logout", action: handleLogout, icon: LogOut },
-    ];
 
     // Get role from state first, then fallback to localStorage
     const currentRole = userData?.role || role;
-    
+
     switch (currentRole) {
       case "Student":
-        return [
-          { name: "Dashboard", path: `/student/dashboard`, icon: LayoutDashboard },
-          ...baseOptions
-        ];
+        return `/student/${currentUserId}`;
       case "Faculty":
-        return [
-          { name: "Dashboard", path: `/faculty/dashboard`, icon: LayoutDashboard },
-          ...baseOptions
-        ];
+        return `/faculty/${currentUserId}`;
       case "Admin":
-        return [
-          { name: "Dashboard", path: `/admin/dashboard`, icon: LayoutDashboard },
-          ...baseOptions
-        ];
+        return `/admin`;
       default:
-        return baseOptions;
+        return `/user/${currentUserId}`;
     }
+  };
+
+  const getProfileOptions = () => {
+    // Get user ID from state first, then fallback to localStorage
+    const currentUserId = userData?._id || userId;
+
+    // Early return with limited options if no user ID is available
+    if (!currentUserId) {
+      return [{ name: "Logout", action: handleLogout, icon: LogOut }];
+    }
+
+    const dashboardPath = getDashboardPath();
+
+    const baseOptions = [
+      { name: "Profile", path: `/userdetails/${currentUserId}`, icon: User },
+      { name: "Logout", action: handleLogout, icon: LogOut },
+    ];
+
+    // For all roles, include dashboard option
+    return [
+      {
+        name: "Dashboard",
+        path: dashboardPath,
+        icon: LayoutDashboard,
+      },
+      ...baseOptions,
+    ];
+  };
+
+  // Get the display name for the user
+  const getDisplayName = () => {
+    if (userData?.fullName) return userData.fullName.split(" ")[0];
+    if (userData?.name) return userData.name.split(" ")[0];
+    return "User";
   };
 
   return (
@@ -231,7 +256,7 @@ const Navbar = () => {
             <Link to={"/"}>BrightBuilds</Link>
           </motion.h1>
         </div>
-        
+
         {/* Navigation Links */}
         <div className="flex items-center space-x-8">
           {[
@@ -307,9 +332,9 @@ const Navbar = () => {
                   <div className="h-full w-full bg-gray-700 flex items-center justify-center">
                     <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
                   </div>
-                ) : userData?.profilePicture ? (
+                ) : userData?.profileImage ? (
                   <img
-                    src={getImageUrl(userData.profilePicture)}
+                    src={getImageUrl(userData.profileImage)}
                     alt="User Profile"
                     className="h-full w-full object-cover"
                     onError={(e) => {
@@ -333,7 +358,7 @@ const Navbar = () => {
                 )}
               </div>
               <span className="text-white text-sm hidden md:block">
-                {userData?.name?.split(" ")[0] || "User"}
+                {getDisplayName()}
               </span>
             </motion.div>
 
@@ -349,9 +374,11 @@ const Navbar = () => {
                 {userData && (
                   <div className="px-4 py-3 border-b border-gray-700">
                     <p className="text-sm text-white font-medium truncate">
-                      {userData.name || "User"}
+                      {userData.fullName || userData.name || "User"}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{userData.role || role || "User"}</p>
+                    <p className="text-xs text-gray-400 truncate">
+                      {userData.role || role || "User"}
+                    </p>
                   </div>
                 )}
                 <div className="py-1">
