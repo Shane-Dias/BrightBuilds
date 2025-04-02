@@ -35,6 +35,8 @@ const StudentDashboard = () => {
           `http://localhost:5000/api/users/details/${id}`
         );
         const data = await res.json();
+       
+        
         if (data) {
           setUsername(data.fullName);
           fetchProjects(data.fullName);
