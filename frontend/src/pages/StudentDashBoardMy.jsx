@@ -286,7 +286,7 @@ const StudentDashboard = () => {
                             href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
+                            className="px-4 py-2 text-white hover:bg-gray-700 transition-colors"
                           >
                             GitHub Repo
                           </a>
@@ -294,7 +294,7 @@ const StudentDashboard = () => {
                             href={project.hostedLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-4 py-2 text-sm hover:bg-gray-700 transition-colors"
+                            className="px-4 py-2 text-white hover:bg-gray-700 transition-colors"
                           >
                             Live Demo
                           </a>

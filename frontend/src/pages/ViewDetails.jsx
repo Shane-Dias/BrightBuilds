@@ -1,4 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
+import React from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Star,
   Heart,
@@ -13,6 +14,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import CommentSection from "../components/CommentSection";
+import { FaRegKeyboard } from "react-icons/fa";
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -95,6 +97,10 @@ const ProjectDetails = () => {
 
     // Construct the full URL - adjust the base URL as needed
     return `http://localhost:5000/${formattedPath}`;
+  };
+
+  const handleProfileClick = (userName) => {
+    console.log(userName);
   };
 
   if (loading) {
@@ -239,10 +245,20 @@ const ProjectDetails = () => {
             <div className="grid grid-cols-2 gap-4">
               <DetailCard
                 icon={<Users className="text-blue-400" size={20} />}
-                title="Teammates"
+                title="Contributors"
                 content={
                   game.teammates && game.teammates.length > 0
-                    ? game.teammates.join(", ")
+                    ? game.teammates.map((teammate, index) => (
+                        <React.Fragment key={teammate}>
+                          <span
+                            className="text-blue-600 hover:underline cursor-pointer"
+                            onClick={() => handleProfileClick(teammate)}
+                          >
+                            {teammate}
+                          </span>
+                          {index < game.teammates.length - 1 ? ", " : ""}
+                        </React.Fragment>
+                      ))
                     : "None"
                 }
               />
