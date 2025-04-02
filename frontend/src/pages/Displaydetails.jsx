@@ -19,6 +19,8 @@ import {
   FaGlobe,
   FaUser,
 } from "react-icons/fa";
+import AutoScrollToTop from "../components/AutoScrollToTop";
+
 
 const UserProfile = () => {
   const userId = useParams();
@@ -159,6 +161,8 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-indigo-900 text-white pt-12 pb-16 px-4 sm:px-6 relative">
+      <AutoScrollToTop/>
+      
       {/* Background gradient circles for visual interest */}
       <div className="absolute top-40 left-10 w-64 h-64 bg-purple-600 rounded-full filter blur-3xl opacity-20"></div>
       <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-600 rounded-full filter blur-3xl opacity-20"></div>

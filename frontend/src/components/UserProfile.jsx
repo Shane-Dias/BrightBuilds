@@ -29,11 +29,11 @@ export default function UserProfile({ userProfile, profilePic }) {
           onClick={handleProfileClick}
           className="group relative cursor-pointer mb-4 md:mb-0 transition-transform hover:scale-105"
         >
-          <img
+          {/* <img
             src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"
             alt="Profile"
             className="w-20 h-20 rounded-full border-3 border-emerald-500 shadow-md hover:shadow-emerald-400/50"
-          />
+          /> */}
           <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 flex items-center justify-center transition-all">
             <span className="text-emerald-400 opacity-0 group-hover:opacity-100 text-xs font-medium">
               View Profile

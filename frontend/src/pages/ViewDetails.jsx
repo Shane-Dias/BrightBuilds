@@ -14,6 +14,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import CommentSection from "../components/CommentSection";
+import AutoScrollToTop from "../components/AutoScrollToTop";
 import { FaRegKeyboard } from "react-icons/fa";
 
 const ProjectDetails = () => {
@@ -142,6 +143,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
+       <AutoScrollToTop/>
       <div className="container mx-auto px-4 py-12 pt-24">
         {/* Header with Back Navigation */}
         <motion.div
@@ -413,6 +415,7 @@ const DetailCard = ({ icon, title, content }) => (
       <p className="text-xs text-gray-400 uppercase">{title}</p>
       <p className="text-sm text-white truncate">{content}</p>
     </div>
+   
   </div>
 );
 

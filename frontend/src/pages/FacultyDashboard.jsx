@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { data, useNavigate, useParams } from "react-router-dom";
 import FacultyProfile from "../components/FacultyProfile";
+import AutoScrollToTop from "../components/AutoScrollToTop";
+
 
 const FacultyDashboard = () => {
   const navigate = useNavigate();
@@ -124,6 +126,7 @@ const FacultyDashboard = () => {
 
   return (
     <>
+    <AutoScrollToTop/>
       <FacultyProfile faculty={faculty} />
       <motion.div
         initial={{ opacity: 0 }}

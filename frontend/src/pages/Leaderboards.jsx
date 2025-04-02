@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import axios from "axios";
+import AutoScrollToTop from "../components/AutoScrollToTop";
+
 
 const Leaderboards = () => {
   const [activeTab, setActiveTab] = useState("thisWeek");
@@ -67,6 +69,8 @@ const Leaderboards = () => {
 
   return (
     <div className="relative bg-gradient-to-br from-gray-900 to-black min-h-screen overflow-hidden">
+     <AutoScrollToTop/>
+     
       <Particles
         id="tsparticles"
         init={particlesInit}
