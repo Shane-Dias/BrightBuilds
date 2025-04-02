@@ -34,9 +34,9 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSDG, setSelectedSDG] = useState("all");
   const [expandedProject, setExpandedProject] = useState(null);
-  
+
   // Sample data initialization
-  
+
   const particlesInit = async (engine) => {
     await loadFull(engine);
   };
@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   const particlesLoaded = async (container) => {
     console.log("Particles loaded", container);
   };
- const navigate = useNavigate();
+  const navigate = useNavigate();
   const viewDetails = (projectId) => {
     navigate(`/details/${projectId}`);
   };
@@ -52,7 +52,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchPendingProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/admin/pendingprojects");
+        const response = await axios.get(
+          "http://localhost:5000/api/admin/pendingprojects"
+        );
         setProjects(response.data.data);
       } catch (error) {
         console.error("Error fetching pending projects:", error);
@@ -63,26 +65,26 @@ const AdminDashboard = () => {
 
   const handleUpdateProjectStatus = async (id, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/update-status/${id}`, { status });
+      await axios.put(`http://localhost:5000/api/admin/update-status/${id}`, {
+        status,
+      });
       setProjects((prev) => prev.filter((project) => project._id !== id)); // Remove updated project from UI
     } catch (error) {
       console.error(`Error updating project status:`, error);
     }
   };
 
-
   const filteredProjects = projects.filter((projects) => {
     const matchesSDG =
-      selectedSDG === "all" || projects.sdgs.some((sdg) => Number(sdg) === Number(selectedSDG));
-  
+      selectedSDG === "all" ||
+      projects.sdgs.some((sdg) => Number(sdg) === Number(selectedSDG));
+
     const matchesSearch = searchTerm
       ? projects.title.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
-  
+
     return matchesSDG && matchesSearch;
   });
-  
-
 
   const filteredUsers = users.filter(
     (user) =>
@@ -93,135 +95,166 @@ const AdminDashboard = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "projectModeration":
-        
         return (
           <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-            <h3 className="text-2xl font-bold text-white">Project Moderation</h3>
-            <div className="flex flex-col sm:flex-row gap-3">
-            
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search projects..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+              <h3 className="text-2xl font-bold text-white">
+                Project Moderation
+              </h3>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative w-full sm:w-64">
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search projects..."
+                    className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-      
-          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project) => (
-                <motion.div
-                  key={project._id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600 transition-colors"
-                >
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                    <div>
-                      <h4 className="text-lg font-medium text-white">{project.title}</h4>
-                      <p className="text-sm text-gray-400">by {project.teammates}</p>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {project.sdgs.map((sdg) => (
-                          <span
-                            key={sdg}
-                            className="px-3 py-2 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white"
-                          >
-                            {sdg}
-                          </span>
-                        ))}
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          project.status === "pending"
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : project.status === "approved"
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
-                        }`}
-                      >
-                        {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setExpandedProject(expandedProject === project._id ? null : project._id)
-                        }
-                        className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-700"
-                        aria-label={
-                          expandedProject === project._id ? "Collapse details" : "Expand details"
-                        }
-                      >
-                        {expandedProject === project._id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                      </button>
-                    </div>
-                  </div>
-      
-                  {expandedProject === project._id && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 pt-4 border-t border-gray-700"
-                    >
-                      <p className="text-gray-300 mb-4 leading-relaxed">{project.description}</p>
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                        <div className="text-sm text-gray-400">
-                          Submitted on:{" "}
-                          {new Date(project.createdAt).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </div>
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => handleUpdateProjectStatus(project._id, "approved")}
-                            className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-green-400 font-medium flex items-center gap-2 transition-colors"
-                          >
-                            <CheckCircle2 size={16} /> Approve
-                          </button>
-                          <button
-                            onClick={() => handleUpdateProjectStatus(project._id, "rejected")}
-                            className="px-4 py-2 bg-red-600/30 hover:bg-red-600/50 rounded-lg text-red-400 font-medium flex items-center gap-2 transition-colors"
-                          >
-                            <XCircle size={16} /> Reject
-                          </button>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDetails(project._id)}
-                        className="bg-black text-lg rounded-lg px-5 py-3 mt-4"
-                      >
-                        View Details
-                      </button>
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))
-            ) : (
-              <div className="text-center py-10">
-                <Search className="mx-auto text-gray-500 mb-2" size={32} />
-                <p className="text-gray-400">No projects found matching your criteria</p>
-              </div>
-            )}
-          </div>
-        </div>
-      );
-        
 
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+              {filteredProjects.length > 0 ? (
+                filteredProjects.map((project) => (
+                  <motion.div
+                    key={project._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600 transition-colors"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                      <div>
+                        <h4 className="text-lg font-medium text-white">
+                          {project.title}
+                        </h4>
+                        <p className="text-sm text-gray-400">
+                          by {project.teammates}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                          {project.sdgs.map((sdg) => (
+                            <span
+                              key={sdg}
+                              className="px-3 py-2 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white"
+                            >
+                              {sdg}
+                            </span>
+                          ))}
+                        </div>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            project.status === "pending"
+                              ? "bg-yellow-500/20 text-yellow-400"
+                              : project.status === "approved"
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }`}
+                        >
+                          {project.status.charAt(0).toUpperCase() +
+                            project.status.slice(1)}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setExpandedProject(
+                              expandedProject === project._id
+                                ? null
+                                : project._id
+                            )
+                          }
+                          className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-700"
+                          aria-label={
+                            expandedProject === project._id
+                              ? "Collapse details"
+                              : "Expand details"
+                          }
+                        >
+                          {expandedProject === project._id ? (
+                            <ChevronUp size={20} />
+                          ) : (
+                            <ChevronDown size={20} />
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
+                    {expandedProject === project._id && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="mt-4 pt-4 border-t border-gray-700"
+                      >
+                        <p className="text-gray-300 mb-4 leading-relaxed">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                          <div className="text-sm text-gray-400">
+                            Submitted on:{" "}
+                            {new Date(project.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )}
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() =>
+                                handleUpdateProjectStatus(
+                                  project._id,
+                                  "approved"
+                                )
+                              }
+                              className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-green-400 font-medium flex items-center gap-2 transition-colors"
+                            >
+                              <CheckCircle2 size={16} /> Approve
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleUpdateProjectStatus(
+                                  project._id,
+                                  "rejected"
+                                )
+                              }
+                              className="px-4 py-2 bg-red-600/30 hover:bg-red-600/50 rounded-lg text-red-400 font-medium flex items-center gap-2 transition-colors"
+                            >
+                              <XCircle size={16} /> Reject
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => viewDetails(project._id)}
+                          className="bg-black text-lg rounded-lg px-5 py-3 mt-4"
+                        >
+                          View Details
+                        </button>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-10">
+                  <Search className="mx-auto text-gray-500 mb-2" size={32} />
+                  <p className="text-gray-400">
+                    No projects found matching your criteria
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
 
       case "userManagement":
         return (
-
           <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-            <AutoScrollToTop/>
+            <AutoScrollToTop />
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-white">
                 User Management
@@ -308,7 +341,6 @@ const AdminDashboard = () => {
           </div>
         );
 
-      
       case "reports":
         return (
           <div className="bg-white/5 rounded-xl p-6 shadow-lg">
@@ -440,6 +472,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
       {/* Dashboard Content */}
+      <AutoScrollToTop />
       <div className="relative z-10">
         {/* Header */}
         <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
@@ -468,9 +501,7 @@ const AdminDashboard = () => {
           {/* Navigation Tabs */}
           <div className="flex overflow-x-auto pb-2 mb-8 scrollbar-hide">
             <div className="flex space-x-2">
-
-
-            <button
+              <button
                 onClick={() => setActiveTab("projectModeration")}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
                   activeTab === "projectModeration"
@@ -481,7 +512,6 @@ const AdminDashboard = () => {
                 <FileCheck size={18} />
                 <span>Project Moderation</span>
               </button>
-
 
               <button
                 onClick={() => setActiveTab("userManagement")}
@@ -494,8 +524,6 @@ const AdminDashboard = () => {
                 <Users size={18} />
                 <span>User Management</span>
               </button>
-
-           
 
               <button
                 onClick={() => setActiveTab("reports")}
