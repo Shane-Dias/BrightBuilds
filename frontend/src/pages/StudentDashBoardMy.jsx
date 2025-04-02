@@ -37,6 +37,8 @@ const StudentDashboard = () => {
         );
         const data = await res.json();
         console.log(data);  
+       
+        
         if (data) {
           setUsername(data.fullName);
           setprofilePic(data.profileImage);
@@ -115,7 +117,7 @@ const StudentDashboard = () => {
       color: "bg-yellow-500",
       text: "Pending",
     },
-    rejected: {
+    reject: {
       icon: <XCircle size={16} className="mr-1" />,
       color: "bg-red-500",
       text: "Rejected",

@@ -9,6 +9,8 @@ export default function UserProfile({ userProfile, profilePic }) {
   useEffect(() => {
     // Get userId from localStorage when component mounts
     const storedUserId = localStorage.getItem("userId");
+    console.log('user image',profilePic);
+    
     if (storedUserId) {
       setUserId(storedUserId);
     }

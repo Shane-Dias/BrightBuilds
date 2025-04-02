@@ -9,6 +9,8 @@ const {
   getPendingProjects,
   updateProjectStatus, 
   getProjectsByUsername,
+  getMentorProjectsByUsername
+
 } = require("../controllers/projectController");
 
 router.route("/create").post(upload.uploadMultiple, createProject);
@@ -18,5 +20,5 @@ router.route('/pendingprojects').get(getPendingProjects);
 // ✅ New Admin Route to Approve/Reject Projects
 router.route("/update-status/:id").put(updateProjectStatus);
 router.route("/projects/user/:username").get(getProjectsByUsername);
-
+router.route("/projects/mentor/:username").get(getMentorProjectsByUsername);
 module.exports = router;

@@ -131,3 +131,24 @@ exports.getProjectsByUsername = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+exports.getMentorProjectsByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Find projects where teammates array contains the given username
+    const projects = await Project.find({ mentor: username });
+
+    if (!projects.length) {
+      return res
+        .status(404)
+        .json({ message: "No projects found for this user." });
+    }
+
+    res.status(200).json({ success: true, projects });
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

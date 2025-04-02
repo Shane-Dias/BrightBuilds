@@ -44,42 +44,10 @@ function App() {
         <Route path="/userdetails/:id" element={<ViewProjectDetails />} />
 
         {/* Protected Routes */}
-        <Route
-          path="/faculty/:id"
-          element={
-            <ProtectedRoute
-              element={<FacultyDashboard />}
-              allowedRoles={["Faculty"]}
-            />
-          }
-        />
-        <Route
-          path="/student/:id"
-          element={
-            <ProtectedRoute
-              element={<StudentDashBoardMy />}
-              allowedRoles={["Student"]}
-            />
-          }
-        />
-        <Route
-          path="/create"
-          element={
-            <ProtectedRoute
-              element={<CreateProj />}
-              allowedRoles={["Student"]}
-            />
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute
-              element={<AdminDashboard />}
-              allowedRoles={["Admin"]}
-            />
-          }
-        />
+        <Route path="/faculty/:id" element={<ProtectedRoute element={<FacultyDashboard />} allowedRoles={["Faculty"]} />} />
+        <Route path="/student/:id" element={<ProtectedRoute element={<StudentDashBoardMy />} allowedRoles={["Student"]} />} />
+        <Route path="/create" element={<ProtectedRoute element={<CreateProj />} allowedRoles={["Student"]} />} />
+        <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRoles={["Admin"]} />} />
 
         {/* Redirect all unknown URLs to Home */}
         <Route path="*" element={<Navigate to="/" replace />} />
