@@ -10,6 +10,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import AutoScrollToTop from "../components/AutoScrollToTop";
 
 // Notification Component
 const Notification = ({ message, type = "success", onClose }) => {
@@ -387,6 +388,7 @@ export default function ProjectUploadForm() {
 
   return (
     <div className="min-h-screen px-10 py-16 bg-gray-900 text-white pt-24 relative">
+      <AutoScrollToTop/>
       {/* Notification Component */}
       {notification && (
         <Notification

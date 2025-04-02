@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import UserProfile from "../components/UserProfile";
+import AutoScrollToTop from "../components/AutoScrollToTop";
+
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -126,6 +128,7 @@ const StudentDashboard = () => {
 
   return (
     <>
+    <AutoScrollToTop/>
       <UserProfile userProfile={username} profilePic={profilePic}/>
       <motion.div
         initial={{ opacity: 0 }}

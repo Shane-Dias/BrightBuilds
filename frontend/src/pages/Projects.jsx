@@ -6,6 +6,8 @@ import Videos from "../components/Videos";
 import Documentaries from "../components/Documentaries";
 import DigitalArt from "../components/DigitalArt";
 import axios from "axios"; // or use fetch
+import AutoScrollToTop from "../components/AutoScrollToTop";
+
 
 const ExploreProjects = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -68,6 +70,7 @@ const ExploreProjects = () => {
 
   return (
     <div className="bg-black text-white min-h-screen p-8 pt-24">
+      <AutoScrollToTop/>
       <div className="flex justify-between items-center mb-8">
         <motion.h1
           className="text-5xl font-lilita text-center"
