@@ -23,7 +23,7 @@ import {
 const UserProfile = () => {
   const userId = useParams();
   useEffect(() => {
-    console.log("🔍 userId from useParams:", userId); // Debugging
+    // console.log("🔍 userId from useParams:", userId);
 
     if (!userId) {
       setError("Invalid user ID");
@@ -47,7 +47,7 @@ const UserProfile = () => {
         throw new Error("User not found!");
       }
       const data = await response.json();
-      console.log("User Data:", data); // Debugging
+      // console.log("User Data:", data); 
       return data;
     } catch (error) {
       console.error("Error fetching user details:", error);

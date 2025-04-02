@@ -140,4 +140,27 @@ const getallUserDetails = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserDetails, getallUserDetails };
+const getUserDetailsByUserName = async (req, res) => {
+  try {
+    const {username} = req.params; // Extract userName from URL
+    console.log(username)
+
+    // Find user by userName instead of _id
+    const user = await User.findOne({ fullName: username }).select("-password"); // Exclude password
+
+    if (!user) return res.status(404).json({ message: "User not found!" });
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("❌ Error in getUserDetailsByUserName:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserDetails,
+  getallUserDetails,
+  getUserDetailsByUserName,
+};

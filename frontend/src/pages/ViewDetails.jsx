@@ -99,8 +99,27 @@ const ProjectDetails = () => {
     return `http://localhost:5000/${formattedPath}`;
   };
 
-  const handleProfileClick = (userName) => {
-    console.log(userName);
+  const handleProfileClick = async (userName) => {
+    try {
+      console.log(userName)
+      const response = await fetch(
+        `http://localhost:5000/api/users/userDetails/${userName}`
+      );
+      const data = await response.json();
+      console.log(data);
+
+      if (!response.ok) {
+        console.error("Error fetching user:", data.message);
+        return;
+      }
+
+      const userId = data._id; // Assuming the API returns `_id`
+
+      console.log("User ID:", userId);
+      navigate(`/userdetails/${userId}`);
+    } catch (error) {
+      console.error("❌ Error fetching user details:", error);
+    }
   };
 
   if (loading) {
