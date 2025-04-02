@@ -216,7 +216,7 @@ const Websites = ({ projects = [] }) => {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-300 mb-4 flex-grow">
+                  <p className="text-sm text-gray-300 mb-4 flex-grow line-clamp-2">
                     {website.description}
                   </p>
 

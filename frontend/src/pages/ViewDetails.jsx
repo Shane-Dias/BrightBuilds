@@ -272,7 +272,7 @@ const ProjectDetails = () => {
                     ? game.teammates.map((teammate, index) => (
                         <React.Fragment key={teammate}>
                           <span
-                            className="text-blue-600 hover:underline cursor-pointer"
+                            className="inline-flex items-center gap-1 text-yellow-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-yellow-300/30 hover:border-yellow-300 shadow-sm hover:shadow"
                             onClick={() => handleProfileClick(teammate)}
                           >
                             {teammate}

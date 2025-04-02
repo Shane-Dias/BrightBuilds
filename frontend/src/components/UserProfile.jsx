@@ -23,7 +23,7 @@ export default function UserProfile({ userProfile, profilePic }) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center px-4 md:px-16 py-8 md:py-12 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg">
+    <div className="flex  flex-col md:flex-row justify-between items-center px-4 md:px-16 py-8 md:py-12 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg">
       <div className="flex pt-10 flex-col md:flex-row items-center md:space-x-6 mb-6 md:mb-0">
         <div
           onClick={handleProfileClick}
@@ -52,7 +52,7 @@ export default function UserProfile({ userProfile, profilePic }) {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-7">
         <Link
           to={"/userdetails/" + userId}
           className="transition-transform hover:scale-105"
