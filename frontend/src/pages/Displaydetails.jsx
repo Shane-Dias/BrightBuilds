@@ -18,26 +18,20 @@ import {
   FaBriefcase,
   FaGlobe,
   FaUser,
+  FaSave,
+  FaTimes,
 } from "react-icons/fa";
 import AutoScrollToTop from "../components/AutoScrollToTop";
 
-
 const UserProfile = () => {
   const userId = useParams();
-  useEffect(() => {
-    // console.log("🔍 userId from useParams:", userId);
-
-    if (!userId) {
-      setError("Invalid user ID");
-      setLoading(false);
-      return;
-    }
-  });
-
+  const [isEditing, setIsEditing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [editedData, setEditedData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
 
   // Function to fetch user data from backend
   const getUserDetails = async (userId) => {
@@ -49,11 +43,41 @@ const UserProfile = () => {
         throw new Error("User not found!");
       }
       const data = await response.json();
-      // console.log("User Data:", data); 
       return data;
     } catch (error) {
       console.error("Error fetching user details:", error);
       return null;
+    }
+  };
+
+  // Function to update user data
+  const updateUserDetails = async (userId, updatedData) => {
+    try {
+      // Get the token from localStorage or wherever you store it
+      const token = localStorage.getItem('token'); // Adjust based on how you store the token
+      
+      const response = await fetch(
+        `http://localhost:5000/api/users/update/${userId.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` // Add auth token if you're using one
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update user details");
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating user details:", error);
+      throw error;
     }
   };
 
@@ -72,6 +96,7 @@ const UserProfile = () => {
         const data = await getUserDetails(userId);
         if (data) {
           setUserData(data);
+          setEditedData(data); // Initialize editedData with fetched data
           setError(null);
         } else {
           setError("Failed to load user data");
@@ -88,7 +113,6 @@ const UserProfile = () => {
 
   // Effect to trigger fade-in animation on component mount
   useEffect(() => {
-    // Small delay to ensure the initial opacity: 0 is applied first
     setTimeout(() => {
       setIsVisible(true);
     }, 100);
@@ -103,6 +127,39 @@ const UserProfile = () => {
       month: "long",
       day: "numeric",
     });
+  };
+
+  // Handle input changes for editable fields
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Toggle edit mode
+  const toggleEditMode = () => {
+    if (isEditing) {
+      // If canceling edit, reset editedData to current userData
+      setEditedData(userData);
+    }
+    setIsEditing(!isEditing);
+  };
+
+  // Save edited data
+  const handleSave = async () => {
+    setSaveLoading(true);
+    try {
+      const updatedUser = await updateUserDetails(userId, editedData);
+      setUserData(updatedUser); // Update the userData state with the response
+      setEditedData(updatedUser); // Keep editedData in sync
+      setIsEditing(false);
+    } catch (error) {
+      setError("Failed to save changes");
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   // Show loading indicator
@@ -137,7 +194,8 @@ const UserProfile = () => {
     );
   }
 
-  // Fallback data for any missing fields
+  // Create user object directly from userData (not as a separate object with defaults)
+  // This ensures we're always displaying the most current data
   const user = {
     fullName: userData.fullName || "User",
     email: userData.email || "No email provided",
@@ -159,11 +217,36 @@ const UserProfile = () => {
     createdAt: userData.createdAt || new Date().toISOString(),
   };
 
+  // Fields that can be edited - Personal Information section
+  const personalInfoFields = [
+    { id: 'fullName', label: 'Full Name', icon: <FaIdCard />, value: editedData.fullName || '' },
+    { id: 'email', label: 'Email', icon: <FaEnvelope />, value: editedData.email || '', type: 'email' },
+    { id: 'mobile', label: 'Mobile', icon: <FaPhone />, value: editedData.mobile || '', type: 'tel' },
+    { id: 'age', label: 'Age', icon: <FaCalendarAlt />, value: editedData.age || '', type: 'number' },
+    { id: 'gender', label: 'Gender', icon: <FaVenusMars />, value: editedData.gender || '' },
+  ];
+
+  // Fields for Education & Career section - Removed social media fields
+  const educationCareerFields = [
+    { id: 'currentPursuit', label: 'Current Pursuit', icon: <FaUserGraduate />, value: editedData.currentPursuit || '' },
+    { id: 'institution', label: 'Institution', icon: <FaUniversity />, value: editedData.institution || '' },
+    { id: 'role', label: 'Role', icon: <FaBriefcase />, value: editedData.role || '' },
+    { id: 'city', label: 'City', icon: <FaMapMarkerAlt />, value: editedData.city || '' },
+    { id: 'state', label: 'State', icon: <FaMapMarkerAlt />, value: editedData.state || '' },
+  ];
+
+  // Social media fields - Only for editing mode
+  const socialMediaFields = [
+    { id: 'instagram', label: 'Instagram', icon: <FaInstagram />, value: editedData.instagram || '' },
+    { id: 'twitter', label: 'Twitter', icon: <FaTwitter />, value: editedData.twitter || '' },
+    { id: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin />, value: editedData.linkedin || '' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-indigo-900 text-white pt-12 pb-16 px-4 sm:px-6 relative">
       <AutoScrollToTop/>
       
-      {/* Background gradient circles for visual interest */}
+      {/* Background gradient circles */}
       <div className="absolute top-40 left-10 w-64 h-64 bg-purple-600 rounded-full filter blur-3xl opacity-20"></div>
       <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-600 rounded-full filter blur-3xl opacity-20"></div>
 
@@ -206,89 +289,209 @@ const UserProfile = () => {
 
           {/* User Name and Brief Info */}
           <div className="text-center md:text-left md:flex-1">
-            <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-2">
-              {user.fullName}
-            </h3>
+            {isEditing ? (
+              <input
+                type="text"
+                name="fullName"
+                value={editedData.fullName || ''}
+                onChange={handleInputChange}
+                className="text-3xl font-bold bg-transparent border-b border-amber-400 mb-2 w-full focus:outline-none focus:border-pink-500"
+              />
+            ) : (
+              <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-2">
+                {user.fullName}
+              </h3>
+            )}
+            
             <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-xl text-gray-300 mb-4">
-              <p className="flex items-center gap-2">
-                <FaGraduationCap className="text-green-400" />
-                <span>{user.currentPursuit}</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <FaBriefcase className="text-blue-400" />
-                <span>{user.role}</span>
-              </p>
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <FaGraduationCap className="text-green-400" />
+                  <input
+                    type="text"
+                    name="currentPursuit"
+                    value={editedData.currentPursuit || ''}
+                    onChange={handleInputChange}
+                    className="bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+              ) : (
+                <p className="flex items-center gap-2">
+                  <FaGraduationCap className="text-green-400" />
+                  <span>{user.currentPursuit}</span>
+                </p>
+              )}
+              
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <FaBriefcase className="text-blue-400" />
+                  <input
+                    type="text"
+                    name="role"
+                    value={editedData.role || ''}
+                    onChange={handleInputChange}
+                    className="bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500"
+                  />
+                </div>
+              ) : (
+                <p className="flex items-center gap-2">
+                  <FaBriefcase className="text-blue-400" />
+                  <span>{user.role}</span>
+                </p>
+              )}
             </div>
-            <p className="flex items-center justify-center md:justify-start gap-2 text-gray-400">
-              <FaGlobe className="text-teal-400" />
-              <span>
-                {user.city}
-                {user.state ? `, ${user.state}` : ""}
-              </span>
-            </p>
+            
+            {isEditing ? (
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <FaGlobe className="text-teal-400" />
+                <input
+                  type="text"
+                  name="city"
+                  value={editedData.city || ''}
+                  onChange={handleInputChange}
+                  placeholder="City"
+                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-24"
+                />
+                <input
+                  type="text"
+                  name="state"
+                  value={editedData.state || ''}
+                  onChange={handleInputChange}
+                  placeholder="State"
+                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-24"
+                />
+              </div>
+            ) : (
+              <p className="flex items-center justify-center md:justify-start gap-2 text-gray-400">
+                <FaGlobe className="text-teal-400" />
+                <span>
+                  {user.city}
+                  {user.state ? `, ${user.state}` : ""}
+                </span>
+              </p>
+            )}
 
             {/* Social Media Icons */}
             <div className="flex gap-4 mt-6 justify-center md:justify-start">
-              {user.instagram && (
-                <a
-                  href={user.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-gray-700 hover:bg-pink-900/70 rounded-full text-pink-400 transition-colors duration-300"
-                >
-                  <FaInstagram size={20} />
-                </a>
-              )}
-              {user.twitter && (
-                <a
-                  href={user.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-400 transition-colors duration-300"
-                >
-                  <FaTwitter size={20} />
-                </a>
-              )}
-              {user.youtube && (
-                <a
-                  href={user.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-gray-700 hover:bg-red-900/70 rounded-full text-red-400 transition-colors duration-300"
-                >
-                  <FaGithub size={20} />
-                </a>
-              )}
-              {user.linkedin && (
-                <a
-                  href={user.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-500 transition-colors duration-300"
-                >
-                  <FaLinkedin size={20} />
-                </a>
-              )}
-              {/* Display grayed-out icons if no social links provided */}
-              {!user.instagram &&
-                !user.twitter &&
-                !user.youtube &&
-                !user.linkedin && (
-                  <>
-                    <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+              {isEditing ? (
+                <>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="instagram"
+                      value={editedData.instagram || ''}
+                      onChange={handleInputChange}
+                      placeholder="Instagram URL"
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                    <div className="p-2 bg-gray-700 hover:bg-pink-900/70 rounded-full text-pink-400">
                       <FaInstagram size={20} />
-                    </span>
-                    <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="twitter"
+                      value={editedData.twitter || ''}
+                      onChange={handleInputChange}
+                      placeholder="Twitter URL"
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                    <div className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-400">
                       <FaTwitter size={20} />
-                    </span>
-                    <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="youtube"
+                      value={editedData.youtube || ''}
+                      onChange={handleInputChange}
+                      placeholder="YouTube URL"
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                    <div className="p-2 bg-gray-700 hover:bg-red-900/70 rounded-full text-red-400">
                       <FaGithub size={20} />
-                    </span>
-                    <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="linkedin"
+                      value={editedData.linkedin || ''}
+                      onChange={handleInputChange}
+                      placeholder="LinkedIn URL"
+                      className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                    />
+                    <div className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-500">
                       <FaLinkedin size={20} />
-                    </span>
-                  </>
-                )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {user.instagram && (
+                    <a
+                      href={user.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-gray-700 hover:bg-pink-900/70 rounded-full text-pink-400 transition-colors duration-300"
+                    >
+                      <FaInstagram size={20} />
+                    </a>
+                  )}
+                  {user.twitter && (
+                    <a
+                      href={user.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-400 transition-colors duration-300"
+                    >
+                      <FaTwitter size={20} />
+                    </a>
+                  )}
+                  {user.youtube && (
+                    <a
+                      href={user.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-gray-700 hover:bg-red-900/70 rounded-full text-red-400 transition-colors duration-300"
+                    >
+                      <FaGithub size={20} />
+                    </a>
+                  )}
+                  {user.linkedin && (
+                    <a
+                      href={user.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-gray-700 hover:bg-blue-900/70 rounded-full text-blue-500 transition-colors duration-300"
+                    >
+                      <FaLinkedin size={20} />
+                    </a>
+                  )}
+                  {/* Display grayed-out icons if no social links provided */}
+                  {!user.instagram &&
+                    !user.twitter &&
+                    !user.youtube &&
+                    !user.linkedin && (
+                      <>
+                        <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                          <FaInstagram size={20} />
+                        </span>
+                        <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                          <FaTwitter size={20} />
+                        </span>
+                        <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                          <FaGithub size={20} />
+                        </span>
+                        <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">
+                          <FaLinkedin size={20} />
+                        </span>
+                      </>
+                    )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -302,57 +505,29 @@ const UserProfile = () => {
             </h4>
 
             <div className="space-y-5">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
-                  <FaIdCard />
+              {personalInfoFields.map((field) => (
+                <div key={field.id} className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
+                    {field.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-400 text-sm">{field.label}</p>
+                    {isEditing ? (
+                      <input
+                        type={field.type || "text"}
+                        name={field.id}
+                        value={field.value}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-b border-amber-400 focus:outline-none focus:border-pink-500"
+                      />
+                    ) : (
+                      <p className="font-medium">
+                        {user[field.id] || "Not specified"}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Full Name</p>
-                  <p className="font-medium">{user.fullName}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
-                  <FaEnvelope />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Email</p>
-                  <p className="font-medium">{user.email}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
-                  <FaPhone />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Mobile</p>
-                  <p className="font-medium">{user.mobile}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
-                  <FaCalendarAlt />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Age</p>
-                  <p className="font-medium">
-                    {user.age} {user.age !== "N/A" ? "years" : ""}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
-                  <FaVenusMars />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Gender</p>
-                  <p className="font-medium">{user.gender}</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -363,49 +538,30 @@ const UserProfile = () => {
             </h4>
 
             <div className="space-y-5">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
-                  <FaUserGraduate />
+              {educationCareerFields.map((field) => (
+                <div key={field.id} className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
+                    {field.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-400 text-sm">{field.label}</p>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        name={field.id}
+                        value={field.value}
+                        onChange={handleInputChange}
+                        className="w-full bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500"
+                      />
+                    ) : (
+                      <p className="font-medium">
+                        {user[field.id] || "Not specified"}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Current Pursuit</p>
-                  <p className="font-medium">{user.currentPursuit}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
-                  <FaUniversity />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Institution</p>
-                  <p className="font-medium">{user.institution}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
-                  <FaBriefcase />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Role</p>
-                  <p className="font-medium">{user.role}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
-                  <FaMapMarkerAlt />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-sm">Location</p>
-                  <p className="font-medium">
-                    {user.city}
-                    {user.state ? `, ${user.state}` : ""}
-                  </p>
-                </div>
-              </div>
-
+              ))}
+              
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
                   <FaCalendarAlt />
@@ -419,11 +575,67 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* Edit Profile Button */}
-        <div className="mt-8 flex justify-center">
-          <button className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3">
-            <FaEdit /> Edit Profile
-          </button>
+        {/* Social Media section - Only visible when editing */}
+        {isEditing && (
+          <div className="mt-6 bg-gray-700/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/50 shadow-lg">
+            <h4 className="text-2xl font-bold text-blue-400 mb-6 flex items-center gap-2">
+              <FaGlobe /> Social Media Links
+            </h4>
+            
+            <div className="space-y-5">
+              {socialMediaFields.map((field) => (
+                <div key={field.id} className="flex items-center gap-4">
+                  <div className="p-3 bg-gray-800/70 rounded-full text-blue-400">
+                    {field.icon}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-400 text-sm">{field.label}</p>
+                    <input
+                      type="text"
+                      name={field.id}
+                      value={field.value}
+                      onChange={handleInputChange}
+                      className="w-full bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500"
+                      placeholder={`Enter your ${field.label} URL`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Edit/Save Profile Button */}
+        <div className="mt-8 flex justify-center gap-4">
+          {isEditing ? (
+            <>
+              <button
+                onClick={handleSave}
+                disabled={saveLoading}
+                className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
+              >
+                {saveLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <FaSave />
+                )}
+                Save Changes
+              </button>
+              <button
+                onClick={toggleEditMode}
+                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
+              >
+                <FaTimes /> Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={toggleEditMode}
+              className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
+            >
+              <FaEdit /> Edit Profile
+            </button>
+          )}
         </div>
       </div>
     </div>

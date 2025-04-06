@@ -157,10 +157,61 @@ const getUserDetailsByUserName = async (req, res) => {
   }
 };
 
+
+// Add this function to userController.js
+const updateUserDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    // Remove fields that shouldn't be updated directly
+    const { password, ...safeUpdateData } = updateData;
+    
+    // If there's a new password, hash it before updating
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      safeUpdateData.password = hashedPassword;
+    }
+    
+    // Update user with new data
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: safeUpdateData },
+      { new: true, runValidators: true }
+    ).select("-password");
+    
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "User details updated successfully!",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error("❌ Error in updateUserDetails:", error);
+    
+    // Handle duplicate key errors (email or fullName)
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: `${Object.keys(error.keyPattern)[0]} already exists!` 
+      });
+    }
+    
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Don't forget to export the new function
 module.exports = {
   registerUser,
   loginUser,
   getUserDetails,
   getallUserDetails,
   getUserDetailsByUserName,
+  updateUserDetails  // Add this line
 };
+
+

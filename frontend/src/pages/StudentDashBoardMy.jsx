@@ -119,7 +119,7 @@ const StudentDashboard = () => {
       color: "bg-yellow-500",
       text: "Pending",
     },
-    reject: {
+    rejected: {
       icon: <XCircle size={16} className="mr-1" />,
       color: "bg-red-500",
       text: "Rejected",

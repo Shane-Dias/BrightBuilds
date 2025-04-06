@@ -6,6 +6,7 @@ const {
   getUserDetails,
   getallUserDetails,
   getUserDetailsByUserName,
+  updateUserDetails
 } = require("../controllers/userController");
 const { uploadSingle } = require("../middleware/upload");
 const authenticateUser = require("../middleware/authenticateUser");
@@ -16,5 +17,6 @@ router.post("/login", loginUser);
 router.get("/details/:id", getUserDetails);
 router.get("/userDetails/:username", getUserDetailsByUserName);
 router.get("/details", authenticateUser, getallUserDetails);
+router.put("/update/:id", updateUserDetails);
 
 module.exports = router;

@@ -56,6 +56,7 @@ const AdminDashboard = () => {
           "http://localhost:5000/api/admin/pendingprojects"
         );
         setProjects(response.data.data);
+
       } catch (error) {
         console.error("Error fetching pending projects:", error);
       }
@@ -91,6 +92,9 @@ const AdminDashboard = () => {
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log('filtered projects admin',filteredProjects);
+  
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -133,8 +137,9 @@ const AdminDashboard = () => {
                           {project.title}
                         </h4>
                         <p className="text-sm text-gray-400">
-                          by {project.teammates}
-                        </p>
+  by {project.teammates.join(", ")}
+</p>
+
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="flex flex-wrap gap-1 max-w-xs">
