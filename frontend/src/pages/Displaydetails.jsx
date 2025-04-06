@@ -32,6 +32,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [isProfileOwner, setIsProfileOwner] = useState(false);
 
   // Function to fetch user data from backend
   const getUserDetails = async (userId) => {
@@ -49,6 +50,34 @@ const UserProfile = () => {
       return null;
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getUserDetails(userId);
+        if (data) {
+          setUserData(data);
+          setEditedData(data); // Initialize editedData with fetched data
+          
+          // Check if current user is the profile owner
+          // Get the current user's ID from localStorage or wherever you store it
+          const currentUserId = localStorage.getItem('userId'); // Adjust based on how you store the user ID
+          setIsProfileOwner(currentUserId === userId.id);
+          
+          setError(null);
+        } else {
+          setError("Failed to load user data");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
 
   // Function to update user data
   const updateUserDetails = async (userId, updatedData) => {
@@ -605,38 +634,42 @@ const UserProfile = () => {
           </div>
         )}
 
+        
         {/* Edit/Save Profile Button */}
-        <div className="mt-8 flex justify-center gap-4">
-          {isEditing ? (
-            <>
-              <button
-                onClick={handleSave}
-                disabled={saveLoading}
-                className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
-              >
-                {saveLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  <FaSave />
-                )}
-                Save Changes
-              </button>
-              <button
-                onClick={toggleEditMode}
-                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
-              >
-                <FaTimes /> Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={toggleEditMode}
-              className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
-            >
-              <FaEdit /> Edit Profile
-            </button>
-          )}
-        </div>
+<div className="mt-8 flex justify-center gap-4">
+  {isEditing ? (
+    <>
+      <button
+        onClick={handleSave}
+        disabled={saveLoading}
+        className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
+      >
+        {saveLoading ? (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        ) : (
+          <FaSave />
+        )}
+        Save Changes
+      </button>
+      <button
+        onClick={toggleEditMode}
+        className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
+      >
+        <FaTimes /> Cancel
+      </button>
+    </>
+  ) : (
+    // Only show Edit button if current user is the profile owner
+    isProfileOwner && (
+      <button
+        onClick={toggleEditMode}
+        className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
+      >
+        <FaEdit /> Edit Profile
+      </button>
+    )
+  )}
+</div>
       </div>
     </div>
   );
