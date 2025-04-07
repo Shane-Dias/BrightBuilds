@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Lock, User, LogIn, EyeOff, Eye } from "lucide-react";
+import AutoScrollToTop from "../components/AutoScrollToTop";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate =useNavigate();
+  const navigate = useNavigate();
 
   const [error, setError] = useState(""); // To handle errors
 
@@ -29,19 +30,15 @@ const LoginPage = () => {
       localStorage.setItem("role", response.data.user.role); // Store the token in localStorage
       console.log("Login successful:", response.data);
 
-      if(response.data.user.role==="Student"){
+      if (response.data.user.role === "Student") {
         navigate(`/student/${response.data.user.id}`);
-      }else if(response.data.user.role==="Faculty"){
+      } else if (response.data.user.role === "Faculty") {
         navigate(`/faculty/${response.data.user.id}`);
-      }
-      else if(response.data.user.role==="Admin"){
+      } else if (response.data.user.role === "Admin") {
         navigate(`/admin`);
-      }
-      else{
+      } else {
         navigate(`/`);
       }
-     
-
     } catch (err) {
       setIsLoading(false);
       setError(err.response?.data?.message || "Something went wrong!"); // Handle error
@@ -82,6 +79,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <AutoScrollToTop />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

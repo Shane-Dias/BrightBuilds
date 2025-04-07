@@ -241,14 +241,14 @@ const UserProfile = () => {
       : null,
     instagram: userData.instagram || "",
     twitter: userData.twitter || "",
-    youtube: userData.youtube || "",
+    github: userData.github || "",
     linkedin: userData.linkedin || "",
     createdAt: userData.createdAt || new Date().toISOString(),
   };
 
   // Fields that can be edited - Personal Information section
   const personalInfoFields = [
-    { id: 'fullName', label: 'Full Name', icon: <FaIdCard />, value: editedData.fullName || '' },
+    { id: 'fullName', label: 'User Name', icon: <FaIdCard />, value: editedData.fullName || '' },
     { id: 'email', label: 'Email', icon: <FaEnvelope />, value: editedData.email || '', type: 'email' },
     { id: 'mobile', label: 'Mobile', icon: <FaPhone />, value: editedData.mobile || '', type: 'tel' },
     { id: 'age', label: 'Age', icon: <FaCalendarAlt />, value: editedData.age || '', type: 'number' },
@@ -269,6 +269,7 @@ const UserProfile = () => {
     { id: 'instagram', label: 'Instagram', icon: <FaInstagram />, value: editedData.instagram || '' },
     { id: 'twitter', label: 'Twitter', icon: <FaTwitter />, value: editedData.twitter || '' },
     { id: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin />, value: editedData.linkedin || '' },
+    { id: 'github', label: 'GitHub', icon: <FaGithub />, value: editedData.github || '' },
   ];
 
   return (
@@ -433,10 +434,10 @@ const UserProfile = () => {
                   <div className="relative">
                     <input
                       type="text"
-                      name="youtube"
-                      value={editedData.youtube || ''}
+                      name="github"
+                      value={editedData.github || ''}
                       onChange={handleInputChange}
-                      placeholder="YouTube URL"
+                      placeholder="GitHub URL"
                       className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
                     />
                     <div className="p-2 bg-gray-700 hover:bg-red-900/70 rounded-full text-red-400">
@@ -479,9 +480,9 @@ const UserProfile = () => {
                       <FaTwitter size={20} />
                     </a>
                   )}
-                  {user.youtube && (
+                  {user.github && (
                     <a
-                      href={user.youtube}
+                      href={user.github}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 bg-gray-700 hover:bg-red-900/70 rounded-full text-red-400 transition-colors duration-300"
@@ -502,7 +503,7 @@ const UserProfile = () => {
                   {/* Display grayed-out icons if no social links provided */}
                   {!user.instagram &&
                     !user.twitter &&
-                    !user.youtube &&
+                    !user.github &&
                     !user.linkedin && (
                       <>
                         <span className="p-2 bg-gray-700/50 rounded-full text-gray-500">

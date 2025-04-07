@@ -20,8 +20,8 @@ const registerUser = async (req, res) => {
       state,
       instagram,
       twitter,
-      youtube,
       linkedin,
+      github,
     } = req.body;
 
     // Check if the email already exists
@@ -56,8 +56,8 @@ const registerUser = async (req, res) => {
       profileImage,
       instagram,
       twitter,
-      youtube,
       linkedin,
+      github,
     });
 
     // Save user to DB
