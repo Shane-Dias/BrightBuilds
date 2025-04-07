@@ -1,0 +1,72 @@
+/* scrollbar.css - Complete solution */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(158, 255, 89, 0.7) transparent !important;
+  }
+  
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: black !important;
+    border-radius: 10px;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), 
+                inset -2px -2px 5px rgba(180, 255, 150, 0.1),
+                0 0 8px rgba(158, 255, 89, 0.4);
+  }
+  
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(158, 255, 89, 0.8);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), 
+                inset -2px -2px 5px rgba(180, 255, 150, 0.2),
+                0 0 12px rgba(158, 255, 89, 0.6);
+  }
+  
+  /* Specific overrides for html and body */
+  html, body {
+    scrollbar-width: 200px !important;
+    scrollbar-color: rgba(25, 25, 112, 1)transparent !important;
+  }
+  
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track {
+    background: white !important;
+    background-color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+    background-color: transparent !important;
+  }
+  
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb {
+    background: rgba(158, 255, 89, 0.7) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), 
+                inset -2px -2px 5px rgba(180, 255, 150, 0.1),
+                0 0 8px rgba(158, 255, 89, 0.4) !important;
+  }
+  
+  /* Override the corner where vertical and horizontal scrollbars meet */
+  *::-webkit-scrollbar-corner {
+    background: transparent !important;
+  }
+  
+  /* Ensure html and body take full height */
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
