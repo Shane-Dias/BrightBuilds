@@ -119,7 +119,9 @@ const SignupPage = () => {
       // Display success toast
       toast.success("Signup successful! Welcome aboard!");
       console.log("Signup successful:", data);
-      navigate("/login")
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error) {
       console.error("Signup error:", error);
       // toast.error("An error occurred during signup");

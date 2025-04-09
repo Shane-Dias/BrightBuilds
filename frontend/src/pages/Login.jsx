@@ -4,6 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Lock, User, LogIn, EyeOff, Eye } from "lucide-react";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -29,19 +31,23 @@ const LoginPage = () => {
       localStorage.setItem("token", response.data.token); // Store the token in localStorage
       localStorage.setItem("role", response.data.user.role); // Store the token in localStorage
       console.log("Login successful:", response.data);
+      toast.success("Login Successful");
 
-      if (response.data.user.role === "Student") {
-        navigate(`/student/${response.data.user.id}`);
-      } else if (response.data.user.role === "Faculty") {
-        navigate(`/faculty/${response.data.user.id}`);
-      } else if (response.data.user.role === "Admin") {
-        navigate(`/admin`);
-      } else {
-        navigate(`/`);
-      }
+      setTimeout(() => {
+        if (response.data.user.role === "Student") {
+          navigate(`/student/${response.data.user.id}`);
+        } else if (response.data.user.role === "Faculty") {
+          navigate(`/faculty/${response.data.user.id}`);
+        } else if (response.data.user.role === "Admin") {
+          navigate(`/admin`);
+        } else {
+          navigate(`/`);
+        }
+      }, 1000);
     } catch (err) {
       setIsLoading(false);
       setError(err.response?.data?.message || "Something went wrong!"); // Handle error
+      toast.error("Invail Credentails");
       console.error("Login failed:", err);
     }
   };
@@ -79,6 +85,7 @@ const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <ToastContainer position="top-right" autoClose={5000} />
       <AutoScrollToTop />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
