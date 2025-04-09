@@ -102,7 +102,7 @@ const ProjectDetails = () => {
 
   const handleProfileClick = async (userName) => {
     try {
-      console.log(userName)
+      console.log(userName);
       const response = await fetch(
         `http://localhost:5000/api/users/userDetails/${userName}`
       );
@@ -143,7 +143,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
-       <AutoScrollToTop/>
+      <AutoScrollToTop />
       <div className="container mx-auto px-4 py-12 pt-24">
         {/* Header with Back Navigation */}
         <motion.div
@@ -286,7 +286,18 @@ const ProjectDetails = () => {
               <DetailCard
                 icon={<School className="text-green-400" size={20} />}
                 title="Mentor"
-                content={game.mentor || "N/A"}
+                content={
+                  game.mentor ? (
+                    <span
+                      className="inline-flex items-center gap-1 text-green-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-green-300/30 hover:border-green-300 shadow-sm hover:shadow"
+                      onClick={() => handleProfileClick(game.mentor)}
+                    >
+                      {game.mentor}
+                    </span>
+                  ) : (
+                    "N/A"
+                  )
+                }
               />
               <DetailCard
                 icon={<Code className="text-purple-400" size={20} />}
@@ -415,7 +426,6 @@ const DetailCard = ({ icon, title, content }) => (
       <p className="text-xs text-gray-400 uppercase">{title}</p>
       <p className="text-sm text-white truncate">{content}</p>
     </div>
-   
   </div>
 );
 
