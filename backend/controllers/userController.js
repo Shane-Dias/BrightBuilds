@@ -204,14 +204,59 @@ const updateUserDetails = async (req, res) => {
   }
 };
 
-// Don't forget to export the new function
+// In userController.js - Add these new functions
+
+// Get all users for admin dashboard
+const getAllUsers = async (req, res) => {
+  try {
+    // You might want to add admin role verification here
+    const users = await User.find({})
+      .select("fullName email role") // Only select the fields we need
+      .lean(); // Use lean for better performance
+    
+    res.status(200).json({
+      success: true,
+      users
+    });
+  } catch (error) {
+    console.error("❌ Error in getAllUsers:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Delete a user
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const deletedUser = await User.findByIdAndDelete(userId);
+    
+    if (!deletedUser) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully"
+    });
+  } catch (error) {
+    console.error("❌ Error in deleteUser:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Don't forget to export the new functions
 module.exports = {
   registerUser,
   loginUser,
   getUserDetails,
   getallUserDetails,
   getUserDetailsByUserName,
-  updateUserDetails  // Add this line
+  updateUserDetails,
+  getAllUsers,     // Add this
+  deleteUser       // Add this
 };
-
 
