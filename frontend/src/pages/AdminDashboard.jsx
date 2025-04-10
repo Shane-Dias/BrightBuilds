@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef  } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -25,7 +25,22 @@ import {
 import { loadFull } from "tsparticles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  
+  Pie,
+  Cell,
+  Tooltip,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import html2canvas from "html2canvas";
+
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("projectModeration");
@@ -34,6 +49,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSDG, setSelectedSDG] = useState("all");
   const [expandedProject, setExpandedProject] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Sample data initialization
 
@@ -48,6 +64,81 @@ const AdminDashboard = () => {
   const viewDetails = (projectId) => {
     navigate(`/details/${projectId}`);
   };
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      console.log("Token:", token); // Log the token
+      
+      console.log("Making API request to fetch users...");
+      const response = await axios.get(
+        `http://localhost:5000/api/users/admin/all-users`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      console.log("API Response:", response.data); // Log the full response
+      
+      if (response.data.success) {
+        const formattedUsers = response.data.users.map(user => ({
+          id: user._id,
+          name: user.fullName,
+          email: user.email,
+          role: user.role,
+          status: "active",
+          projects: "N/A"
+        }));
+        
+        console.log("Formatted users:", formattedUsers); // Log formatted users
+        setUsers(formattedUsers);
+      } else {
+        console.log("Response success was false:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error object:", error);
+      console.error("Error response:", error.response?.data); // Log detailed error info
+      console.error("Failed to fetch users:", error.message);
+      toast.error("Failed to load users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers()
+  
+   
+  }, [])
+  
+
+  const deleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) {
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem("token");
+      
+      const response = await axios.delete(
+        `http://localhost:5000/api/users/admin/delete-user/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      if (response.data.success) {
+        toast.success("User deleted successfully");
+        // Remove the user from state to update UI
+        setUsers(users.filter(user => user.id !== userId));
+      }
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      toast.error(error.response?.data?.message || "Failed to delete user");
+    }
+  };
+
 
   useEffect(() => {
     const fetchPendingProjects = async () => {
@@ -95,6 +186,13 @@ const AdminDashboard = () => {
 
   console.log('filtered projects admin',filteredProjects);
   
+
+ //Trends and Pie chart:
+
+
+ 
+
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -259,91 +357,87 @@ const AdminDashboard = () => {
       case "userManagement":
         return (
           <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-            <AutoScrollToTop />
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-white">
-                User Management
-              </h3>
-              <div className="relative w-64">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
+  <AutoScrollToTop />
+  <div className="flex justify-between items-center mb-6">
+    <h3 className="text-xl font-semibold text-white">
+      User Management
+    </h3>
+    <div className="relative w-64">
+      <Search
+        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+        size={18}
+      />
+      <input
+        type="text"
+        placeholder="Search users..."
+        className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+    </div>
+  </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-800 text-gray-300">
-                  <tr>
-                    <th className="py-3 px-4 text-left rounded-tl-lg">Name</th>
-                    <th className="py-3 px-4 text-left">Email</th>
-                    <th className="py-3 px-4 text-left">Role</th>
-                    <th className="py-3 px-4 text-left">Status</th>
-                    <th className="py-3 px-4 text-left">Projects</th>
-                    <th className="py-3 px-4 text-left rounded-tr-lg">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700">
-                  {filteredUsers.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="hover:bg-gray-800/50 transition-colors"
+  {loading ? (
+    <div className="text-center py-8 text-white">Loading users...</div>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead className="bg-gray-800 text-gray-300">
+          <tr>
+            <th className="py-3 px-4 text-left rounded-tl-lg">Name</th>
+            <th className="py-3 px-4 text-left">Email</th>
+            <th className="py-3 px-4 text-left">Role</th>
+            <th className="py-3 px-4 text-left rounded-tr-lg">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-700">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => (
+              <tr
+                key={user.id}
+                className="hover:bg-gray-800/50 transition-colors"
+              >
+                <td className="py-3 px-4 text-white">{user.name}</td>
+                <td className="py-3 px-4 text-gray-400">{user.email}</td>
+                <td className="py-3 px-4">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      user.role === "student"
+                        ? "bg-blue-500/20 text-blue-400"
+                        : user.role === "faculty"
+                        ? "bg-purple-500/20 text-purple-400"
+                        : user.role === "admin"
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-gray-500/20 text-gray-400"
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+                </td>
+                <td className="py-3 px-4">
+                  <div className="flex space-x-2">
+                    <button 
+                      className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                      onClick={() => deleteUser(user.id)}
                     >
-                      <td className="py-3 px-4 text-white">{user.name}</td>
-                      <td className="py-3 px-4 text-gray-400">{user.email}</td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            user.role === "student"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : user.role === "faculty"
-                              ? "bg-purple-500/20 text-purple-400"
-                              : "bg-green-500/20 text-green-400"
-                          }`}
-                        >
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${
-                            user.status === "active"
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-red-500/20 text-red-400"
-                          }`}
-                        >
-                          {user.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-gray-300">
-                        {user.projects}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex space-x-2">
-                          <button className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                            <Edit size={16} className="text-blue-400" />
-                          </button>
-                          <button className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                            <Trash2 size={16} className="text-red-400" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                      <Trash2 size={16} className="text-red-400" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="py-8 text-center text-gray-400">
+                No users found matching your search
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+      )}
+    </div>
         );
 
       case "reports":
@@ -386,7 +480,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Data Export */}
-            <div className="bg-gray-800/50 rounded-xl p-6">
+            {/* <div className="bg-gray-800/50 rounded-xl p-6">
               <h4 className="text-lg font-medium text-white mb-4">
                 Export Data
               </h4>
@@ -412,7 +506,7 @@ const AdminDashboard = () => {
                   <span className="text-xs text-gray-400">CSV, JSON</span>
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         );
 

@@ -15,6 +15,7 @@
     "@splinetool/runtime": "^1.9.80",
     "axios": "^1.8.4",
     "framer-motion": "^12.6.0",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.484.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -23,6 +24,7 @@
     "react-simple-typewriter": "^5.0.1",
     "react-toastify": "^11.0.5",
     "react-tsparticles": "^2.12.2",
+    "recharts": "^2.15.2",
     "tsparticles": "^3.8.1",
     "tsparticles-slim": "^2.12.0"
   },
