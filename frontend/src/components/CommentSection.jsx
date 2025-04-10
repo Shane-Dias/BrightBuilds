@@ -29,6 +29,7 @@ export const CommentSection = () => {
         `http://localhost:5000/api/comments/${projectId}`
       );
       setComments(res.data);
+      console.log("Fetched comments:", res.data);
       setError(null);
     } catch (err) {
       console.error("Error fetching comments:", err);
@@ -319,38 +320,21 @@ export const CommentSection = () => {
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                  <span className="font-semibold text-blue-200 text-sm">
-                                    {reply.author?.username || "Anonymous"}
+                                  <span
+                                    className="inline-flex items-center gap-1.5 text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1 rounded-full transition-all duration-200 cursor-pointer font-medium border border-blue-400/20 hover:border-blue-400/50 shadow-sm hover:shadow text-sm"
+                                    onClick={() =>
+                                      handleProfileClick(reply.userId?.fullName)
+                                    }
+                                  >
+                                    {reply.userId?.fullName || "Anonymous"}
                                   </span>
                                   <span className="text-xs text-gray-400">
                                     {formatDate(reply.createdAt)}
                                   </span>
                                 </div>
                                 <p className="text-gray-200 text-sm mb-3">
-                                  {reply.text}
+                                  {reply.replyText}
                                 </p>
-                                <div className="flex items-center">
-                                  <button
-                                    onClick={() =>
-                                      toggleLike(reply._id, true, comment._id)
-                                    }
-                                    className={`flex items-center ${
-                                      reply.liked
-                                        ? "text-pink-400"
-                                        : "text-gray-400 hover:text-pink-400"
-                                    } transition-colors text-sm`}
-                                    disabled={!token}
-                                  >
-                                    <Heart
-                                      size={14}
-                                      fill={
-                                        reply.liked ? "currentColor" : "none"
-                                      }
-                                      className="mr-1"
-                                    />
-                                    {reply.likes}
-                                  </button>
-                                </div>
                               </div>
                             </div>
                           </motion.div>
