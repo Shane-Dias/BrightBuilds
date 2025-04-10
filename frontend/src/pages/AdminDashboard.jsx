@@ -1,15 +1,17 @@
-import { useState, useEffect , useRef  } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Users,
   FileCheck,
-  LayoutGrid,
-  Trophy,
+  // LayoutGrid,
+  // Trophy,
   Bell,
   FileText,
   Goal,
   Search,
-  Filter,
+  // Filter,
   Download,
   MoreVertical,
   ChevronDown,
@@ -17,30 +19,28 @@ import {
   CheckCircle2,
   XCircle,
   Trash2,
-  Edit,
-  Send,
+  // Edit,
+  // Send,
   BarChart2,
   PieChart,
 } from "lucide-react";
 import { loadFull } from "tsparticles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {
-  
-  Pie,
-  Cell,
-  Tooltip,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+// import {
+//   Pie,
+//   Cell,
+//   Tooltip,
+//   LineChart,
+//   Line,
+//   XAxis,
+//   YAxis,
+//   CartesianGrid,
+//   Legend,
+//   ResponsiveContainer,
+// } from "recharts";
 import AutoScrollToTop from "../components/AutoScrollToTop";
-import html2canvas from "html2canvas";
-
+// import html2canvas from "html2canvas";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("projectModeration");
@@ -70,27 +70,27 @@ const AdminDashboard = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       console.log("Token:", token); // Log the token
-      
+
       console.log("Making API request to fetch users...");
       const response = await axios.get(
         `http://localhost:5000/api/users/admin/all-users`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
+
       console.log("API Response:", response.data); // Log the full response
-      
+
       if (response.data.success) {
-        const formattedUsers = response.data.users.map(user => ({
+        const formattedUsers = response.data.users.map((user) => ({
           id: user._id,
           name: user.fullName,
           email: user.email,
           role: user.role,
           status: "active",
-          projects: "N/A"
+          projects: "N/A",
         }));
-        
+
         console.log("Formatted users:", formattedUsers); // Log formatted users
         setUsers(formattedUsers);
       } else {
@@ -107,38 +107,35 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    fetchUsers()
-  
-   
-  }, [])
-  
+    fetchUsers();
+  }, []);
 
   const deleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) {
       return;
     }
-    
+
     try {
       const token = localStorage.getItem("token");
-      
+
       const response = await axios.delete(
         `http://localhost:5000/api/users/admin/delete-user/${userId}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
+
       if (response.data.success) {
         toast.success("User deleted successfully");
         // Remove the user from state to update UI
-        setUsers(users.filter(user => user.id !== userId));
+        setUsers(users.filter((user) => user.id !== userId));
+        fetchUsers();
       }
     } catch (error) {
       console.error("Failed to delete user:", error);
       toast.error(error.response?.data?.message || "Failed to delete user");
     }
   };
-
 
   useEffect(() => {
     const fetchPendingProjects = async () => {
@@ -147,7 +144,6 @@ const AdminDashboard = () => {
           "http://localhost:5000/api/admin/pendingprojects"
         );
         setProjects(response.data.data);
-
       } catch (error) {
         console.error("Error fetching pending projects:", error);
       }
@@ -184,21 +180,39 @@ const AdminDashboard = () => {
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log('filtered projects admin',filteredProjects);
-  
+  console.log("filtered projects admin", filteredProjects);
 
- //Trends and Pie chart:
+  const handleProfileClick = async (userName) => {
+    try {
+      console.log(userName);
+      const response = await fetch(
+        `http://localhost:5000/api/users/userDetails/${userName}`
+      );
+      const data = await response.json();
+      console.log(data);
 
+      if (!response.ok) {
+        console.error("Error fetching user:", data.message);
+        return;
+      }
 
- 
+      const userId = data._id; // Assuming the API returns `_id`
 
+      console.log("User ID:", userId);
+      navigate(`/userdetails/${userId}`);
+    } catch (error) {
+      console.error("❌ Error fetching user details:", error);
+    }
+  };
 
+  //Trends and Pie chart:
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "projectModeration":
         return (
           <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
+            <ToastContainer position="top-right" autoClose={5000} />
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
               <h3 className="text-2xl font-bold text-white">
                 Project Moderation
@@ -235,9 +249,8 @@ const AdminDashboard = () => {
                           {project.title}
                         </h4>
                         <p className="text-sm text-gray-400">
-  by {project.teammates.join(", ")}
-</p>
-
+                          by {project.teammates.join(", ")}
+                        </p>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="flex flex-wrap gap-1 max-w-xs">
@@ -357,87 +370,105 @@ const AdminDashboard = () => {
       case "userManagement":
         return (
           <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-  <AutoScrollToTop />
-  <div className="flex justify-between items-center mb-6">
-    <h3 className="text-xl font-semibold text-white">
-      User Management
-    </h3>
-    <div className="relative w-64">
-      <Search
-        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-        size={18}
-      />
-      <input
-        type="text"
-        placeholder="Search users..."
-        className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </div>
-  </div>
+            <AutoScrollToTop />
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold text-white">
+                User Management
+              </h3>
+              <div className="relative w-64">
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
 
-  {loading ? (
-    <div className="text-center py-8 text-white">Loading users...</div>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead className="bg-gray-800 text-gray-300">
-          <tr>
-            <th className="py-3 px-4 text-left rounded-tl-lg">Name</th>
-            <th className="py-3 px-4 text-left">Email</th>
-            <th className="py-3 px-4 text-left">Role</th>
-            <th className="py-3 px-4 text-left rounded-tr-lg">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-700">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <tr
-                key={user.id}
-                className="hover:bg-gray-800/50 transition-colors"
-              >
-                <td className="py-3 px-4 text-white">{user.name}</td>
-                <td className="py-3 px-4 text-gray-400">{user.email}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      user.role === "student"
-                        ? "bg-blue-500/20 text-blue-400"
-                        : user.role === "faculty"
-                        ? "bg-purple-500/20 text-purple-400"
-                        : user.role === "admin"
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-gray-500/20 text-gray-400"
-                    }`}
-                  >
-                    {user.role}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex space-x-2">
-                    <button 
-                      className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-                      onClick={() => deleteUser(user.id)}
-                    >
-                      <Trash2 size={16} className="text-red-400" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4" className="py-8 text-center text-gray-400">
-                No users found matching your search
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-      )}
-    </div>
+            {loading ? (
+              <div className="text-center py-8 text-white">
+                Loading users...
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-800 text-gray-300">
+                    <tr>
+                      <th className="py-3 px-4 text-left rounded-tl-lg">
+                        Name
+                      </th>
+                      <th className="py-3 px-4 text-left">Email</th>
+                      <th className="py-3 px-4 text-left">Role</th>
+                      <th className="py-3 px-4 text-left rounded-tr-lg">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700">
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <tr
+                          key={user.id}
+                          className="hover:bg-gray-800/50 transition-colors"
+                        >
+                          <td className="py-3 px-4 text-white">
+                            <span
+                              className="inline-flex items-center gap-1 text-yellow-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-yellow-300/30 hover:border-yellow-300 shadow-sm hover:shadow"
+                              onClick={() => handleProfileClick(user.name)}
+                            >
+                              {user.name}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-gray-400">
+                            {user.email}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                user.role === "student"
+                                  ? "bg-blue-500/20 text-blue-400"
+                                  : user.role === "faculty"
+                                  ? "bg-purple-500/20 text-purple-400"
+                                  : user.role === "admin"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : "bg-gray-500/20 text-gray-400"
+                              }`}
+                            >
+                              {user.role}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex space-x-2">
+                              <button
+                                className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                                onClick={() => deleteUser(user.id)}
+                              >
+                                <Trash2 size={16} className="text-red-400" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="4"
+                          className="py-8 text-center text-gray-400"
+                        >
+                          No users found matching your search
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         );
 
       case "reports":

@@ -5,14 +5,13 @@ const isAdmin = async (req, res, next) => {
   try {
     // The userId should come from the authentication middleware
     const user = await User.findById(req.userId);
-    
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Access denied: Admin privileges required" 
+
+    if (!user || user.role !== "Admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: Admin privileges required",
       });
     }
-    
     next();
   } catch (error) {
     console.error("❌ Error in admin verification:", error);
