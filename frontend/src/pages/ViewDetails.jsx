@@ -405,13 +405,7 @@ const ProjectDetails = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mt-12"
         >
-          {game.comments && game.comments.length > 0 ? (
-            <CommentSection comments={game.comments} />
-          ) : (
-            <div className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10 text-center">
-              <p className="text-gray-400">No comments available</p>
-            </div>
-          )}
+          <CommentSection />
         </motion.div>
       </div>
     </div>
