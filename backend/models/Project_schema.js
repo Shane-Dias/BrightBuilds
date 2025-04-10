@@ -17,7 +17,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  media: [String], // We'll store file paths 
+  media: [String], // We'll store file paths
   mentor: {
     type: String,
     required: false,
@@ -45,14 +45,29 @@ const projectSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  likedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   rating: {
     type: Number,
     default: 0.1,
   },
+  ratedBy: [
+    {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      rating: Number,
+    },
+  ],
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
-    default: "approved",  //change this to pending later when admin page is ready
+    default: "pending", //change this to pending later when admin page is ready
   },
   createdAt: {
     type: Date,

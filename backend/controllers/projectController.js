@@ -63,7 +63,6 @@ exports.getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
 
-    
     if (!project) {
       return res
         .status(404)
@@ -133,7 +132,6 @@ exports.getProjectsByUsername = async (req, res) => {
   }
 };
 
-
 exports.getMentorProjectsByUsername = async (req, res) => {
   try {
     const { username } = req.params;
@@ -151,5 +149,74 @@ exports.getMentorProjectsByUsername = async (req, res) => {
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.likeProject = async (req, res) => {
+  const userId = req.userId;
+  const { projectId } = req.params;
+
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    if (project.likedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: "You already liked this project" });
+    }
+
+    project.likes += 1;
+    project.likedBy.push(userId);
+
+    await project.save();
+
+    res
+      .status(200)
+      .json({ message: "Project liked successfully", likes: project.likes });
+  } catch (err) {
+    res.status(500).json({ message: "Error liking project", error: err });
+  }
+};
+
+exports.rateProject = async (req, res) => {
+  const userId = req.userId;
+  const { projectId } = req.params;
+  const { rating } = req.body; // Should be a number (e.g., 1 to 5)
+
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) return res.status(404).json({ message: "Project not found" });
+
+    const alreadyRated = project.ratedBy.find(
+      (r) => r.userId.toString() === userId
+    );
+
+    if (alreadyRated) {
+      return res
+        .status(400)
+        .json({ message: "You have already rated this project" });
+    }
+
+    project.ratedBy.push({ userId, rating });
+
+    // Calculate average rating
+    const totalRating = project.ratedBy.reduce(
+      (sum, entry) => sum + entry.rating,
+      0
+    );
+    const avgRating = totalRating / project.ratedBy.length;
+
+    project.rating = avgRating;
+
+    await project.save();
+
+    res
+      .status(200)
+      .json({ message: "Project rated successfully", rating: avgRating });
+  } catch (err) {
+    res.status(500).json({ message: "Error rating project", error: err });
   }
 };
