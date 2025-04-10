@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MessageSquare, User, Send } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const CommentSection = () => {
   const [comments, setComments] = useState([]);
@@ -10,6 +11,7 @@ export const CommentSection = () => {
   const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Get project ID from URL
   const projectId = window.location.pathname.split("/").pop();
@@ -56,6 +58,29 @@ export const CommentSection = () => {
     } catch (err) {
       console.error("Failed to add comment:", err);
       setError("Failed to post comment. Please try again.");
+    }
+  };
+
+  const handleProfileClick = async (userName) => {
+    try {
+      console.log(userName);
+      const response = await fetch(
+        `http://localhost:5000/api/users/userDetails/${userName}`
+      );
+      const data = await response.json();
+      console.log(data);
+
+      if (!response.ok) {
+        console.error("Error fetching user:", data.message);
+        return;
+      }
+
+      const userId = data._id; // Assuming the API returns `_id`
+
+      console.log("User ID:", userId);
+      navigate(`/userdetails/${userId}`);
+    } catch (error) {
+      console.error("❌ Error fetching user details:", error);
     }
   };
 
@@ -194,9 +219,15 @@ export const CommentSection = () => {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-semibold text-blue-200">
+                      <span
+                        className="inline-flex items-center gap-1.5 text-blue-200 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1 rounded-full transition-all duration-200 cursor-pointer font-medium border border-blue-400/20 hover:border-blue-400/50 shadow-sm hover:shadow text-sm"
+                        onClick={() =>
+                          handleProfileClick(comment.userId?.fullName)
+                        }
+                      >
                         {comment.userId?.fullName || "Anonymous"}
                       </span>
+
                       <span className="text-xs text-gray-400">
                         {formatDate(comment.createdAt)}
                       </span>
