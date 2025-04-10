@@ -487,7 +487,7 @@ const ProjectDetails = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mt-12"
         >
-          <CommentSection />
+          <CommentSection projectDetails={game} />
         </motion.div>
       </div>
     </div>
