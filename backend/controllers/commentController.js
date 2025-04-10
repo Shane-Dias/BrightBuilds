@@ -5,17 +5,31 @@ const User = require("../models/User_schema");
 // @desc    Add new comment
 // @route   POST /api/comments
 exports.addComment = async (req, res) => {
-  const { projectId, commentText } = req.body;
-  const userId = req.userId; // Comes from auth middleware
-
-  if (!commentText)
-    return res.status(400).json({ error: "Comment is required" });
+  const { commentText } = req.body;
+  const { projectId } = req.params;
+  const userId = req.userId;
 
   try {
-    const comment = await Comment.create({ projectId, userId, commentText });
-    res.status(201).json(comment);
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Automatically make Admin comments private
+    const isPrivate = user.role === "Admin";
+
+    const newComment = new Comment({
+      commentText,
+      projectId,
+      userId,
+      isPrivate,
+    });
+
+    await newComment.save();
+    res
+      .status(201)
+      .json({ message: "Comment added successfully", comment: newComment });
   } catch (err) {
-    res.status(500).json({ error: "Failed to add comment" });
+    console.error("Error adding comment:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
