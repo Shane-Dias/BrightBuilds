@@ -29,7 +29,12 @@ const commentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    replies: [replySchema], // <-- Nested replies array
+    replies: [replySchema],
+
+    isPrivate: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

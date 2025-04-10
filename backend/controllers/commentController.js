@@ -1,4 +1,6 @@
+const Project = require("../models/Project_schema");
 const Comment = require("../models/Comment_schema");
+const User = require("../models/User_schema");
 
 // @desc    Add new comment
 // @route   POST /api/comments
