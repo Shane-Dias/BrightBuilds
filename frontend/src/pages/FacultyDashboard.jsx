@@ -7,12 +7,11 @@ import {
   Globe,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import { data, useNavigate, useParams } from "react-router-dom";
 import FacultyProfile from "../components/FacultyProfile";
 import AutoScrollToTop from "../components/AutoScrollToTop";
-
 
 const FacultyDashboard = () => {
   const navigate = useNavigate();
@@ -32,37 +31,41 @@ const FacultyDashboard = () => {
   useEffect(() => {
     const fetchFacultyDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/details/${id}`);
+        const res = await fetch(
+          `http://localhost:5000/api/users/details/${id}`
+        );
         if (!res.ok) throw new Error("Failed to fetch faculty details");
-  
+
         const data = await res.json();
         console.log("Faculty details:", data);
-  
+
         if (data && data.fullName) {
-          console.log('mentor name',data.fullName);
-          
+          console.log("mentor name", data.fullName);
+
           setFaculty(data);
-          console.log('faculty name from state',faculty);
-          
+          console.log("faculty name from state", faculty);
+
           await fetchMentorProjects(data.fullName); // Ensure it executes properly
         }
       } catch (error) {
         console.error("Error fetching faculty details:", error);
       }
     };
-  
+
     const fetchMentorProjects = async (mentorName) => {
       try {
-        const res = await fetch(`http://localhost:5000/api/projects/mentor/${mentorName}`);
+        const res = await fetch(
+          `http://localhost:5000/api/projects/mentor/${mentorName}`
+        );
         if (!res.ok) throw new Error("Failed to fetch mentor projects");
-  
+
         const data = await res.json();
         console.log("Mentor projects response:", data);
-  
+
         if (data.success && Array.isArray(data.projects)) {
           setMentorProjects(data.projects);
           console.log("Mentor projects:", data.projects);
-  
+
           // Initialize likes state for projects
           const likesState = {};
           data.projects.forEach((project) => {
@@ -76,30 +79,9 @@ const FacultyDashboard = () => {
         console.error("Error fetching mentor projects:", error);
       }
     };
-  
+
     fetchFacultyDetails();
   }, [id]);
-  
-
-  const handleLike = (projectId) => {
-    setMentorProjects((prevProjects) =>
-      prevProjects.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: userLikes[projectId]
-                ? project.likes - 1
-                : project.likes + 1,
-            }
-          : project
-      )
-    );
-
-    setUserLikes((prev) => ({
-      ...prev,
-      [projectId]: !prev[projectId],
-    }));
-  };
 
   const viewDetails = (projectId) => {
     navigate(`/details/${projectId}`);
@@ -110,23 +92,23 @@ const FacultyDashboard = () => {
     approved: {
       icon: <CheckCircle size={16} className="mr-1" />,
       color: "bg-green-500",
-      text: "Approved"
+      text: "Approved",
     },
     pending: {
       icon: <Clock size={16} className="mr-1" />,
       color: "bg-yellow-500",
-      text: "Pending"
+      text: "Pending",
     },
     rejected: {
       icon: <XCircle size={16} className="mr-1" />,
       color: "bg-red-500",
-      text: "Rejected"
-    }
+      text: "Rejected",
+    },
   };
 
   return (
     <>
-    <AutoScrollToTop/>
+      <AutoScrollToTop />
       <FacultyProfile faculty={faculty} />
       <motion.div
         initial={{ opacity: 0 }}
@@ -136,7 +118,7 @@ const FacultyDashboard = () => {
       >
         <div className="relative z-10">
           <h1 className="text-5xl font-bold font-lilita text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12">
-            Your Mentored Projects 
+            Your Mentored Projects
           </h1>
 
           {/* Projects Grid */}
@@ -170,7 +152,7 @@ const FacultyDashboard = () => {
                 onMouseLeave={() => setHoveredGame(null)}
                 className="relative group perspective-1000"
               >
-                <div className="relative bg-gray-800/60 backdrop-blur-lg rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
+                <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
                   {/* Project Thumbnail with Zoom Effect and Status Badge */}
                   <div className="relative overflow-hidden">
                     <motion.img
@@ -250,12 +232,14 @@ const FacultyDashboard = () => {
                         Team: {project.teammates?.length || 0} members
                       </div>
                       <button
-                        onClick={() => handleLike(project._id)}
+                        onClick={() => viewDetails(project._id)}
                         className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                       >
                         <Heart
                           size={18}
-                          fill={userLikes[project._id] ? "currentColor" : "none"}
+                          fill={
+                            userLikes[project._id] ? "currentColor" : "none"
+                          }
                           className="mr-1"
                         />
                         {project.likes || 0}
@@ -312,7 +296,8 @@ const FacultyDashboard = () => {
           {mentorProjects.length === 0 && (
             <div className="text-center py-16 text-gray-400">
               <p className="text-xl">
-                No mentored projects found. You'll see projects here when students add you as a mentor.
+                No mentored projects found. You'll see projects here when
+                students add you as a mentor.
               </p>
             </div>
           )}

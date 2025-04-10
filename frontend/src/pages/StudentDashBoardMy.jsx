@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import UserProfile from "../components/UserProfile";
 import AutoScrollToTop from "../components/AutoScrollToTop";
 
-
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [hoveredGame, setHoveredGame] = useState(null);
@@ -22,7 +21,7 @@ const StudentDashboard = () => {
   const [username, setUsername] = useState("");
   const [projects, setProjects] = useState([]);
   const [userLikes, setUserLikes] = useState({});
-  const [profilePic, setprofilePic] = useState("")
+  const [profilePic, setprofilePic] = useState("");
 
   // Function to get proper image URL
   const getImageUrl = (mediaPath) => {
@@ -38,9 +37,8 @@ const StudentDashboard = () => {
           `http://localhost:5000/api/users/details/${id}`
         );
         const data = await res.json();
-        console.log(data);  
-       
-        
+        console.log(data);
+
         if (data) {
           setUsername(data.fullName);
           setprofilePic(data.profileImage);
@@ -77,32 +75,6 @@ const StudentDashboard = () => {
     fetchUsername();
   }, [id]);
 
-  const handleLike = (projectId) => {
-    setProjects((prevProjects) =>
-      prevProjects.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: userLikes[projectId]
-                ? project.likes - 1
-                : project.likes + 1,
-            }
-          : project
-      )
-    );
-
-    setUserLikes((prev) => ({
-      ...prev,
-      [projectId]: !prev[projectId],
-    }));
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate("/login");
-  };
-
   const viewDetails = (projectId) => {
     navigate(`/details/${projectId}`);
   };
@@ -128,8 +100,8 @@ const StudentDashboard = () => {
 
   return (
     <>
-    <AutoScrollToTop/>
-      <UserProfile userProfile={username} profilePic={profilePic}/>
+      <AutoScrollToTop />
+      <UserProfile userProfile={username} profilePic={profilePic} />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -251,7 +223,7 @@ const StudentDashboard = () => {
                         Team: {project.teammates?.length || 0} members
                       </div>
                       <button
-                        onClick={() => handleLike(project._id)}
+                        onClick={() => viewDetails(project._id)}
                         className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                       >
                         <Heart
