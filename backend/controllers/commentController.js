@@ -24,11 +24,38 @@ exports.getCommentsByProject = async (req, res) => {
 
   try {
     const comments = await Comment.find({ projectId })
-      .populate("userId", "fullName") // get user name
-      .sort({ createdAt: -1 }); 
+      .populate("userId", "fullName") // commenter
+      .populate("replies.userId", "fullName") // replier
+      .sort({ createdAt: -1 });
 
     res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch comments" });
+  }
+};
+
+exports.addReply = async (req, res) => {
+  const { replyText } = req.body;
+  const { commentId } = req.params;
+  const userId = req.userId; // From auth middleware
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+    comment.replies.push({
+      replyText,
+      userId,
+    });
+
+    await comment.save();
+
+    const updatedComment = await Comment.findById(commentId).populate(
+      "replies.userId",
+      "fullName"
+    );
+    res.status(201).json(updatedComment);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add reply", error });
   }
 };
