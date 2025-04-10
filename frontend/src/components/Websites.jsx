@@ -24,22 +24,6 @@ const Websites = ({ projects = [] }) => {
     setWebsites(projects);
   }, [projects]);
 
-  const handleLike = (websiteId) => {
-    setWebsites((prevWebsites) =>
-      prevWebsites.map((website) =>
-        website._id === websiteId
-          ? {
-              ...website,
-              likes: website.userHasLiked
-                ? website.likes - 1
-                : website.likes + 1,
-              userHasLiked: !website.userHasLiked,
-            }
-          : website
-      )
-    );
-  };
-
   const filteredAndSortedWebsites = useMemo(() => {
     let result = [...websites];
 
@@ -228,7 +212,7 @@ const Websites = ({ projects = [] }) => {
                         : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(website._id)}
+                      onClick={() => viewDetails(website._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart

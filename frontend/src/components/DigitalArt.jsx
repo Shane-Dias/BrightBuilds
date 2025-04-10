@@ -24,22 +24,6 @@ const DigitalArt = ({ projects = [] }) => {
     setArtworks(projects);
   }, [projects]);
 
-  const handleLike = (projectId) => {
-    setArtworks((prevArtworks) =>
-      prevArtworks.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: project.userHasLiked
-                ? project.likes - 1
-                : project.likes + 1,
-              userHasLiked: !project.userHasLiked,
-            }
-          : project
-      )
-    );
-  };
-
   const filteredAndSortedArtworks = useMemo(() => {
     let result = [...artworks];
 
@@ -228,7 +212,7 @@ const DigitalArt = ({ projects = [] }) => {
                         : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(artwork._id)}
+                      onClick={() => viewDetails(artwork._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart

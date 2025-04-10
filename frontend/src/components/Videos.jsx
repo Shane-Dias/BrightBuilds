@@ -24,22 +24,6 @@ const Videos = ({ projects = [] }) => {
     setVideos(projects);
   }, [projects]);
 
-  const handleLike = (projectId) => {
-    setVideos((prevVideos) =>
-      prevVideos.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: project.userHasLiked
-                ? project.likes - 1
-                : project.likes + 1,
-              userHasLiked: !project.userHasLiked,
-            }
-          : project
-      )
-    );
-  };
-
   const filteredAndSortedVideos = useMemo(() => {
     let result = [...videos];
 
@@ -229,7 +213,7 @@ const Videos = ({ projects = [] }) => {
                         : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(video._id)}
+                      onClick={() => viewDetails(video._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart

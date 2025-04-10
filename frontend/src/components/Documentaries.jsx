@@ -24,22 +24,6 @@ const Documentaries = ({ projects = [] }) => {
     setDocumentaries(projects);
   }, [projects]);
 
-  const handleLike = (projectId) => {
-    setDocumentaries((prevDocs) =>
-      prevDocs.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: project.userHasLiked
-                ? project.likes - 1
-                : project.likes + 1,
-              userHasLiked: !project.userHasLiked,
-            }
-          : project
-      )
-    );
-  };
-
   const filteredAndSortedDocumentaries = useMemo(() => {
     let result = [...documentaries];
 
@@ -228,7 +212,7 @@ const Documentaries = ({ projects = [] }) => {
                         : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(documentary._id)}
+                      onClick={() => viewDetails(documentary._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart

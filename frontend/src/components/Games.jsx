@@ -26,22 +26,6 @@ const Games = ({ projects = [] }) => {
     setGames(projects);
   }, [projects]);
 
-  const handleLike = (projectId) => {
-    setGames((prevGames) =>
-      prevGames.map((project) =>
-        project._id === projectId
-          ? {
-              ...project,
-              likes: project.userHasLiked
-                ? project.likes - 1
-                : project.likes + 1,
-              userHasLiked: !project.userHasLiked,
-            }
-          : project
-      )
-    );
-  };
-
   const filteredAndSortedGames = useMemo(() => {
     let result = [...games];
 
@@ -230,7 +214,7 @@ const Games = ({ projects = [] }) => {
                         : "No SDG"}
                     </span>
                     <button
-                      onClick={() => handleLike(game._id)}
+                      onClick={() => viewDetails(game._id)}
                       className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                     >
                       <Heart
