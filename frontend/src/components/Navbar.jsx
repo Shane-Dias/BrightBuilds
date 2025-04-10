@@ -102,18 +102,6 @@ const Navbar = () => {
     };
 
     loadUserData();
-
-    // For demonstration, set some default data
-    if (!userData && process.env.NODE_ENV === "development") {
-      setUserData({
-        _id: userId || "user123",
-        name: "Serene123",
-        fullName: "Serene123",
-        role: "Student",
-        profilePicture: "uploads\\1743513975473.jpg",
-      });
-    }
-
     return () => {
       isMounted = false;
     };
