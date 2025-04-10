@@ -13,6 +13,7 @@ const {
   getMentorProjectsByUsername,
   likeProject,
   rateProject,
+  getProjectsGroupedBySDG
 } = require("../controllers/projectController");
 
 router.route("/create").post(upload.uploadMultiple, createProject);
@@ -25,4 +26,6 @@ router.route("/projects/user/:username").get(getProjectsByUsername);
 router.route("/projects/mentor/:username").get(getMentorProjectsByUsername);
 router.post("/:projectId/like", auth, likeProject);
 router.post("/:projectId/rate", auth, rateProject);
+router.get("/sdg-summary", getProjectsGroupedBySDG);
+
 module.exports = router;
