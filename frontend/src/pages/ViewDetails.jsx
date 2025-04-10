@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import axios from "axios"; // Add axios import
 import CommentSection from "../components/CommentSection";
 import AutoScrollToTop from "../components/AutoScrollToTop";
 import { FaRegKeyboard } from "react-icons/fa";
@@ -27,50 +28,106 @@ const ProjectDetails = () => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [token, setToken] = useState(""); // Add token state
+  const [userRating, setUserRating] = useState(0); // Add state for user's rating
+  const [hoveredRating, setHoveredRating] = useState(0); // Add state for hover effect
 
   useEffect(() => {
-    const fetchProjectDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/details/${id}`);
+    // Get token from localStorage
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
-        if (!response.ok) {
-          throw new Error(
-            `Failed to fetch project details: ${response.status}`
-          );
-        }
+  const fetchProjectDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:5000/api/details/${id}`);
 
-        const responseData = await response.json();
-
-        // Extract project data from the nested structure
-        if (responseData.success && responseData.data) {
-          setGame(responseData.data);
-          console.log(responseData.data);
-          setLikeCount(responseData.data.likes || 0);
-        } else {
-          throw new Error("Invalid data structure received from API");
-        }
-      } catch (err) {
-        setError(err.message);
-        console.error("Error fetching project details:", err);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch project details: ${response.status}`);
       }
-    };
 
+      const responseData = await response.json();
+
+      // Extract project data from the nested structure
+      if (responseData.success && responseData.data) {
+        setGame(responseData.data);
+        console.log(responseData.data);
+        setLikeCount(responseData.data.likes || 0);
+
+        // Check if user has already liked the project
+        if (responseData.data.userHasLiked) {
+          setLiked(true);
+        }
+
+        // Set user's rating if available
+        if (responseData.data.userRating) {
+          setUserRating(responseData.data.userRating);
+        }
+      } else {
+        throw new Error("Invalid data structure received from API");
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching project details:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProjectDetails();
   }, [id]);
 
-  const toggleLike = () => {
-    setLiked(!liked);
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+  // Updated handleLike function that accepts projectId parameter
+  const handleLike = async (projectId) => {
+    console.log("The user token:", token);
+    try {
+      await axios.post(
+        `http://localhost:5000/api/${projectId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // your stored token
+          },
+        }
+      );
 
-    // Optional: Send like update to backend
-    // fetch(`http://localhost:5000/api/details/${id}/like`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ liked: !liked })
-    // });
+      fetchProjectDetails();
+    } catch (err) {
+      console.error(
+        "Error liking project:",
+        err.response?.data?.message || err.message
+      );
+      alert(err.response?.data?.message || "Failed to like project");
+    }
+  };
+
+  // Add handleRate function for rating projects
+  const handleRate = async (projectId, ratingValue) => {
+    try {
+      await axios.post(
+        `http://localhost:5000/api/${projectId}/rate`,
+        { rating: ratingValue },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Update UI after rating
+      setUserRating(ratingValue);
+      fetchProjectDetails();
+    } catch (err) {
+      console.error(
+        "Error rating project:",
+        err.response?.data?.message || err.message
+      );
+      alert(err.response?.data?.message || "Failed to rate project");
+    }
   };
 
   const navigateImages = (direction) => {
@@ -241,7 +298,7 @@ const ProjectDetails = () => {
                   </span>
                 </div>
                 <button
-                  onClick={toggleLike}
+                  onClick={() => handleLike(id)}
                   className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
                 >
                   <Heart
@@ -254,6 +311,31 @@ const ProjectDetails = () => {
               </div>
               <div className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
                 {game.category || "Project"}
+              </div>
+            </div>
+
+            {/* Rate This Project */}
+            <div className="mt-4 bg-white/10 rounded-xl p-4 border border-white/10">
+              <h3 className="text-lg font-semibold mb-2">Rate This Project</h3>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((val) => (
+                  <button
+                    key={val}
+                    onClick={() => handleRate(id, val)}
+                    onMouseEnter={() => setHoveredRating(val)}
+                    onMouseLeave={() => setHoveredRating(0)}
+                    className={`text-2xl transition-transform ${
+                      val <= (hoveredRating || userRating)
+                        ? "text-yellow-400"
+                        : "text-gray-400"
+                    } hover:scale-110`}
+                  >
+                    ★
+                  </button>
+                ))}
+                <span className="ml-2 text-gray-300">
+                  {userRating > 0 ? `Your rating: ${userRating}/5` : ""}
+                </span>
               </div>
             </div>
 
