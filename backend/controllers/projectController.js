@@ -220,3 +220,25 @@ exports.rateProject = async (req, res) => {
     res.status(500).json({ message: "Error rating project", error: err });
   }
 };
+
+exports.getProjectsGroupedBySDG = async (req, res) => {
+  try {
+    const projects = await Project.find({ status: "approved" });
+
+    const grouped = {};
+    projects.forEach((project) => {
+      project.sdgs.forEach((sdg) => {
+        if (!grouped[sdg]) grouped[sdg] = [];
+        grouped[sdg].push({
+          _id: project._id,
+          title: project.title,
+        });
+      });
+    });
+
+    res.status(200).json({ success: true, data: grouped });
+  } catch (err) {
+    console.error("Error grouping by SDG", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

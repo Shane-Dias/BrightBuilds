@@ -25,6 +25,7 @@
     "react-toastify": "^11.0.5",
     "react-tsparticles": "^2.12.2",
     "recharts": "^2.15.2",
+    "sweetalert2": "^11.17.2",
     "tsparticles": "^3.8.1",
     "tsparticles-slim": "^2.12.0"
   },

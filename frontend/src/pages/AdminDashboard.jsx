@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 import {
   Users,
   FileCheck,
@@ -40,6 +41,8 @@ import { useNavigate } from "react-router-dom";
 //   ResponsiveContainer,
 // } from "recharts";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import Reports from "../components/Reports";
+import SdgTracking from "../components/SdgTracking";
 // import html2canvas from "html2canvas";
 
 const AdminDashboard = () => {
@@ -110,32 +113,60 @@ const AdminDashboard = () => {
     fetchUsers();
   }, []);
 
-  const deleteUser = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) {
-      return;
-    }
+  
+const deleteUser = async (userId) => {
+  const result = await Swal.fire({
+    title: "Delete this user?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#ef4444", // Tailwind red-500
+    cancelButtonColor: "#4b5563",  // Tailwind gray-600
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+    background: "#1f2937", // Tailwind gray-800
+    color: "#ffffff", // White text
+  });
 
-    try {
-      const token = localStorage.getItem("token");
+  if (!result.isConfirmed) return;
 
-      const response = await axios.delete(
-        `http://localhost:5000/api/users/admin/delete-user/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  try {
+    const token = localStorage.getItem("token");
 
-      if (response.data.success) {
-        toast.success("User deleted successfully");
-        // Remove the user from state to update UI
-        setUsers(users.filter((user) => user.id !== userId));
-        fetchUsers();
+    const response = await axios.delete(
+      `http://localhost:5000/api/users/admin/delete-user/${userId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-      toast.error(error.response?.data?.message || "Failed to delete user");
+    );
+
+    if (response.data.success) {
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "User has been deleted.",
+        background: "#1f2937",
+        color: "#ffffff",
+        confirmButtonColor: "#10b981", // green-500
+      });
+
+      toast.success("User deleted successfully");
+      setUsers(users.filter((user) => user.id !== userId)); // Make sure it's _id
+      fetchUsers();
     }
-  };
+  } catch (error) {
+    console.error("Failed to delete user:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.response?.data?.message || "Failed to delete user",
+      background: "#1f2937",
+      color: "#ffffff",
+    });
+    toast.error(error.response?.data?.message || "Failed to delete user");
+  }
+};
+
 
   useEffect(() => {
     const fetchPendingProjects = async () => {
@@ -211,6 +242,8 @@ const AdminDashboard = () => {
     switch (activeTab) {
       case "projectModeration":
         return (
+          <>
+          <AutoScrollToTop/>
           <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
             <ToastContainer position="top-right" autoClose={5000} />
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
@@ -365,6 +398,7 @@ const AdminDashboard = () => {
               )}
             </div>
           </div>
+          </>
         );
 
       case "userManagement":
@@ -473,125 +507,12 @@ const AdminDashboard = () => {
 
       case "reports":
         return (
-          <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-            <h3 className="text-xl font-semibold text-white mb-6">
-              Reports & Insights
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* Project Trends */}
-              <div className="bg-gray-800/50 rounded-xl p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-lg font-medium text-white">
-                    Project Trends
-                  </h4>
-                  <button className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                    <Download size={16} className="text-gray-400" />
-                  </button>
-                </div>
-                <div className="h-64 bg-gray-900/50 rounded-lg flex items-center justify-center">
-                  <BarChart2 size={48} className="text-gray-600" />
-                </div>
-              </div>
-
-              {/* SDG Distribution */}
-              <div className="bg-gray-800/50 rounded-xl p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="text-lg font-medium text-white">
-                    SDG Distribution
-                  </h4>
-                  <button className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors">
-                    <Download size={16} className="text-gray-400" />
-                  </button>
-                </div>
-                <div className="h-64 bg-gray-900/50 rounded-lg flex items-center justify-center">
-                  <PieChart size={48} className="text-gray-600" />
-                </div>
-              </div>
-            </div>
-
-            {/* Data Export */}
-            {/* <div className="bg-gray-800/50 rounded-xl p-6">
-              <h4 className="text-lg font-medium text-white mb-4">
-                Export Data
-              </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
-                  <FileText size={24} className="text-blue-400 mb-2" />
-                  <span className="text-white">Projects</span>
-                  <span className="text-xs text-gray-400">CSV, JSON</span>
-                </button>
-                <button className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
-                  <Users size={24} className="text-purple-400 mb-2" />
-                  <span className="text-white">Users</span>
-                  <span className="text-xs text-gray-400">CSV, JSON</span>
-                </button>
-                <button className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
-                  <Trophy size={24} className="text-yellow-400 mb-2" />
-                  <span className="text-white">Ratings</span>
-                  <span className="text-xs text-gray-400">CSV, JSON</span>
-                </button>
-                <button className="flex flex-col items-center p-4 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
-                  <Goal size={24} className="text-green-400 mb-2" />
-                  <span className="text-white">SDGs</span>
-                  <span className="text-xs text-gray-400">CSV, JSON</span>
-                </button>
-              </div>
-            </div> */}
-          </div>
+          <Reports/>
         );
 
       case "sdgTracking":
         return (
-          <div className="bg-white/5 rounded-xl p-6 shadow-lg">
-            <h3 className="text-xl font-semibold text-white mb-6">
-              SDG Tracking
-            </h3>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(
-                (sdg) => (
-                  <motion.div
-                    key={sdg}
-                    whileHover={{ y: -5, scale: 1.05 }}
-                    className="bg-gray-800/50 rounded-lg p-4 flex flex-col items-center cursor-pointer hover:bg-gray-800/70 transition-colors"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-white font-bold mb-2">
-                      {sdg}
-                    </div>
-                    <span className="text-sm text-center text-gray-300">
-                      SDG {sdg}
-                    </span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      {Math.floor(Math.random() * 20) + 5} projects
-                    </span>
-                  </motion.div>
-                )
-              )}
-            </div>
-
-            <div className="bg-gray-800/50 rounded-xl p-6">
-              <h4 className="text-lg font-medium text-white mb-4">
-                SDG Impact Summary
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gray-900/50 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-purple-400 mb-2">
-                    17
-                  </div>
-                  <div className="text-gray-400">SDGs Addressed</div>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-blue-400">89%</div>
-                  <div className="text-gray-400">Projects Mapped</div>
-                </div>
-                <div className="bg-gray-900/50 rounded-lg p-4">
-                  <div className="text-3xl font-bold text-green-400">142</div>
-                  <div className="text-gray-400">Total Contributions</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <SdgTracking/>
         );
 
       default:
