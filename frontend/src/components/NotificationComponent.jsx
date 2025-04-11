@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, Calendar, User, MessageSquare } from "lucide-react";
+import { Bell, X, Calendar, User, MessageSquare, Check } from "lucide-react";
 import { FcIdea } from "react-icons/fc";
 
 const NotificationComponent = () => {
@@ -11,103 +11,6 @@ const NotificationComponent = () => {
   const drawerRef = useRef(null);
 
   const token = localStorage.getItem("token");
-
-  // Mock notifications for demonstration - replace with your actual API call
-  // const fetchNotifications = async () => {
-  //   if (!token) return;
-
-  //   setIsLoading(true);
-  //   try {
-  //     // Replace with your actual API endpoint
-  //     const response = await fetch("http://localhost:5000/api/notifications", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) throw new Error("Failed to fetch notifications");
-
-  //     const data = await response.json();
-  //     setNotifications(data.notifications || []);
-
-  //     // Count unread notifications
-  //     const unreadNotifications = data.notifications.filter(
-  //       (notification) => !notification.isRead
-  //     );
-  //     setUnreadCount(unreadNotifications.length);
-  //   } catch (error) {
-  //     console.error("Error fetching notifications:", error);
-  //     // Fallback to empty notifications
-  //     setNotifications([]);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  const markAsRead = async (notificationId) => {
-    if (!token) return;
-
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch(
-        `http://localhost:5000/api/notifications/${notificationId}/read`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to mark notification as read");
-
-      // Update the local state to reflect the change
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification._id === notificationId
-            ? { ...notification, isRead: true }
-            : notification
-        )
-      );
-
-      // Update unread count
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
-  // const markAllAsRead = async () => {
-  //   if (!token || notifications.length === 0) return;
-
-  //   try {
-  //     // Replace with your actual API endpoint
-  //     const response = await fetch(
-  //       "http://localhost:5000/api/notifications/read-all",
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (!response.ok)
-  //       throw new Error("Failed to mark all notifications as read");
-
-  //     // Update the local state to reflect the change
-  //     setNotifications((prev) =>
-  //       prev.map((notification) => ({ ...notification, isRead: true }))
-  //     );
-
-  //     // Reset unread count
-  //     setUnreadCount(0);
-  //   } catch (error) {
-  //     console.error("Error marking all notifications as read:", error);
-  //   }
-  // };
 
   // Click outside handler to close drawer
   useEffect(() => {
@@ -122,16 +25,6 @@ const NotificationComponent = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Fetch notifications when component mounts
-  // useEffect(() => {
-  //   fetchNotifications();
-
-  //   // Set up polling for new notifications (every 30 seconds)
-  //   const intervalId = setInterval(fetchNotifications, 30000);
-
-  //   return () => clearInterval(intervalId);
-  // }, [token]);
 
   // Sample test data - remove in production
   useEffect(() => {
@@ -170,7 +63,7 @@ const NotificationComponent = () => {
         message: "Project submission deadline is in 3 days!",
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
         type: "reminder",
-        isRead: true,
+        isRead: false,
       },
     ];
 
@@ -180,6 +73,18 @@ const NotificationComponent = () => {
       setUnreadCount(demoNotifications.filter((n) => !n.isRead).length);
     }
   }, [notifications, isLoading, token]);
+
+  // Mark a single notification as read
+  const markAsRead = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification._id === id
+          ? { ...notification, isRead: true }
+          : notification
+      )
+    );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+  };
 
   // Helper to get the icon based on notification type
   const getNotificationIcon = (type) => {
@@ -294,22 +199,12 @@ const NotificationComponent = () => {
                   </div>
                 )}
               </div>
-              <div className="flex items-center space-x-4">
-                {unreadCount > 0 && (
-                  <button
-                    // onClick={markAllAsRead}
-                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    Mark all as read
-                  </button>
-                )}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
             </div>
 
             {/* Notifications List */}
@@ -336,8 +231,7 @@ const NotificationComponent = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       whileHover={{ backgroundColor: "rgba(75, 85, 99, 0.3)" }}
-                      // onClick={() => markAsRead(notification._id)}
-                      className={`px-6 py-4 transition-colors cursor-pointer ${
+                      className={`px-6 py-4 transition-colors ${
                         !notification.isRead ? "bg-blue-900/20" : ""
                       }`}
                     >
@@ -370,8 +264,23 @@ const NotificationComponent = () => {
                             {notification.message}
                           </p>
                         </div>
-                        {!notification.isRead && (
-                          <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-2"></div>
+
+                        {/* Mark as read button */}
+                        {!notification.isRead ? (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              markAsRead(notification._id);
+                            }}
+                            className="flex-shrink-0 bg-blue-600 hover:bg-blue-500 text-white p-1.5 rounded-full transition-colors"
+                            title="Mark as read"
+                          >
+                            <Check size={16} />
+                          </motion.button>
+                        ) : (
+                          <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 mt-2 opacity-0"></div>
                         )}
                       </div>
                     </motion.li>
@@ -380,11 +289,11 @@ const NotificationComponent = () => {
               )}
             </div>
 
-            {/* Drawer Footer */}
+            {/* Improved Drawer Footer */}
             <div className="border-t border-gray-700 p-4 text-center">
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-sm text-gray-400 hover:text-white transition-colors"
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-purple-500/20"
               >
                 Close
               </button>
