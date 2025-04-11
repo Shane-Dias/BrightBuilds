@@ -531,12 +531,18 @@ const deleteUser = async (userId) => {
 
       case "reports":
         return (
+          <>
+          <AutoScrollToTop/>
           <Reports/>
+          </>
         );
 
       case "sdgTracking":
         return (
+          <>
+          <AutoScrollToTop/>
         <SdgTracking/>
+        </>
         );
 
       default:
