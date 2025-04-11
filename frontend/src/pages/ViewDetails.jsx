@@ -31,6 +31,8 @@ const ProjectDetails = () => {
   const [token, setToken] = useState(""); // Add token state
   const [userRating, setUserRating] = useState(0); // Add state for user's rating
   const [hoveredRating, setHoveredRating] = useState(0); // Add state for hover effect
+  const [popupUrl, setPopupUrl] = useState(null);
+
 
   useEffect(() => {
     // Get token from localStorage
@@ -200,6 +202,35 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
+      {popupUrl && (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="bg-white rounded-lg overflow-hidden shadow-xl w-[90%] max-w-5xl h-[80%] flex flex-col">
+      <div className="flex justify-between items-center p-4 border-b bg-gray-100">
+        <span className="font-semibold text-gray-700">Live Demo Preview</span>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => window.open(popupUrl, "_blank")}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm"
+          >
+            Open in New Tab
+          </button>
+          <button
+            onClick={() => setPopupUrl(null)}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-md text-sm"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+      <iframe
+        src={popupUrl}
+        title="Live Demo"
+        className="flex-1 w-full"
+      ></iframe>
+    </div>
+  </div>
+)}
+
       <AutoScrollToTop />
       <div className="container mx-auto px-4 py-12 pt-24">
         {/* Header with Back Navigation */}
@@ -415,16 +446,15 @@ const ProjectDetails = () => {
                 </a>
               )}
               {game.hostedLink && (
-                <a
-                  href={game.hostedLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
-                >
-                  <ExternalLink className="mr-2" size={18} />
-                  Live Demo
-                </a>
-              )}
+  <button
+    onClick={() => setPopupUrl(game.hostedLink)}
+    className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+  >
+    <ExternalLink className="mr-2" size={18} />
+    Live Demo
+  </button>
+)}
+
             </div>
           </motion.div>
         </div>
