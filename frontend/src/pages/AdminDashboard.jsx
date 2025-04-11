@@ -182,16 +182,36 @@ const deleteUser = async (userId) => {
     fetchPendingProjects();
   }, []);
 
-  const handleUpdateProjectStatus = async (id, status) => {
+  const handleUpdateProjectStatus = async (id, status, teammates, projectTitle) => {
     try {
+      // 1. Update status first
       await axios.put(`http://localhost:5000/api/admin/update-status/${id}`, {
         status,
       });
-      setProjects((prev) => prev.filter((project) => project._id !== id)); // Remove updated project from UI
+  
+      // 2. Send notification to all teammates (by fullName)
+      const adminId = localStorage.getItem("userId") 
+      console.log("Admin id:",adminId)
+  
+      const notifyPromises = teammates.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy: adminId,
+          fullName,
+          title: `Project ${status}`,
+          message: `Your project "${projectTitle}" has been ${status.toLowerCase()} by the Admin.`,
+          type: "projectStatus",
+        })
+      );
+  
+      await Promise.all(notifyPromises);
+  
+      // 3. Update UI
+      setProjects((prev) => prev.filter((project) => project._id !== id));
     } catch (error) {
-      console.error(`Error updating project status:`, error);
+      console.error("Error updating project status or sending notifications:", error);
     }
   };
+  
 
   const filteredProjects = projects.filter((projects) => {
     const matchesSDG =
@@ -358,7 +378,9 @@ const deleteUser = async (userId) => {
                               onClick={() =>
                                 handleUpdateProjectStatus(
                                   project._id,
-                                  "approved"
+                                  "approved",
+                                  project.teammates,
+                                  project.title
                                 )
                               }
                               className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-green-400 font-medium flex items-center gap-2 transition-colors"
@@ -369,7 +391,9 @@ const deleteUser = async (userId) => {
                               onClick={() =>
                                 handleUpdateProjectStatus(
                                   project._id,
-                                  "rejected"
+                                  "rejected",
+                                  project.teammates,
+                                  project.title
                                 )
                               }
                               className="px-4 py-2 bg-red-600/30 hover:bg-red-600/50 rounded-lg text-red-400 font-medium flex items-center gap-2 transition-colors"
