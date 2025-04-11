@@ -251,6 +251,7 @@ export default function ProjectUploadForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const userId = localStorage.getItem("userId");
 
     if (!form.title || !form.description || media.length === 0) {
       setNotification({
@@ -296,18 +297,33 @@ export default function ProjectUploadForm() {
 
       if (!response.ok) {
         console.log("Error:", response.statusText);
+      } else {
+        setNotification({
+          message:
+            "Your project has been submitted to the Admin. Status Pending",
+          type: "success",
+        });
+
+        await fetch("http://localhost:5000/api/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sentBy: userId,
+            fullName: "ADMIN",
+            title: "New Project Submission",
+            message: `A new project titled "${form.title}" has been submitted and is pending your review.`,
+            type: "projectSubmission",
+          }),
+        });
+
+        setTimeout(() => {
+          navigate(`/student/${userId}`);
+        }, 1500);
       }
 
-      const data = await response.json();
-
       // Show success notification
-      setNotification({
-        message: "Your project has been submitted to the Admin. Status Pending",
-        type: "success",
-      });
-      setTimeout(() => {
-        navigate("/student/1");
-      }, 1500);
     } catch (error) {
       console.error("Submission error:", error);
       setNotification({
@@ -388,7 +404,7 @@ export default function ProjectUploadForm() {
 
   return (
     <div className="min-h-screen px-10 py-16 bg-gray-900 text-white pt-24 relative">
-      <AutoScrollToTop/>
+      <AutoScrollToTop />
       {/* Notification Component */}
       {notification && (
         <Notification
@@ -518,7 +534,9 @@ export default function ProjectUploadForm() {
         {/* Teammates & Mentor */}
         <div className="mt-6 grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-xl mb-2">Enter usernames of contributers </label>
+            <label className="block text-xl mb-2">
+              Enter usernames of contributers{" "}
+            </label>
             <div className="flex items-center gap-2">
               <input
                 type="text"

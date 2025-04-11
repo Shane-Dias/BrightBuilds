@@ -25,6 +25,7 @@ const notificationSchema = new mongoose.Schema(
       enum: [
         "comment",
         "like",
+        "projectSubmission",
         "projectStatus",
         "admin-feedback",
         "general",
