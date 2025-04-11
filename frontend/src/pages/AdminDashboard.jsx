@@ -509,11 +509,11 @@ const AdminDashboard = () => {
                           <td className="py-3 px-4">
                             <span
                               className={`px-2 py-1 rounded-full text-xs ${
-                                user.role === "student"
+                                user.role === "Student"
                                   ? "bg-blue-500/20 text-blue-400"
-                                  : user.role === "faculty"
+                                  : user.role === "Faculty"
                                   ? "bg-purple-500/20 text-purple-400"
-                                  : user.role === "admin"
+                                  : user.role === "Admin"
                                   ? "bg-green-500/20 text-green-400"
                                   : "bg-gray-500/20 text-gray-400"
                               }`}
