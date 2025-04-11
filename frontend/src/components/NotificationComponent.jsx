@@ -84,25 +84,37 @@ const NotificationComponent = () => {
     }
   };
 
-  // Delete a notification (placeholder function)
   const deleteNotification = async (id) => {
     try {
-      // Optimistic UI update
-      setNotifications((prev) =>
-        prev.filter((notification) => notification._id !== id)
+      const response = await fetch(
+        `http://localhost:5000/api/notifications/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      // Update unread count if needed
-      const deletedNotification = notifications.find((n) => n._id === id);
-      if (deletedNotification && !deletedNotification.isRead) {
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-      }
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Delete failed:", data.message);
+        // If deletion fails, you might want to revert the UI changes here
+      } else {
+        setNotifications((prev) =>
+          prev.filter((notification) => notification._id !== id)
+        );
 
-      // TODO: Add actual API call when the function is provided
-      console.log("Delete notification with ID:", id);
+        // Update unread count if needed
+        const deletedNotification = notifications.find((n) => n._id === id);
+        if (deletedNotification && !deletedNotification.isRead) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+      }
     } catch (err) {
-      console.error("Failed to delete notification", err);
-      // Revert UI changes if needed
+      console.error("Error deleting notification:", err);
+      // You might want to revert UI changes on error
     }
   };
 
