@@ -16,8 +16,6 @@ export const CommentSection = ({ projectDetails }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  console.log("In comment section", projectDetails.teammates);
-
   // Get project ID from URL
   const projectId = window.location.pathname.split("/").pop();
   const token = localStorage.getItem("token");
@@ -97,8 +95,15 @@ export const CommentSection = ({ projectDetails }) => {
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
+    const projectTitle = projectDetails.title || "Project Title";
+    const mentor = projectDetails.mentor || "Mentor Name";
+    const teammates = projectDetails.teammates || [];
+    console.log(
+      `Teammates: ${teammates}, mentor:${mentor}, project title:${projectTitle}`
+    );
 
     try {
+      // 1. Post the comment
       await axios.post(
         `http://localhost:5000/api/comments/${projectId}`,
         {
@@ -111,9 +116,28 @@ export const CommentSection = ({ projectDetails }) => {
         }
       );
 
-      setNewComment(""); // Clear input
-      setIsPrivate(false); // Reset privacy toggle
-      fetchComments(); // Refresh comments after post
+      // 2. Notify all contributors
+      const sentBy = localStorage.getItem("userId");
+      const recipients = [...teammates, mentor]; // fullNames
+
+      const notifyPromises = recipients.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy,
+          fullName,
+          title: "New Comment on Project",
+          message: `A new ${
+            isPrivate ? "private" : "public"
+          } comment was added to the project "${projectTitle}".`,
+          type: "projectComment",
+        })
+      );
+
+      await Promise.all(notifyPromises);
+
+      // 3. Reset UI
+      setNewComment("");
+      setIsPrivate(false);
+      fetchComments();
     } catch (err) {
       console.error("Failed to add comment:", err);
       setError("Failed to post comment. Please try again.");

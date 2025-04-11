@@ -23,7 +23,7 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: [
-        "comment",
+        "projectComment",
         "like",
         "projectSubmission",
         "projectStatus",
