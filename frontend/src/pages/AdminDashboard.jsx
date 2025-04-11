@@ -53,7 +53,7 @@ const AdminDashboard = () => {
   const [selectedSDG, setSelectedSDG] = useState("all");
   const [expandedProject, setExpandedProject] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [selectedRole, setSelectedRole] = useState("");
   // Sample data initialization
 
   const particlesInit = async (engine) => {
@@ -244,11 +244,14 @@ const AdminDashboard = () => {
     return matchesSDG && matchesSearch;
   });
 
-  const filteredUsers = users.filter(
-    (user) =>
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = selectedRole === "" || user.role === selectedRole;
+
+    return matchesSearch && matchesRole;
+  });
 
   console.log("filtered projects admin", filteredProjects);
 
@@ -454,18 +457,31 @@ const AdminDashboard = () => {
               <h3 className="text-xl font-semibold text-white">
                 User Management
               </h3>
-              <div className="relative w-64">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+              <div className="flex items-center space-x-4">
+                <div className="relative w-64">
+                  <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <select
+                  className="bg-gray-800 text-white rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  value={selectedRole}
+                >
+                  <option value="">All Roles</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Faculty">Faculty</option>
+                  <option value="Student">Student</option>
+                  <option value="User">User</option>
+                </select>
               </div>
             </div>
 
@@ -553,17 +569,17 @@ const AdminDashboard = () => {
       case "reports":
         return (
           <>
-          <AutoScrollToTop/>
-          <Reports/>
+            <AutoScrollToTop />
+            <Reports />
           </>
         );
 
       case "sdgTracking":
         return (
           <>
-          <AutoScrollToTop/>
-        <SdgTracking/>
-        </>
+            <AutoScrollToTop />
+            <SdgTracking />
+          </>
         );
 
       default:
