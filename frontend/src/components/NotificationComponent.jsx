@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, Calendar, User, MessageSquare, Check } from "lucide-react";
+import {
+  Bell,
+  X,
+  Calendar,
+  User,
+  MessageSquare,
+  Check,
+  Trash2,
+} from "lucide-react";
 import { FcIdea } from "react-icons/fc";
 
 const NotificationComponent = () => {
@@ -11,6 +19,7 @@ const NotificationComponent = () => {
   const drawerRef = useRef(null);
 
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
   // Click outside handler to close drawer
   useEffect(() => {
@@ -26,70 +35,81 @@ const NotificationComponent = () => {
     };
   }, []);
 
-  // Sample test data - remove in production
+  // Fetch notifications from API
   useEffect(() => {
-    // For testing/demo only - remove in production
-    if (!token) return;
-
-    const demoNotifications = [
-      {
-        _id: "1",
-        title: "Project Approved",
-        message: "Your smart home project has been approved by the faculty!",
-        createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
-        type: "project",
-        isRead: false,
-      },
-      {
-        _id: "2",
-        title: "New Badge Earned",
-        message:
-          "Congratulations! You've earned the 'Innovation Master' badge.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
-        type: "achievement",
-        isRead: false,
-      },
-      {
-        _id: "3",
-        title: "Team Invite",
-        message: "Sarah invited you to join team 'Circuit Breakers'.",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
-        type: "invitation",
-        isRead: true,
-      },
-      {
-        _id: "4",
-        title: "Deadline Reminder",
-        message: "Project submission deadline is in 3 days!",
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
-        type: "reminder",
-        isRead: false,
-      },
-    ];
-
-    // Use this for demo purposes only
-    if (notifications.length === 0 && !isLoading) {
-      setNotifications(demoNotifications);
-      setUnreadCount(demoNotifications.filter((n) => !n.isRead).length);
+    const fetchNotifications = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/notifications/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await res.json();
+        setNotifications(data);
+        setUnreadCount(data.filter((n) => !n.isRead).length);
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (token) {
+      fetchNotifications();
     }
-  }, [notifications, isLoading, token]);
+  }, [token]);
 
   // Mark a single notification as read
-  const markAsRead = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notification) =>
-        notification._id === id
-          ? { ...notification, isRead: true }
-          : notification
-      )
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
+  const markAsRead = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/notifications/read/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification._id === id
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error("Failed to mark as read", err);
+    }
+  };
+
+  // Delete a notification (placeholder function)
+  const deleteNotification = async (id) => {
+    try {
+      // Optimistic UI update
+      setNotifications((prev) =>
+        prev.filter((notification) => notification._id !== id)
+      );
+
+      // Update unread count if needed
+      const deletedNotification = notifications.find((n) => n._id === id);
+      if (deletedNotification && !deletedNotification.isRead) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+
+      // TODO: Add actual API call when the function is provided
+      console.log("Delete notification with ID:", id);
+    } catch (err) {
+      console.error("Failed to delete notification", err);
+      // Revert UI changes if needed
+    }
   };
 
   // Helper to get the icon based on notification type
   const getNotificationIcon = (type) => {
     switch (type) {
-      case "project":
+      case "projectStatus":
         return <FcIdea className="text-xl" />;
       case "achievement":
         return (
@@ -265,23 +285,35 @@ const NotificationComponent = () => {
                           </p>
                         </div>
 
-                        {/* Mark as read button */}
-                        {!notification.isRead ? (
+                        {/* Action buttons */}
+                        <div className="flex flex-col space-y-2 flex-shrink-0">
+                          {!notification.isRead && (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markAsRead(notification._id);
+                              }}
+                              className="flex-shrink-0 bg-blue-600 hover:bg-blue-500 text-white p-1.5 rounded-full transition-colors"
+                              title="Mark as read"
+                            >
+                              <Check size={16} />
+                            </motion.button>
+                          )}
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              markAsRead(notification._id);
+                              deleteNotification(notification._id);
                             }}
-                            className="flex-shrink-0 bg-blue-600 hover:bg-blue-500 text-white p-1.5 rounded-full transition-colors"
-                            title="Mark as read"
+                            className="flex-shrink-0 bg-red-600 hover:bg-red-500 text-white p-1.5 rounded-full transition-colors"
+                            title="Delete notification"
                           >
-                            <Check size={16} />
+                            <Trash2 size={16} />
                           </motion.button>
-                        ) : (
-                          <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 mt-2 opacity-0"></div>
-                        )}
+                        </div>
                       </div>
                     </motion.li>
                   ))}
