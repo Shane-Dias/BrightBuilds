@@ -6,6 +6,7 @@ const projectRoutes = require("./routes/projectRoutes");
 require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use("/api", projectRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", projectRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
