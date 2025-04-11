@@ -551,7 +551,6 @@ const AdminDashboard = () => {
         );
 
       case "reports":
-<<<<<<< HEAD
         return (
           <>
           <AutoScrollToTop/>
@@ -566,12 +565,6 @@ const AdminDashboard = () => {
         <SdgTracking/>
         </>
         );
-=======
-        return <Reports />;
-
-      case "sdgTracking":
-        return <SdgTracking />;
->>>>>>> 47e344a937a097c0ebaa3b38d82b68dbcadb876d
 
       default:
         return null;
