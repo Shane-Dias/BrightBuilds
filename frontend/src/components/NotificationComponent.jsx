@@ -129,7 +129,7 @@ const NotificationComponent = () => {
             <Bell size={18} />
           </div>
         );
-      case "invitation":
+      case "like" || "rating":
         return (
           <div className="text-blue-400">
             <User size={18} />

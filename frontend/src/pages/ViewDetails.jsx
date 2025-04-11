@@ -33,7 +33,6 @@ const ProjectDetails = () => {
   const [hoveredRating, setHoveredRating] = useState(0); // Add state for hover effect
   const [popupUrl, setPopupUrl] = useState(null);
 
-
   useEffect(() => {
     // Get token from localStorage
     const storedToken = localStorage.getItem("token");
@@ -85,18 +84,38 @@ const ProjectDetails = () => {
 
   // Updated handleLike function that accepts projectId parameter
   const handleLike = async (projectId) => {
-    console.log("The user token:", token);
+    const teammates = game?.teammates;
+    const mentor = game.mentor;
+    const title = game.title;
+    const userId = localStorage.getItem("userId");
+
     try {
+      // 1. Like the project
       await axios.post(
         `http://localhost:5000/api/${projectId}/like`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`, // your stored token
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
+      // 2. Send notification to teammates and mentor
+      const recipients = [...teammates, mentor];
+      const notifyPromises = recipients.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy: userId,
+          fullName,
+          title: `New Like on Project`,
+          message: `Your project "${title}" was liked by someone.`,
+          type: "like",
+        })
+      );
+
+      await Promise.all(notifyPromises);
+
+      // 3. Refresh UI
       fetchProjectDetails();
     } catch (err) {
       console.error(
@@ -109,7 +128,13 @@ const ProjectDetails = () => {
 
   // Add handleRate function for rating projects
   const handleRate = async (projectId, ratingValue) => {
+    const userId = localStorage.getItem("userId");
+    const teammates = game?.teammates;
+    const mentor = game.mentor;
+    const title = game.title;
+
     try {
+      // 1. Submit rating
       await axios.post(
         `http://localhost:5000/api/${projectId}/rate`,
         { rating: ratingValue },
@@ -120,7 +145,21 @@ const ProjectDetails = () => {
         }
       );
 
-      // Update UI after rating
+      // 2. Notify mentor and teammates
+      const recipients = [...teammates, mentor]; // array of fullNames
+      const notifyPromises = recipients.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy: userId,
+          fullName,
+          title: `Project Rated`,
+          message: `Your project "${title}" was rated ${ratingValue} ⭐ by someone.`,
+          type: "rating",
+        })
+      );
+
+      await Promise.all(notifyPromises);
+
+      // 3. Update UI
       setUserRating(ratingValue);
       fetchProjectDetails();
     } catch (err) {
@@ -203,33 +242,35 @@ const ProjectDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
       {popupUrl && (
-  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
-    <div className="bg-white rounded-lg overflow-hidden shadow-xl w-[90%] max-w-5xl h-[80%] flex flex-col">
-      <div className="flex justify-between items-center p-4 border-b bg-gray-100">
-        <span className="font-semibold text-gray-700">Live Demo Preview</span>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => window.open(popupUrl, "_blank")}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm"
-          >
-            Open in New Tab
-          </button>
-          <button
-            onClick={() => setPopupUrl(null)}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-md text-sm"
-          >
-            Close
-          </button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg overflow-hidden shadow-xl w-[90%] max-w-5xl h-[80%] flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b bg-gray-100">
+              <span className="font-semibold text-gray-700">
+                Live Demo Preview
+              </span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => window.open(popupUrl, "_blank")}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm"
+                >
+                  Open in New Tab
+                </button>
+                <button
+                  onClick={() => setPopupUrl(null)}
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-md text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={popupUrl}
+              title="Live Demo"
+              className="flex-1 w-full"
+            ></iframe>
+          </div>
         </div>
-      </div>
-      <iframe
-        src={popupUrl}
-        title="Live Demo"
-        className="flex-1 w-full"
-      ></iframe>
-    </div>
-  </div>
-)}
+      )}
 
       <AutoScrollToTop />
       <div className="container mx-auto px-4 py-12 pt-24">
@@ -446,15 +487,14 @@ const ProjectDetails = () => {
                 </a>
               )}
               {game.hostedLink && (
-  <button
-    onClick={() => setPopupUrl(game.hostedLink)}
-    className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
-  >
-    <ExternalLink className="mr-2" size={18} />
-    Live Demo
-  </button>
-)}
-
+                <button
+                  onClick={() => setPopupUrl(game.hostedLink)}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+                >
+                  <ExternalLink className="mr-2" size={18} />
+                  Live Demo
+                </button>
+              )}
             </div>
           </motion.div>
         </div>
