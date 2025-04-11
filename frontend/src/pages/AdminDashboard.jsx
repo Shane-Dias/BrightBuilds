@@ -551,10 +551,20 @@ const AdminDashboard = () => {
         );
 
       case "reports":
-        return <Reports />;
+        return (
+          <>
+          <AutoScrollToTop/>
+          <Reports/>
+          </>
+        );
 
       case "sdgTracking":
-        return <SdgTracking />;
+        return (
+          <>
+          <AutoScrollToTop/>
+        <SdgTracking/>
+        </>
+        );
 
       default:
         return null;
