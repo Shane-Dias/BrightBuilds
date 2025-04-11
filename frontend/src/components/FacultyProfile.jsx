@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 export default function FacultyProfile({ faculty }) {
   console.log('faculty in component', faculty);
@@ -14,7 +15,11 @@ export default function FacultyProfile({ faculty }) {
         /> */}
         <div>
           <h1 className="text-3xl text-white font-lilita font-normal">Welcome, {faculty?.fullName}</h1>
-          <p className="text-gray-400">Faculty Dashboard</p>
+          <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
+                      <FaChalkboardTeacher className="text-emerald-400 text-xl" />
+                      Faculty Dashboard
+                    </p>
+         
         </div>
       </div>
     </div>

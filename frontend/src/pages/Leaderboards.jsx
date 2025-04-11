@@ -5,6 +5,8 @@ import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import axios from "axios";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import useLeaderboardRankings from "../hooks/useLeaderboardRankings";
+import RankingBadge from "../components/RankingBadge";
 
 
 const Leaderboards = () => {
@@ -12,6 +14,10 @@ const Leaderboards = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+  // const { weeklyLeaderboard, overallLeaderboard } = useLeaderboardRankings();
+
 
   // Fetch projects from backend
   useEffect(() => {
@@ -262,6 +268,7 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
               key={project._id || index}
               project={project}
               rank={index + 1}
+              
             />
           ))}
         </div>
@@ -270,7 +277,8 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
   );
 };
 
-const ProjectCard = ({ project, rank }) => {
+// In your Leaderboards.js file
+const ProjectCard = ({ project, rank  }) => {
   const navigate = useNavigate();
 
   // Map backend category to the frontend category format
@@ -371,6 +379,11 @@ const ProjectCard = ({ project, rank }) => {
         {rank}
       </div>
 
+      {/* Leaderboard Badge */}
+      {/* <div className="absolute top-4 right-4 z-20">
+        <RankingBadge type={leaderboardType} rank={rank} />
+      </div> */}
+
       {/* Project Image */}
       <div className="flex-shrink-0 w-full md:w-48 h-48 rounded-xl overflow-hidden shadow-lg relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-30"></div>
@@ -387,94 +400,93 @@ const ProjectCard = ({ project, rank }) => {
       </div>
 
       <div className="flex flex-col gap-3">
-  <div className="flex justify-between items-start">
-    <div>
-      <h3 className="text-2xl max-w-52 font-bold text-white truncate ">
-        {project.title}
-      </h3>
-      <div className="flex items-center gap-2 mt-1">
-        {[...Array(5)].map((_, i) => (
-          <svg
-            key={i}
-            className={`w-5 h-5 ${
-              i < Math.floor(project.rating)
-                ? "text-yellow-400 fill-current"
-                : "text-gray-400 fill-current"
-            }`}
-            viewBox="0 0 20 20"
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-2xl max-w-52 font-bold text-white truncate ">
+              {project.title}
+            </h3>
+            <div className="flex items-center gap-2 mt-1">
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < Math.floor(project.rating)
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-400 fill-current"
+                  }`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+              <span className="text-xl font-bold text-yellow-400">
+                {project.rating.toFixed(1)}
+              </span>
+            </div>
+          </div>
+          <span
+            className={`bg-gradient-to-r ${categoryColors[categoryKey]} text-white text-base px-6 py-2 rounded-full`}
           >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
-        <span className="text-xl font-bold text-yellow-400">
-          {project.rating.toFixed(1)}
-        </span>
-      </div>
-    </div>
-    <span
-      className={`bg-gradient-to-r ${categoryColors[categoryKey]} text-white text-base px-6 py-2 rounded-full`}
-    >
-      {project.category}
-    </span>
-  </div>
-
-  <p className="text-gray-300 leading-relaxed line-clamp-2 max-h-12 overflow-hidden">
-    {project.description.length > 100 ? project.description.slice(0, 100) + "..." : project.description}
-  </p>
-
-  <div className="flex flex-col items-start">
-    <motion.button
-      onClick={() => navigate(`/details/${project._id}`)}
-      className="px-6 -ml-1 py-2 bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-full hover:from-red-600 hover:to-yellow-600 transition-all shadow-lg flex items-center gap-2"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fillRule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-          clipRule="evenodd"
-        />
-      </svg>
-      View Details
-    </motion.button>
-
-    <div className="flex flex-col  items-start gap-4">
-      <div className="flex items-center gap-1 mt-3">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 text-red-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <span className="text-white font-medium">{project.likes}</span>
-      </div>
-
-      <div className="text-sm text-gray-400">
-        <span className="font-medium text-white">SDG:</span>{" "}
-        {project.sdgs && project.sdgs.length > 0 ? (
-          <span className="inline-block bg-green-500/10 px-2 py-1 rounded-full text-green-300">
-            {project.sdgs[0]}
+            {project.category}
           </span>
-        ) : (
-          "N/A"
-        )}
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
 
+        <p className="text-gray-300 leading-relaxed line-clamp-2 max-h-12 overflow-hidden">
+          {project.description.length > 100 ? project.description.slice(0, 100) + "..." : project.description}
+        </p>
+
+        <div className="flex flex-col items-start">
+          <motion.button
+            onClick={() => navigate(`/details/${project._id}`)}
+            className="px-6 -ml-1 py-2 bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-full hover:from-red-600 hover:to-yellow-600 transition-all shadow-lg flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                clipRule="evenodd"
+              />
+            </svg>
+            View Details
+          </motion.button>
+
+          <div className="flex flex-col items-start gap-4">
+            <div className="flex items-center gap-1 mt-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-red-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-white font-medium">{project.likes}</span>
+            </div>
+
+            <div className="text-sm text-gray-400">
+              <span className="font-medium text-white">SDG:</span>{" "}
+              {project.sdgs && project.sdgs.length > 0 ? (
+                <span className="inline-block bg-green-500/10 px-2 py-1 rounded-full text-green-300">
+                  {project.sdgs[0]}
+                </span>
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 };

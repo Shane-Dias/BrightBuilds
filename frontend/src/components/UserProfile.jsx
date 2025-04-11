@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowAltCircleRight, FaUser, FaChartLine } from "react-icons/fa";
+import { PiStudentBold } from "react-icons/pi";
 
 export default function UserProfile({ userProfile, profilePic }) {
   const [userId, setUserId] = useState(null);
@@ -46,7 +47,7 @@ export default function UserProfile({ userProfile, profilePic }) {
             Welcome, {userProfile || "User"}
           </h1>
           <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
-            <FaChartLine className="text-emerald-400" />
+            <PiStudentBold className="text-emerald-400 text-xl" />
             Student Dashboard
           </p>
         </div>
