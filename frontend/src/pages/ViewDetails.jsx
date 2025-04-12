@@ -213,6 +213,7 @@ const ProjectDetails = () => {
 
       if (!response.ok) {
         console.error("Error fetching user:", data.message);
+        toast.error(data.message || "Failed to fetch user details");
         return;
       }
 
@@ -222,6 +223,7 @@ const ProjectDetails = () => {
       navigate(`/userdetails/${userId}`);
     } catch (error) {
       console.error("❌ Error fetching user details:", error);
+      toast.error("❌ Error fetching user details:", error);
     }
   };
 
