@@ -588,32 +588,10 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden pt-20">
       {/* Dashboard Content */}
       <AutoScrollToTop />
       <div className="relative z-10">
-        {/* Header */}
-        <header className="bg-gray-900/80 backdrop-blur-md border-b border-gray-800">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
-                Admin Dashboard
-              </h1>
-              <div className="flex items-center space-x-4">
-                <button className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors relative">
-                  <Bell size={20} />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs flex items-center justify-center">
-                    3
-                  </span>
-                </button>
-                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
-                  <span className="font-medium">A</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* Main Content */}
         <main className="container mx-auto px-6 py-8">
           {/* Navigation Tabs */}
