@@ -17,6 +17,8 @@ import axios from "axios"; // Add axios import
 import CommentSection from "../components/CommentSection";
 import AutoScrollToTop from "../components/AutoScrollToTop";
 import { FaRegKeyboard } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -122,7 +124,8 @@ const ProjectDetails = () => {
         "Error liking project:",
         err.response?.data?.message || err.message
       );
-      alert(err.response?.data?.message || "Failed to like project");
+      // alert(err.response?.data?.message || "Failed to like project");
+      toast.info(err.response?.data?.message || "Failed to like project");
     }
   };
 
@@ -167,7 +170,8 @@ const ProjectDetails = () => {
         "Error rating project:",
         err.response?.data?.message || err.message
       );
-      alert(err.response?.data?.message || "Failed to rate project");
+      // alert(err.response?.data?.message || "Failed to rate project");
+      toast.info(err.response?.data?.message || "Failed to rate project");
     }
   };
 
@@ -241,6 +245,7 @@ const ProjectDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
+      <ToastContainer position="top-right" autoClose={5000} />
       {popupUrl && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg overflow-hidden shadow-xl w-[90%] max-w-5xl h-[80%] flex flex-col">
