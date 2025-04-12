@@ -20,8 +20,11 @@ import {
   FaUser,
   FaSave,
   FaTimes,
+  FaProjectDiagram,
 } from "react-icons/fa";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import StudentProjects from "../components/StudentProjects";
+import FacultyProjects from "../components/FacultyProjects";
 
 const UserProfile = () => {
   const userId = useParams();
@@ -33,6 +36,7 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
   const [saveLoading, setSaveLoading] = useState(false);
   const [isProfileOwner, setIsProfileOwner] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
 
   // Function to fetch user data from backend
   const getUserDetails = async (userId) => {
@@ -61,8 +65,7 @@ const UserProfile = () => {
           setEditedData(data); // Initialize editedData with fetched data
           
           // Check if current user is the profile owner
-          // Get the current user's ID from localStorage or wherever you store it
-          const currentUserId = localStorage.getItem('userId'); // Adjust based on how you store the user ID
+          const currentUserId = localStorage.getItem('userId');
           setIsProfileOwner(currentUserId === userId.id);
           
           setError(null);
@@ -82,8 +85,7 @@ const UserProfile = () => {
   // Function to update user data
   const updateUserDetails = async (userId, updatedData) => {
     try {
-      // Get the token from localStorage or wherever you store it
-      const token = localStorage.getItem('token'); // Adjust based on how you store the token
+      const token = localStorage.getItem('token');
       
       const response = await fetch(
         `http://localhost:5000/api/users/update/${userId.id}`,
@@ -91,7 +93,7 @@ const UserProfile = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // Add auth token if you're using one
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(updatedData),
         }
@@ -116,29 +118,6 @@ const UserProfile = () => {
     mediaPath = mediaPath.replace(/\\/g, "/");
     return `http://localhost:5000/${mediaPath}`;
   };
-
-  // Effect to fetch user data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const data = await getUserDetails(userId);
-        if (data) {
-          setUserData(data);
-          setEditedData(data); // Initialize editedData with fetched data
-          setError(null);
-        } else {
-          setError("Failed to load user data");
-        }
-      } catch (err) {
-        setError("An error occurred while fetching user data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
 
   // Effect to trigger fade-in animation on component mount
   useEffect(() => {
@@ -181,8 +160,8 @@ const UserProfile = () => {
     setSaveLoading(true);
     try {
       const updatedUser = await updateUserDetails(userId, editedData);
-      setUserData(updatedUser); // Update the userData state with the response
-      setEditedData(updatedUser); // Keep editedData in sync
+      setUserData(updatedUser);
+      setEditedData(updatedUser);
       setIsEditing(false);
     } catch (error) {
       setError("Failed to save changes");
@@ -223,8 +202,7 @@ const UserProfile = () => {
     );
   }
 
-  // Create user object directly from userData (not as a separate object with defaults)
-  // This ensures we're always displaying the most current data
+  // Create user object
   const user = {
     fullName: userData.fullName || "User",
     email: userData.email || "No email provided",
@@ -246,7 +224,7 @@ const UserProfile = () => {
     createdAt: userData.createdAt || new Date().toISOString(),
   };
 
-  // Fields that can be edited - Personal Information section
+  // Fields that can be edited
   const personalInfoFields = [
     { id: 'fullName', label: 'User Name', icon: <FaIdCard />, value: editedData.fullName || '' },
     { id: 'email', label: 'Email', icon: <FaEnvelope />, value: editedData.email || '', type: 'email' },
@@ -255,7 +233,6 @@ const UserProfile = () => {
     { id: 'gender', label: 'Gender', icon: <FaVenusMars />, value: editedData.gender || '' },
   ];
 
-  // Fields for Education & Career section - Removed social media fields
   const educationCareerFields = [
     { id: 'currentPursuit', label: 'Current Pursuit', icon: <FaUserGraduate />, value: editedData.currentPursuit || '' },
     { id: 'institution', label: 'Institution', icon: <FaUniversity />, value: editedData.institution || '' },
@@ -264,7 +241,6 @@ const UserProfile = () => {
     { id: 'state', label: 'State', icon: <FaMapMarkerAlt />, value: editedData.state || '' },
   ];
 
-  // Social media fields - Only for editing mode
   const socialMediaFields = [
     { id: 'instagram', label: 'Instagram', icon: <FaInstagram />, value: editedData.instagram || '' },
     { id: 'twitter', label: 'Twitter', icon: <FaTwitter />, value: editedData.twitter || '' },
@@ -288,6 +264,7 @@ const UserProfile = () => {
         User Profile
       </h2>
 
+      {/* User Profile Card */}
       <div
         className={`max-w-4xl mx-auto p-8 bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-2xl border border-amber-400/50 transition-all duration-3000 ease-in-out ${
           isVisible
@@ -500,7 +477,6 @@ const UserProfile = () => {
                       <FaLinkedin size={20} />
                     </a>
                   )}
-                  {/* Display grayed-out icons if no social links provided */}
                   {!user.instagram &&
                     !user.twitter &&
                     !user.github &&
@@ -635,43 +611,65 @@ const UserProfile = () => {
           </div>
         )}
 
-        
-        {/* Edit/Save Profile Button */}
-<div className="mt-8 flex justify-center gap-4">
-  {isEditing ? (
-    <>
-      <button
-        onClick={handleSave}
-        disabled={saveLoading}
-        className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
-      >
-        {saveLoading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        ) : (
-          <FaSave />
-        )}
-        Save Changes
-      </button>
-      <button
-        onClick={toggleEditMode}
-        className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
-      >
-        <FaTimes /> Cancel
-      </button>
-    </>
-  ) : (
-    // Only show Edit button if current user is the profile owner
-    isProfileOwner && (
-      <button
-        onClick={toggleEditMode}
-        className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
-      >
-        <FaEdit /> Edit Profile
-      </button>
-    )
-  )}
-</div>
+        {/* Action Buttons */}
+        <div className="mt-8 flex justify-center gap-4 flex-wrap">
+          {isEditing ? (
+            <>
+              <button
+                onClick={handleSave}
+                disabled={saveLoading}
+                className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
+              >
+                {saveLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <FaSave />
+                )}
+                Save Changes
+              </button>
+              <button
+                onClick={toggleEditMode}
+                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
+              >
+                <FaTimes /> Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              {isProfileOwner && (
+                <button
+                  onClick={toggleEditMode}
+                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
+                >
+                  <FaEdit /> Edit Profile
+                </button>
+              )}
+              <button
+                onClick={() => setShowProjects(!showProjects)}
+                className={`px-8 py-3 bg-gradient-to-r ${showProjects ? 'from-purple-500 to-indigo-600' : 'from-indigo-500 to-purple-600'} text-white font-bold text-lg rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 flex items-center gap-3`}
+              >
+                <FaProjectDiagram /> {showProjects ? 'Hide Projects' : 'View Projects'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Projects Section - Separated from user profile card */}
+      {showProjects && (
+        <div 
+          className={`min-w-full mx-auto mt-12 p-8 bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-2xl border border-indigo-400/50 transition-all duration-1000 ease-in-out ${
+            isVisible && showProjects ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-10"
+          }`}
+        >
+          {user.role==='Student'?<div className="min-h-96">
+            <StudentProjects username={user.fullName} userId={userId.id} />
+          </div>:<div className="min-h-96">
+            <FacultyProjects username={user.fullName} userId={userId.id} />
+          </div>}
+          
+        </div>
+      )}
     </div>
   );
 };

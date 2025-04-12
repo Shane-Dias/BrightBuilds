@@ -14,6 +14,7 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import ViewDetails from "./pages/ViewDetails";
 import NotificationComponent from "./components/NotificationComponent";
 
+
 // Protected Route Component
 const ProtectedRoute = ({ element, allowedRoles }) => {
   const token = localStorage.getItem("token");
@@ -44,6 +45,7 @@ function App() {
         <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
         <Route path="/userdetails/:id" element={<ViewProjectDetails />} />
+        
 
         {/* Protected Routes */}
         <Route
