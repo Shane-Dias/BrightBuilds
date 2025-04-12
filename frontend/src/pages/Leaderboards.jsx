@@ -5,9 +5,10 @@ import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import axios from "axios";
 import AutoScrollToTop from "../components/AutoScrollToTop";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import useLeaderboardRankings from "../hooks/useLeaderboardRankings";
 import RankingBadge from "../components/RankingBadge";
-
 
 const Leaderboards = () => {
   const [activeTab, setActiveTab] = useState("thisWeek");
@@ -15,9 +16,7 @@ const Leaderboards = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
   // const { weeklyLeaderboard, overallLeaderboard } = useLeaderboardRankings();
-
 
   // Fetch projects from backend
   useEffect(() => {
@@ -65,6 +64,27 @@ const Leaderboards = () => {
       .slice(0, 5); // Top 5 for this week
   };
 
+  const notifyTop5Projects = async () => {
+    const top5 = getThisWeekProjects();
+    const systemSenderId = "67fa06c5154775df966e6942";
+
+    const notifyPromises = top5.flatMap((project) => {
+      const recipients = [...project.teammates, project.mentor];
+      return recipients.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy: systemSenderId,
+          fullName,
+          title: "🎉 Your project is in the Top 5 this week!",
+          message: `Congrats! Your project "${project.title}" is among the top-rated projects this week.`,
+          type: "achievement",
+        })
+      );
+    });
+
+    await Promise.all(notifyPromises);
+    toast.success("Top 5 projects notified successfully!");
+  };
+
   // Get overall top projects
   const getOverallProjects = () => {
     return projects
@@ -73,10 +93,35 @@ const Leaderboards = () => {
       .slice(0, 10); // Top 10 overall
   };
 
+  const notifyTopOverallProjects = async () => {
+    const top10 = getOverallProjects();
+    console.log(top10);
+    const systemSenderId = "67fa06c5154775df966e6942";
+
+    const notifyPromises = top10.flatMap((project) => {
+      const recipients = [...project.teammates, project.mentor];
+      return recipients.map((fullName) =>
+        axios.post("http://localhost:5000/api/notifications", {
+          sentBy: systemSenderId,
+          fullName,
+          title: "🏆 Top 10 Project!",
+          message: `Your project "${project.title}" is ranked in the Top 10 overall projects! Great job!`,
+          type: "achievement",
+        })
+      );
+    });
+
+    await Promise.all(notifyPromises);
+    toast.success("Top 5 projects notified successfully!");
+  };
+
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
+
   return (
     <div className="relative bg-gradient-to-br from-gray-900 to-black min-h-screen overflow-hidden">
-     <AutoScrollToTop/>
-     
+      <AutoScrollToTop />
+      <ToastContainer position="top-right" autoClose={5000} />
       <Particles
         id="tsparticles"
         init={particlesInit}
@@ -167,7 +212,25 @@ const Leaderboards = () => {
         >
           Project Leaderboards
         </motion.h1>
+        {role === "Admin" && (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full py-4">
+            <button
+              onClick={notifyTopOverallProjects}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50 w-full sm:w-auto"
+              aria-label="Notify top 10 projects overall"
+            >
+              Notify Top 10 Projects Overall
+            </button>
 
+            <button
+              onClick={notifyTop5Projects}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 disabled:opacity-50 w-full sm:w-auto"
+              aria-label="Notify Top 5 Projects This Week"
+            >
+              Notify Top 5 Projects This Week
+            </button>
+          </div>
+        )}
         {/* Competitive Tab Navigation */}
         <div className="flex justify-center mb-8">
           <div className="bg-gray-800 rounded-full p-1 flex space-x-1 shadow-lg">
@@ -211,7 +274,6 @@ const Leaderboards = () => {
             </motion.button>
           </div>
         </div>
-
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500"></div>
@@ -253,9 +315,7 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-bold text-white mb-6 text-center">
-        {title}
-      </h2>
+      <h2 className="text-xl font-bold text-white mb-6 text-center">{title}</h2>
 
       {projects.length === 0 ? (
         <div className="text-center text-gray-400 p-8 bg-gray-800 bg-opacity-50 rounded-lg">
@@ -268,7 +328,6 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
               key={project._id || index}
               project={project}
               rank={index + 1}
-              
             />
           ))}
         </div>
@@ -278,7 +337,7 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
 };
 
 // In your Leaderboards.js file
-const ProjectCard = ({ project, rank  }) => {
+const ProjectCard = ({ project, rank }) => {
   const navigate = useNavigate();
 
   // Map backend category to the frontend category format
@@ -432,7 +491,9 @@ const ProjectCard = ({ project, rank  }) => {
         </div>
 
         <p className="text-gray-300 leading-relaxed line-clamp-2 max-h-12 overflow-hidden">
-          {project.description.length > 100 ? project.description.slice(0, 100) + "..." : project.description}
+          {project.description.length > 100
+            ? project.description.slice(0, 100) + "..."
+            : project.description}
         </p>
 
         <div className="flex flex-col items-start">

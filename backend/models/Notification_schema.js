@@ -28,6 +28,7 @@ const notificationSchema = new mongoose.Schema(
         "rating",
         "projectSubmission",
         "projectStatus",
+        "achievement",
         "general",
       ],
       default: "general",
