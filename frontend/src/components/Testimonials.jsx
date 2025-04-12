@@ -41,12 +41,12 @@ export default function Testimonials() {
       <div className="container mx-auto px-6 text-center">
         {/* Section Title */}
         <motion.h1
-          className="text-5xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
+          className="text-7xl font-bold font-smooch text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          👥 Testimonials
+          Testimonials
         </motion.h1>
 
         <p className="text-gray-300 mb-12 max-w-3xl mx-auto">

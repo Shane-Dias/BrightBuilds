@@ -18,12 +18,12 @@ export default function About() {
       <div className="relative z-10">
         {/* Section Title */}
         <motion.h1
-          className="text-5xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
+          className="text-7xl font-bold font-smooch text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          🌍 About the Platform
+          About the Platform
         </motion.h1>
 
         {/* Description */}
@@ -64,11 +64,10 @@ export default function About() {
                 transition: { type: "spring", stiffness: 300 },
               },
             }}
-            whileHover={{ scale: 1.05 }}
-            className="relative group perspective-1000 cursor-pointer" // Added cursor-pointer here
+            className="relative group perspective-1000 cursor-pointer"
           >
-            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-800/10 opacity-50 z-0 pointer-events-none"></div>
+            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover: p-6 group-hover:shadow-[0_0_35px_rgba(59,130,246,1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-blue-800/10 opacity-50 z-0 pointer-events-none group-hover:opacity-70 transition-opacity duration-300"></div>
 
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-400 p-4 text-white">
                 <GraduationCap size={24} />
@@ -108,12 +107,10 @@ export default function About() {
                 transition: { type: "spring", stiffness: 300 },
               },
             }}
-            whileHover={{ scale: 1.05 }}
-            className="relative group perspective-1000 cursor-pointer" 
+            className="relative group perspective-1000 cursor-pointer"
           >
-            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center p-6">
-              {/* Added pointer-events-none to the overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-green-800/10 opacity-50 z-0 pointer-events-none"></div>
+            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover: p-6 group-hover:shadow-[0_0_35px_rgba(22,163,74,1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-green-800/10 opacity-50 z-0 pointer-events-none group-hover:opacity-70 transition-opacity duration-300"></div>
 
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-gradient-to-r from-green-600 to-green-400 p-4 text-white">
                 <BookOpen size={24} />
@@ -153,12 +150,10 @@ export default function About() {
                 transition: { type: "spring", stiffness: 300 },
               },
             }}
-            whileHover={{ scale: 1.05 }}
-            className="relative group perspective-1000 cursor-pointer" 
+            className="relative group perspective-1000 cursor-pointer"
           >
-            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center p-6">
-              {/* Added pointer-events-none to the overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-600/10 to-amber-800/10 opacity-50 z-0 pointer-events-none"></div>
+            <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover: p-6 group-hover:shadow-[0_0_40px_rgba(245,158,11,1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-600/10 to-amber-800/10 opacity-50 z-0 pointer-events-none group-hover:opacity-70 transition-opacity duration-300"></div>
 
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-400 p-4 text-white">
                 <Building size={24} />
@@ -178,7 +173,7 @@ export default function About() {
                 whileTap={{ scale: 0.95 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate("/signup"); 
+                  navigate("/signup");
                 }}
                 className="relative z-10 w-full bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center cursor-pointer"
               >
@@ -233,7 +228,7 @@ export default function About() {
                   Collaborate & Innovate
                 </h3>
                 <p className="text-sm text-gray-300">
-                  Building the future of gaming with sustainable development in
+                  Building the future of the world with sustainable development in
                   mind
                 </p>
               </div>
