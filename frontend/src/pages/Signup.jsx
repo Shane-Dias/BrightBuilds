@@ -21,6 +21,7 @@ import {
   EyeOff,
   Eye,
 } from "lucide-react";
+import AutoScrollToTop from "../components/AutoScrollToTop";
 
 const SignupPage = () => {
   // Form state
@@ -185,6 +186,7 @@ const SignupPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900 py-12 pt-24">
+      <AutoScrollToTop />
       <ToastContainer position="top-right" autoClose={5000} />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
