@@ -19,6 +19,7 @@ import AutoScrollToTop from "../components/AutoScrollToTop";
 import { FaRegKeyboard } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { MdDateRange } from "react-icons/md";
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -470,7 +471,7 @@ const ProjectDetails = () => {
                 }
               />
               <DetailCard
-                icon={<Award className="text-yellow-400" size={20} />}
+                icon={<MdDateRange  className="text-yellow-400" size={20} />}
                 title="Created On"
                 content={new Date(game.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
