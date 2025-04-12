@@ -18,6 +18,7 @@ import {
   FaHandshake,
   FaChartLine,
 } from "react-icons/fa";
+import { BsCashCoin } from "react-icons/bs";
 
 const SdgTracking = () => {
   const [sdgData, setSdgData] = useState({});
@@ -26,7 +27,7 @@ const SdgTracking = () => {
   const projectListRef = useRef(null); // ref to scroll to projects
 
   const sdgIcons = {
-    "No Poverty": FaHandsHelping,
+    "No Poverty": BsCashCoin,
     "Zero Hunger": FaChild,
     "Good Health and Well-being": FaHeartbeat,
     "Quality Education": FaBook,

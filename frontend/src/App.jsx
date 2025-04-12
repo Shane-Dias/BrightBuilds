@@ -13,6 +13,7 @@ import StudentDashBoardMy from "./pages/StudentDashBoardMy";
 import FacultyDashboard from "./pages/FacultyDashboard";
 import ViewDetails from "./pages/ViewDetails";
 import NotificationComponent from "./components/NotificationComponent";
+import AutoScrollToTop from "./components/AutoScrollToTop";
 
 
 // Protected Route Component
@@ -34,6 +35,7 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
 function App() {
   return (
     <BrowserRouter>
+      <AutoScrollToTop/>
       <Navbar />
       <NotificationComponent />
       <Routes>
