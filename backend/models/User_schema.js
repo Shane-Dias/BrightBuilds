@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     age: { type: Number, required: true, min: 13 }, // Assuming minimum age requirement
-    gender: { type: String, required: true, enum: ["Male", "Female", "Other"] },
+    gender: { type: String, required: true, enum: ["Male", "Female", "Other", "None"] },
     mobile: { type: String, required: true, trim: true },
     currentPursuit: { type: String, required: true },
     institution: { type: String, required: true },

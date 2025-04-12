@@ -132,7 +132,7 @@ const SignupPage = () => {
   };
 
   // Gender options
-  const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"];
+  const genderOptions = ["Male", "Female", "Other", "None"];
 
   // Framer Motion variants
   const containerVariants = {
