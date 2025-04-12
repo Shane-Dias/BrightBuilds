@@ -117,8 +117,8 @@ export const CommentSection = ({ projectDetails }) => {
       );
 
       // 2. Notify all contributors
-      const sentBy = localStorage.getItem("userId");
-      const recipients = [...teammates, mentor]; // fullNames
+      const recipients =
+        mentor === "Not Assigned" ? [...teammates] : [...teammates, mentor];
 
       const notifyPromises = recipients.map((fullName) =>
         axios.post("http://localhost:5000/api/notifications", {
