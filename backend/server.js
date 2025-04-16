@@ -7,6 +7,7 @@ require("dotenv").config();
 const userRoutes = require("./routes/userRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
+const studyRoutes = require("./routes/studyRoutes"); // Add this line
 
 const app = express();
 
@@ -17,10 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // MongoDB Connection
-// .connect("mongodb://127.0.0.1:27017/brightbuilds") //local server
-
 mongoose
-  .connect(process.env.MONGO_URI) // atlas server
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
@@ -30,6 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/admin", projectRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use(studyRoutes); // Add this line
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

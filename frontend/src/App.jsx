@@ -14,7 +14,7 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import ViewDetails from "./pages/ViewDetails";
 import NotificationComponent from "./components/NotificationComponent";
 import AutoScrollToTop from "./components/AutoScrollToTop";
-
+import Chatbot from "./components/Chatbot";
 
 // Protected Route Component
 const ProtectedRoute = ({ element, allowedRoles }) => {
@@ -47,6 +47,7 @@ function App() {
         <Route path="/details/:id" element={<ViewDetails />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
         <Route path="/userdetails/:id" element={<ViewProjectDetails />} />
+        <Route path="/bot" element={<Chatbot />} />
         
 
         {/* Protected Routes */}
