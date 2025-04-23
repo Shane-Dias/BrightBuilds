@@ -2,12 +2,12 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "./input";
-import { Button } from "./button";
-import { Card, CardHeader, CardContent, CardFooter } from "./card";
+import {Input}  from "./Input";
+import {Button}  from "./Button";
+import { Card, CardHeader, CardContent, CardFooter } from "./Card";
 import { Loader2, Send, ArrowLeft, Mic, MicOff, RefreshCw, Sparkles } from "lucide-react";
-import { ShootingStars } from "./shooting-stars";
-import { StarsBackground } from "./stars-background";
+import { ShootingStars } from "./Shooting-stars";
+import { StarsBackground } from "./Stars-background";
 
 const Chatbot = () => {
   const [query, setQuery] = useState("");
