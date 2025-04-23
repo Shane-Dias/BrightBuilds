@@ -350,7 +350,7 @@ const Chatbot = () => {
           </div>
         )}
 
-        <CardFooter className="fixed bottom-0 left-0 right-0 w-full bg-gradient-to-t from-neutral-900 to-neutral-900/95 pt-8 pb-6 px-4 z-50">
+        <CardFooter className="sticky bottom-0 left-0 right-0 w-full bg-gradient-to-t from-neutral-900 to-neutral-900/95 pt-8 pb-6 px-4 z-50">
           <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-3xl mx-auto">
             <Input
               ref={inputRef}
