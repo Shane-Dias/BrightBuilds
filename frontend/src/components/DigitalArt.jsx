@@ -7,7 +7,7 @@ import {
   Heart,
   ExternalLink,
   Globe,
-  Trophy
+  Trophy,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -34,10 +34,10 @@ const DigitalArt = ({ projects = [] }) => {
       try {
         const response = await axios.get("http://localhost:5000/api/projects");
         const allProjects = response.data.data || [];
-        
+
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        
+
         const weeklyProjects = allProjects
           .filter(
             (project) =>
@@ -46,19 +46,19 @@ const DigitalArt = ({ projects = [] }) => {
           )
           .sort((a, b) => b.rating - a.rating || b.likes - a.likes)
           .slice(0, 5);
-        
+
         const overallProjects = allProjects
           .filter((project) => project.status === "approved")
           .sort((a, b) => b.rating - a.rating || b.likes - a.likes)
           .slice(0, 10);
-        
+
         setWeeklyLeaderboard(weeklyProjects);
         setOverallLeaderboard(overallProjects);
       } catch (error) {
         console.error("Error fetching leaderboard data:", error);
       }
     };
-    
+
     fetchLeaderboards();
   }, []);
 
@@ -89,12 +89,14 @@ const DigitalArt = ({ projects = [] }) => {
 
   // Function to find a project's ranking in leaderboards
   const getProjectRankings = (projectId) => {
-    const weeklyRank = weeklyLeaderboard.findIndex(p => p._id === projectId) + 1;
-    const overallRank = overallLeaderboard.findIndex(p => p._id === projectId) + 1;
-    
+    const weeklyRank =
+      weeklyLeaderboard.findIndex((p) => p._id === projectId) + 1;
+    const overallRank =
+      overallLeaderboard.findIndex((p) => p._id === projectId) + 1;
+
     return {
       weekly: weeklyRank > 0 ? weeklyRank : null,
-      overall: overallRank > 0 ? overallRank : null
+      overall: overallRank > 0 ? overallRank : null,
     };
   };
 
@@ -205,7 +207,7 @@ const DigitalArt = ({ projects = [] }) => {
           {filteredAndSortedArtworks.map((artwork) => {
             // Get artwork rankings
             const rankings = getProjectRankings(artwork._id);
-            
+
             return (
               <motion.div
                 key={artwork._id}
@@ -227,27 +229,33 @@ const DigitalArt = ({ projects = [] }) => {
                     <div className="absolute top-2 right-2 z-30 flex flex-col gap-2">
                       {rankings.weekly && (
                         <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 border border-black/10 backdrop-filter backdrop-blur-sm">
-                                                                        <div className="bg-black/10 p-1.5 rounded-full flex items-center justify-center">
-                                                                          <Trophy size={16} className="text-black" />
-                                                                        </div>
-                                                                        <span className="flex items-center">
-                                                                          <span className="font-extrabold mr-1">#{rankings.weekly}</span> Weekly
-                                                                        </span>
-                                                                      </div>
+                          <div className="bg-black/10 p-1.5 rounded-full flex items-center justify-center">
+                            <Trophy size={16} className="text-black" />
+                          </div>
+                          <span className="flex items-center">
+                            <span className="font-extrabold mr-1">
+                              #{rankings.weekly}
+                            </span>{" "}
+                            Weekly
+                          </span>
+                        </div>
                       )}
                       {rankings.overall && (
                         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold py-2 px-4 rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 backdrop-filter backdrop-blur-sm">
-                                                                                               <div className="bg-white/20 p-1.5 rounded-full flex items-center justify-center">
-                                                                                                 <Trophy size={16} className="text-white" />
-                                                                                               </div>
-                                                                                               <span className="flex items-center">
-                                                                                                 <span className="font-extrabold mr-1">#{rankings.overall}</span> Overall
-                                                                                               </span>
-                                                                                             </div>
+                          <div className="bg-white/20 p-1.5 rounded-full flex items-center justify-center">
+                            <Trophy size={16} className="text-white" />
+                          </div>
+                          <span className="flex items-center">
+                            <span className="font-extrabold mr-1">
+                              #{rankings.overall}
+                            </span>{" "}
+                            Overall
+                          </span>
+                        </div>
                       )}
                     </div>
                   )}
-                  
+
                   {/* Artwork Thumbnail with Zoom Effect */}
                   <div className="relative overflow-hidden">
                     <motion.img

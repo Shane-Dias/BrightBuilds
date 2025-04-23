@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {Input}  from "./Input";
+import Input from "./input.jsx";
 import {Button}  from "./Button";
 import { Card, CardHeader, CardContent, CardFooter } from "./Card";
 import { Loader2, Send, ArrowLeft, Mic, MicOff, RefreshCw, Sparkles } from "lucide-react";
