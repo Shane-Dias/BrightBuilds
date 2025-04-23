@@ -403,7 +403,7 @@ export default function ProjectUploadForm() {
   };
 
   return (
-    <div className="min-h-screen px-10 py-16 bg-gray-900 text-white pt-24 relative">
+    <div className="min-h-screen   -ml-5 -mr-5 md:mx-0 md:w-full px-10 py-16 bg-gray-900 text-white pt-24 ">
       <AutoScrollToTop />
       {/* Notification Component */}
       {notification && (
@@ -421,7 +421,7 @@ export default function ProjectUploadForm() {
         onSubmit={handleSubmit}
         className="max-w-6xl mx-auto p-8 bg-gray-800 font-smooch font-bold text-xl tracking-wide leading-relaxed rounded-2xl shadow-lg border border-amber-400"
       >
-        <div className="grid font-smooch font-bold text-lg grid-cols-2 gap-6">
+        <div className="md:grid font-smooch font-bold text-lg md:grid-cols-2 grid-cols-1 gap-5 md:gap-6">
           <div>
             <label className="block text-xl mb-2">Project Title *</label>
             <input
@@ -434,7 +434,7 @@ export default function ProjectUploadForm() {
             />
           </div>
           <div>
-            <label className="block  text-xl mb-2">Project Description *</label>
+            <label className="block mt-4 text-xl mb-2">Project Description *</label>
             <textarea
               className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
               rows="3"
@@ -532,7 +532,7 @@ export default function ProjectUploadForm() {
         </div>
 
         {/* Teammates & Mentor */}
-        <div className="mt-6 grid grid-cols-2 gap-6">
+        <div className="mt-6 grid md:grid-cols-2 md:gap-6">
           <div>
             <label className="block text-xl mb-2">
               Enter usernames of contributers{" "}
@@ -610,7 +610,7 @@ export default function ProjectUploadForm() {
         </div>
 
         {/* Additional Project Links */}
-        <div className="mt-6 grid grid-cols-2 gap-6">
+        <div className="mt-6 grid md:grid-cols-2 gap-4 md:gap-6">
           <div>
             <div className="flex items-center gap-2">
               <FaGithub />
