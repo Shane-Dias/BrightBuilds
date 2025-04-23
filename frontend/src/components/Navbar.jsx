@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, NavLink, Link } from "react-router-dom";
-import { FaClipboardList } from 'react-icons/fa'
+import { FaClipboardList } from "react-icons/fa";
 import {
   Home,
   Grid,
@@ -10,15 +10,19 @@ import {
   User,
   LogOut,
   LayoutDashboard,
+  Menu,
+  X,
 } from "lucide-react";
 import { FcIdea } from "react-icons/fc";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userData, setUserData] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   // Get values from localStorage with error handling and defaults
   const getLocalStorageItem = (key, defaultValue = null) => {
@@ -114,6 +118,12 @@ const Navbar = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -189,6 +199,12 @@ const Navbar = () => {
     return "User";
   };
 
+  const navLinks = [
+    { name: "Home", path: "/", icon: Home },
+    { name: "Projects", path: "/projects", icon: FaClipboardList },
+    { name: "Leaderboards", path: "/leaderboards", icon: Award },
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md shadow-lg">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -246,13 +262,21 @@ const Navbar = () => {
           </motion.h1>
         </div>
 
-        {/* Navigation Links */}
-        <div className="flex items-center space-x-8">
-          {[
-            { name: "Home", path: "/", icon: Home },
-            { name: "Projects", path: "/projects", icon: FaClipboardList },
-            { name: "Leaderboards", path: "/leaderboards", icon: Award },
-          ].map((link) => (
+        {/* Hamburger Menu Button - Only visible on mobile */}
+        <button
+          className="md:hidden flex items-center text-white"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? (
+            <X size={24} className="text-white" />
+          ) : (
+            <Menu size={24} className="text-white" />
+          )}
+        </button>
+
+        {/* Navigation Links - Hidden on mobile, visible on desktop */}
+        <div className="hidden md:flex items-center space-x-8">
+          {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
@@ -286,14 +310,14 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* User Profile */}
+        {/* User Profile - Always visible on both mobile and desktop */}
         {!token ? (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/login")}
             className="
-              flex items-center space-x-2 
+              hidden md:flex items-center space-x-2 
               bg-gradient-to-r from-blue-600 to-purple-600 
               text-white px-4 py-2 rounded-full 
               hover:from-blue-700 hover:to-purple-700 
@@ -309,7 +333,7 @@ const Navbar = () => {
             <span>Login</span>
           </motion.button>
         ) : (
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative hidden md:block" ref={dropdownRef}>
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -401,6 +425,139 @@ const Navbar = () => {
             )}
           </div>
         )}
+
+        {/* Mobile Menu Dropdown */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              ref={mobileMenuRef}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed top-16 left-0 right-0 bg-gray-900/95 backdrop-blur-md shadow-lg z-40 overflow-hidden"
+            >
+              <div className="container mx-auto px-4 py-4 flex flex-col">
+                {/* Mobile Navigation Links */}
+                <div className="flex flex-col space-y-4 border-b border-gray-700 pb-4">
+                  {navLinks.map((link) => (
+                    <NavLink
+                      key={link.name}
+                      to={link.path}
+                      className={({ isActive }) => `
+                        flex items-center space-x-3 px-2 py-3
+                        text-gray-300 hover:text-white 
+                        ${
+                          isActive ? "text-white bg-gray-800/50 rounded-lg" : ""
+                        }
+                      `}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <link.icon size={20} />
+                      <span className="font-medium">{link.name}</span>
+                    </NavLink>
+                  ))}
+                </div>
+
+                {/* Mobile User Options */}
+                <div className="pt-4">
+                  {!token ? (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        navigate("/login");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="
+                        w-full flex items-center justify-center space-x-2 
+                        bg-gradient-to-r from-blue-600 to-purple-600 
+                        text-white px-4 py-3 rounded-lg 
+                        transition-all duration-300 
+                        shadow-lg
+                      "
+                    >
+                      <LogIn size={20} />
+                      <span>Login</span>
+                    </motion.button>
+                  ) : (
+                    <>
+                      {/* User Profile Info */}
+                      <div className="flex items-center space-x-3 mb-4 p-2">
+                        <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-purple-500">
+                          {isLoading ? (
+                            <div className="h-full w-full bg-gray-700 flex items-center justify-center">
+                              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                            </div>
+                          ) : userData?.profileImage ? (
+                            <img
+                              src={getImageUrl(userData.profileImage)}
+                              alt="User Profile"
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "";
+                                e.target.parentNode.innerHTML = `
+                                  <div class="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                      <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                  </div>
+                                `;
+                              }}
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                              <User size={20} className="text-white" />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">
+                            {userData?.fullName || userData?.name || "User"}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {userData?.role || role || "User"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* User Options */}
+                      <div className="flex flex-col space-y-2">
+                        {getProfileOptions().map((option, index) => (
+                          <div key={index}>
+                            {option.path ? (
+                              <Link
+                                to={option.path}
+                                className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg hover:text-white transition-colors"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                <option.icon size={20} />
+                                <span>{option.name}</span>
+                              </Link>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  option.action();
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-gray-800/50 rounded-lg hover:text-white transition-colors text-left"
+                              >
+                                <option.icon size={20} />
+                                <span>{option.name}</span>
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );

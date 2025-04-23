@@ -5,14 +5,14 @@ import Websites from "../components/Websites";
 import Videos from "../components/Videos";
 import Documentaries from "../components/Documentaries";
 import DigitalArt from "../components/DigitalArt";
-import axios from "axios"; // or use fetch
+import axios from "axios";
 import AutoScrollToTop from "../components/AutoScrollToTop";
-
 
 const ExploreProjects = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -39,18 +39,12 @@ const ExploreProjects = () => {
   // Define filter options
   const filters = [
     { label: "All", value: "all" },
-    { label: "Games", value: "Game" }, // Match these to your schema's category values
+    { label: "Games", value: "Game" },
     { label: "Websites", value: "Website" },
     { label: "Videos", value: "Video" },
     { label: "Documentaries", value: "Documentary" },
     { label: "Digital Art", value: "Digital Art" },
   ];
-
-  // Filter projects by active category
-  const filteredProjects =
-    activeFilter === "all"
-      ? projects
-      : projects.filter((project) => project.category === activeFilter);
 
   // Group projects by category
   const projectsByCategory = {
@@ -64,16 +58,19 @@ const ExploreProjects = () => {
       (project) => project.category === "Digital Art"
     ),
   };
-  console.log(projectsByCategory)
+
+  const handleFilterChange = (e) => {
+    setActiveFilter(e.target.value);
+  };
 
   if (loading) return <div className="text-white text-center">Loading...</div>;
 
   return (
-    <div className="bg-black text-white min-h-screen p-8 pt-24">
-      <AutoScrollToTop/>
-      <div className="flex justify-between items-center mb-8">
+    <div className="bg-black text-white min-h-screen p-4 md:p-8 pt-20 md:pt-24">
+      <AutoScrollToTop />
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <motion.h1
-          className="text-5xl font-lilita text-center"
+          className="text-3xl md:text-5xl font-lilita text-center"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -81,23 +78,18 @@ const ExploreProjects = () => {
           Explore Projects
         </motion.h1>
 
-        <div className="flex space-x-2">
-          {filters.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setActiveFilter(filter.value)}
-              className={`
-                px-4 py-2 rounded-md text-sm transition-colors duration-300
-                ${
-                  activeFilter === filter.value
-                    ? "bg-white text-black"
-                    : "bg-gray-800 text-white hover:bg-gray-700"
-                }
-              `}
-            >
-              {filter.label}
-            </button>
-          ))}
+        <div className="w-full md:w-auto">
+          <select
+            value={activeFilter}
+            onChange={handleFilterChange}
+            className="w-full md:w-48 px-4 py-2 rounded-md text-sm bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
+          >
+            {filters.map((filter) => (
+              <option key={filter.value} value={filter.value}>
+                {filter.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
