@@ -81,7 +81,6 @@ The primary goal of BrightBuilds is to:
 | 🔍 Search & Filter         | Projects can be filtered by category, SDG, or rating. |
 | ⭐ Ratings & Feedback       | Users and faculty can rate and comment on projects. |
 | 🏆 Leaderboard             | Projects are ranked based on popularity, ratings, and views. |
-| 🤝 Collaboration & Mentorship | Students can request mentors and collaborate using messaging tools. |
 | 🔔 Real-Time Notifications | Alerts for new ratings, comments, feedback, and announcements. |
 | 🔐 Role-Based Access       | Secured access control for each user type. |
 
@@ -158,7 +157,7 @@ The primary goal of BrightBuilds is to:
 
 > _(Upload screenshots and a working video demo here after deployment)_
 
-- 📸 Screenshot 1 – Home Page  
+- ![Home Page]([https://drive.google.com/uc?export=view&id=FILE_ID](https://drive.google.com/file/d/19VnteogIxYuYt5yPcn1_rPkVciXnp-Kk/view?usp=sharing))
 - 📸 Screenshot 2 – Project Gallery  
 - 📸 Screenshot 3 – Project Details  
 - 📸 Screenshot 4 – Student Dashboard  
@@ -177,14 +176,13 @@ We welcome contributions! Feel free to fork this repo and open pull requests for
 
 ---
 
-## 📃 License
 
-This project is built for educational purposes under the **Creative Coding using Python** course.  
-All rights reserved © 2025 BrightBuilds Team.
+## 🙏 Acknowledgements
 
----
+BrightBuilds is the result of dedicated teamwork, creative exploration, and countless hours of problem-solving by a team of three students: Shane Dias, Serene Dmello, and Jacell Jamble.
 
-## 🙌 Acknowledgments
+Built entirely through our own initiative, this platform reflects what’s possible when curiosity meets collaboration — without external mentorship or institutional guidance. We hope BrightBuilds stands as a testament to the spirit of self-driven learning and innovation.
 
-Special thanks to the students, faculty mentors, and course instructors who made this platform a success!
+Special thanks to everyone who inspires students to build boldly and think independently.
+
 
