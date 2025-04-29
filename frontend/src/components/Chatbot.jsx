@@ -75,7 +75,7 @@ const Chatbot = () => {
       }
       
       // Regular paragraph
-      return `<div class="ai-paragraph">${paragraph}</div>`;
+      return `<div class="ai-paragraph">${paragraph}</div>`; 
     });
     
     return formattedParagraphs.join('');
