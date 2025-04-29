@@ -1,6 +1,6 @@
 # 💡 BrightBuilds – Empowering Creative Coders for a Sustainable Future
 
-**BrightBuilds** is an innovative full-stack web platform designed to showcase student-led creative coding projects from the _Creative Coding using Python_ course. These projects — including animations, games, websites, digital art, and documentaries — are all mapped to relevant **United Nations Sustainable Development Goals (SDGs)**.
+**BrightBuilds** is an innovative full-stack web platform designed to showcase student-led creative coding projects.  These projects — including animations, games, websites, digital art, and documentaries — are all mapped to relevant **United Nations Sustainable Development Goals (SDGs)**.
 
 The platform is built to engage students, faculty, employers, and the public with an interactive, collaborative environment that promotes mentorship, sustainability, and skill-based visibility.
 
