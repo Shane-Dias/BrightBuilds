@@ -190,8 +190,8 @@ Before you begin, ensure you have the following installed:
 Open your terminal and run the below snippet:
 
 ```bash
-git clone https://github.com/Shane-Dias/MERN-FSD.git
-cd MERN-FSD
+git clone https://github.com/Shane-Dias/BrightBuilds.git
+cd BrightBuilds
 ```
 
 ### 2. Setup Frontend
