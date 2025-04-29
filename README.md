@@ -1,6 +1,6 @@
 # 💡 BrightBuilds – Empowering Creative Coders for a Sustainable Future
 
-**BrightBuilds** is an innovative full-stack web platform designed to showcase student-led creative coding projects.  These projects — including animations, games, websites, digital art, and documentaries — are all mapped to relevant **United Nations Sustainable Development Goals (SDGs)**.
+**BrightBuilds** is an innovative full-stack web platform designed to showcase student-led creative coding projects. These projects — including animations, games, websites, digital art, and documentaries — are all mapped to relevant **United Nations Sustainable Development Goals (SDGs)**.
 
 The platform is built to engage students, faculty, employers, and the public with an interactive, collaborative environment that promotes mentorship, sustainability, and skill-based visibility.
 
@@ -8,8 +8,7 @@ The platform is built to engage students, faculty, employers, and the public wit
 
 ## 🔗 Live Website
 
-👉 **[https://bright-builds.vercel.app/](#)**  
-
+👉 **[BrightBuilds](https://bright-builds.vercel.app/)** (Only frontend is live for now. Full deployment coming soon.)
 
 ---
 
@@ -27,11 +26,13 @@ The primary goal of BrightBuilds is to:
 ## 🛠️ Tech Stack
 
 **Frontend:**
+
 - [React.js](https://reactjs.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Framer Motion](https://www.framer.com/motion/)
 
 **Backend:**
+
 - [Node.js](https://nodejs.org/)
 - [Express.js](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
@@ -75,14 +76,14 @@ The primary goal of BrightBuilds is to:
 
 ## 🧩 Core Functionalities
 
-| Feature                    | Description |
-|----------------------------|-------------|
+| Feature                         | Description                                                     |
+| ------------------------------- | --------------------------------------------------------------- |
 | 📁 Project Upload & SDG Mapping | Students upload detailed project info and choose relevant SDGs. |
-| 🔍 Search & Filter         | Projects can be filtered by category, SDG, or rating. |
-| ⭐ Ratings & Feedback       | Users and faculty can rate and comment on projects. |
-| 🏆 Leaderboard             | Projects are ranked based on popularity, ratings, and views. |
-| 🔔 Real-Time Notifications | Alerts for new ratings, comments, feedback, and announcements. |
-| 🔐 Role-Based Access       | Secured access control for each user type. |
+| 🔍 Search & Filter              | Projects can be filtered by category, SDG, or rating.           |
+| ⭐ Ratings & Feedback           | Users and faculty can rate and comment on projects.             |
+| 🏆 Leaderboard                  | Projects are ranked based on popularity, ratings, and views.    |
+| 🔔 Real-Time Notifications      | Alerts for new ratings, comments, feedback, and announcements.  |
+| 🔐 Role-Based Access            | Secured access control for each user type.                      |
 
 ---
 
@@ -92,7 +93,6 @@ The primary goal of BrightBuilds is to:
 
 - Serves as the landing page for the website.
 - Explains the objective of the platform.
-
 
 ### 🗃️ Project Gallery (Public View)
 
@@ -155,28 +155,84 @@ The primary goal of BrightBuilds is to:
 
 ## 🎥 Demo & Screenshots
 
->
-
-- ![Home Page](/frontend/readmeimages/HomePage.png)
-- ![Create Project](/frontend/readmeimages/CreateProject.jpg)
-- ![View Details](/frontend/readmeimages/ViewDetails.jpg)
-- ![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg)
-- ![Admin Panel1](/frontend/readmeimages/AdminPanel.png)
-- ![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)
-- ![User Profile](/frontend/readmeimages/UserProfile.png) 
-- 🎥 [Click here to watch the full walkthrough demo](#)
+###  [Click here to watch the full walkthrough demo](#)
+![Home Page](/frontend/readmeimages/HomePage.png)
+![Create Project](/frontend/readmeimages/CreateProject.jpg)
+![View Details](/frontend/readmeimages/ViewDetails.jpg)
+![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg)
+![Admin Panel1](/frontend/readmeimages/AdminPanel.png)
+![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)
+![User Profile](/frontend/readmeimages/UserProfile.png)
 
 ---
+
+# Project Setup Guide
+
+## 🔧 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v16 or higher) - [Download Node.js](https://nodejs.org/)
+- **npm** or **yarn** (comes with Node.js)
+- **MongoDB** (local installation or Atlas account) - [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+- **Git** - [Download Git](https://git-scm.com/)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+Open your terminal and run the below snippet:
+
+```bash
+git clone https://github.com/Shane-Dias/MERN-FSD.git
+cd MERN-FSD
+```
+
+### 2. Setup Frontend
+
+```bash
+  cd frontend
+  npm install
+  npm run dev
+```
+
+This runs your project on your local system at localhost:5173
+
+### 3. Setup Backend
+
+Now open another terminal in your main project directory and run:
+
+```bash
+  cd backend
+  npm install
+  node server.js
+```
+
+This starts your backend on localhost:5000
+
+### 4. Configure Environment Variables
+
+Create a .env file inside the backend folder with the following content:
+
+```bash
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+```
+
+Replace your_mongodb_connection_string with your actual MongoDB URI and your_jwt_secret_key with a strong secret string(32 characters long).
 
 ## 📢 Contribution Guidelines
 
 We welcome contributions! Feel free to fork this repo and open pull requests for:
+
 - UI improvements
 - Bug fixes
 - Feature suggestions
 
 ---
-
 
 ## 🙏 Acknowledgements
 
@@ -185,5 +241,3 @@ BrightBuilds is the result of dedicated teamwork, creative exploration, and coun
 Built entirely through our own initiative, this platform reflects what’s possible when curiosity meets collaboration — without external mentorship or institutional guidance. We hope BrightBuilds stands as a testament to the spirit of self-driven learning and innovation.
 
 Special thanks to everyone who inspires students to build boldly and think independently.
-
-
