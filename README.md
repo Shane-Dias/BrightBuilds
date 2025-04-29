@@ -155,14 +155,18 @@ The primary goal of BrightBuilds is to:
 
 ## 🎥 Demo & Screenshots
 
-###  [Click here to watch the full walkthrough demo](#)
-![Home Page](/frontend/readmeimages/HomePage.png)
-![Create Project](/frontend/readmeimages/CreateProject.jpg)
-![View Details](/frontend/readmeimages/ViewDetails.jpg)
-![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg)
-![Admin Panel1](/frontend/readmeimages/AdminPanel.png)
-![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)
-![User Profile](/frontend/readmeimages/UserProfile.png)
+### [Click here to watch the full walkthrough demo](#)
+
+| Title                | Screenshot                                                      |
+| -------------------- | --------------------------------------------------------------- |
+| **Home Page**        | ![Home Page](/frontend/readmeimages/HomePage.png)               |
+| **Student Dashboard**| ![Student](/frontend/readmeimages/StdDash.jpeg)                 |
+| **Create Project**   | ![Create Project](/frontend/readmeimages/CreateProject.jpg)     |
+| **View Details**     | ![View Details](/frontend/readmeimages/ViewDetails.jpg)         |
+| **Explore Projects** | ![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg) |
+| **Admin Panel 1**    | ![Admin Panel1](/frontend/readmeimages/AdminPanel.png)          |
+| **Admin Panel 2**    | ![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)         |
+| **User Profile**     | ![User Profile](/frontend/readmeimages/UserProfile.png)         |
 
 ---
 
