@@ -43,6 +43,11 @@ The primary goal of BrightBuilds is to:
 **Frontend:**
 
 - [React.js](https://reactjs.org/)
+- [React Router Dom](https://reactrouter.com/home)
+- [Axios](https://axios-http.com/docs/intro)
+- [React Toastify](https://www.npmjs.com/package/react-toastify)
+- [Chart.js](https://www.chartjs.org/)
+- [Vite](https://vite.dev/guide/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Framer Motion](https://www.framer.com/motion/)
 
@@ -51,6 +56,17 @@ The primary goal of BrightBuilds is to:
 - [Node.js](https://nodejs.org/)
 - [Express.js](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
+- [JWT Webtokens](https://jwt.io/libraries)
+- [Multer](https://www.npmjs.com/package/multer)
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs)
+  
+
+**Hosting:**
+
+- Vercel – Frontend hosting
+- MongoDB Atlas – Cloud MongoDB database service
+- Git & GitHub – Version control and collaboration
+- Postman – API testing during backend development
 
 ---
 
