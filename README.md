@@ -6,6 +6,32 @@ The platform is built to engage students, faculty, employers, and the public wit
 
 ---
 
+## 📑 Table of Contents
+
+- [💡 BrightBuilds – Empowering Creative Coders for a Sustainable Future](#-brightbuilds--empowering-creative-coders-for-a-sustainable-future)
+- [🔗 Live Website](#-live-website)
+- [🎯 Objective](#-objective)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [👥 User Roles and Their Dashboards](#-user-roles-and-their-dashboards)
+  - [🔍 Viewers](#1-🔍-viewers-public-employers-experts)
+  - [🧑‍💻 Student Teams](#2-🧑‍💻-student-teams)
+  - [👨‍🏫 Faculty Coordinators](#3-👨‍🏫-faculty-coordinators)
+  - [🛡️ Admins](#4-🛡️-admins)
+- [🧩 Core Functionalities](#-core-functionalities)
+- [📸 Detailed Page Descriptions](#-detailed-page-descriptions)
+  - [🔷 Home Page](#-home-page)
+  - [🗃️ Project Gallery (Public View)](#️-project-gallery-public-view)
+  - [📘 Project Details Page](#-project-details-page)
+  - [🧑‍🎓 Student Dashboard](#-student-dashboard)
+  - [👩‍🏫 Faculty Dashboard](#-faculty-dashboard)
+  - [🛠️ Admin Dashboard](#️-admin-dashboard)
+- [🎥 Demo & Screenshots](#-demo--screenshots)
+- [🔧 Prerequisites](#-prerequisites)
+- [🚀 Getting Started](#-getting-started)
+- [📢 Contribution Guidelines](#-contribution-guidelines)
+- [🙏 Acknowledgements](#-acknowledgements)
+
+
 ## 🔗 Live Website
 
 👉 **[BrightBuilds](https://bright-builds.vercel.app/)** (Only frontend is live for now. Full deployment coming soon.)
@@ -155,7 +181,7 @@ The primary goal of BrightBuilds is to:
 
 ## 🎥 Demo & Screenshots
 
-### [Click here to watch the full walkthrough demo](#)
+### [Click here to watch the full walkthrough demo](https://drive.google.com/file/d/147g674Ghl8Db4roQ2XncPpJjk9YWZMHm/view?usp=sharing)
 
 | Title                | Screenshot                                                      |
 | -------------------- | --------------------------------------------------------------- |

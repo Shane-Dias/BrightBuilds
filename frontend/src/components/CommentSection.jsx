@@ -117,24 +117,24 @@ export const CommentSection = ({ projectDetails }) => {
       );
 
       // 2. Notify all contributors
-      const recipients =
-        mentor === "Not Assigned" ? [...teammates] : [...teammates, mentor];
+      // const recipients =
+      //   mentor === "Not Assigned" ? [...teammates] : [...teammates, mentor];
 
-      const sentBy = currentUser?.fullName || "A user"; // Add this line to define sentBy
+      // const sentBy = currentUser?.fullName || "A user"; // Add this line to define sentBy
 
-      const notifyPromises = recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
-          sentBy,
-          fullName,
-          title: "New Comment on Project",
-          message: `A new ${
-            isPrivate ? "private" : "public"
-          } comment was added to the project "${projectTitle}".`,
-          type: "projectComment",
-        })
-      );
+      // const notifyPromises = recipients.map((fullName) =>
+      //   axios.post("http://localhost:5000/api/notifications", {
+      //     sentBy,
+      //     fullName,
+      //     title: "New Comment on Project",
+      //     message: `A new ${
+      //       isPrivate ? "private" : "public"
+      //     } comment was added to the project "${projectTitle}".`,
+      //     type: "projectComment",
+      //   })
+      // );
 
-      await Promise.all(notifyPromises);
+      // await Promise.all(notifyPromises);
 
       // 3. Reset UI
       setNewComment("");
