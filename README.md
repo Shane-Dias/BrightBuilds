@@ -9,18 +9,17 @@ The platform is built to engage students, faculty, employers, and the public wit
 ## 📑 Table of Contents
 
 - [💡 BrightBuilds – Empowering Creative Coders for a Sustainable Future](#-brightbuilds--empowering-creative-coders-for-a-sustainable-future)
-- [🔗 Live Website](#-live-website)
-- [🎯 Objective](#-objective)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [👥 User Roles and Their Dashboards](#-user-roles-and-their-dashboards)
-- [📸 Detailed Page Descriptions](#-detailed-page-descriptions)
-- [🎥 Demo & Screenshots](#-demo--screenshots)
-- [🛂 Project Setup Guide](#-project-setup-guide)
-  - [🔧 Prerequisites](#-prerequisites)
-  - [🚀 Getting Started](#-getting-started)
-- [📢 Contribution Guidelines](#-contribution-guidelines)
-- [🙏 Acknowledgements](#-acknowledgements)
-
+- 🔗[Live Website](#-live-website)
+- 🎯[Objective](#-objective)
+- 🛠️[Tech Stack](#️-tech-stack)
+- 👥[User Roles and Their Dashboards](#-user-roles-and-their-dashboards)
+- 📸[Detailed Page Descriptions](#-detailed-page-descriptions)
+- 🎥[Demo & Screenshots](#-demo--screenshots)
+- 🛂[Project Setup Guide](#-project-setup-guide)
+  - 🔧[Prerequisites](#-prerequisites)
+  - 🚀[Getting Started](#-getting-started)
+- 📢[Contribution Guidelines](#-contribution-guidelines)
+- 🙏[Acknowledgements](#-acknowledgements)
 
 ## 🔗 Live Website
 
@@ -173,16 +172,16 @@ The primary goal of BrightBuilds is to:
 
 ### [Click here to watch the full walkthrough demo](https://drive.google.com/file/d/147g674Ghl8Db4roQ2XncPpJjk9YWZMHm/view?usp=sharing)
 
-| Title                | Screenshot                                                      |
-| -------------------- | --------------------------------------------------------------- |
-| **Home Page**        | ![Home Page](/frontend/readmeimages/HomePage.png)               |
-| **Student Dashboard**| ![Student](/frontend/readmeimages/StdDash.jpeg)                 |
-| **Create Project**   | ![Create Project](/frontend/readmeimages/CreateProject.jpg)     |
-| **View Details**     | ![View Details](/frontend/readmeimages/ViewDetails.jpg)         |
-| **Explore Projects** | ![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg) |
-| **Admin Panel 1**    | ![Admin Panel1](/frontend/readmeimages/AdminPanel.png)          |
-| **Admin Panel 2**    | ![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)         |
-| **User Profile**     | ![User Profile](/frontend/readmeimages/UserProfile.png)         |
+| Title                 | Screenshot                                                      |
+| --------------------- | --------------------------------------------------------------- |
+| **Home Page**         | ![Home Page](/frontend/readmeimages/HomePage.png)               |
+| **Student Dashboard** | ![Student](/frontend/readmeimages/StdDash.jpeg)                 |
+| **Create Project**    | ![Create Project](/frontend/readmeimages/CreateProject.jpg)     |
+| **View Details**      | ![View Details](/frontend/readmeimages/ViewDetails.jpg)         |
+| **Explore Projects**  | ![Explore Projects](/frontend/readmeimages/ExploreProjects.jpg) |
+| **Admin Panel 1**     | ![Admin Panel1](/frontend/readmeimages/AdminPanel.png)          |
+| **Admin Panel 2**     | ![Admin Panel2](/frontend/readmeimages/AdminPanel2.jpg)         |
+| **User Profile**      | ![User Profile](/frontend/readmeimages/UserProfile.png)         |
 
 ---
 
