@@ -59,7 +59,6 @@ The primary goal of BrightBuilds is to:
 - [JWT Webtokens](https://jwt.io/libraries)
 - [Multer](https://www.npmjs.com/package/multer)
 - [bcryptjs](https://www.npmjs.com/package/bcryptjs)
-  
 
 **Hosting:**
 
@@ -187,6 +186,8 @@ The primary goal of BrightBuilds is to:
 ## 🎥 Demo & Screenshots
 
 ### [Click here to watch the full walkthrough demo](https://drive.google.com/file/d/147g674Ghl8Db4roQ2XncPpJjk9YWZMHm/view?usp=sharing)
+
+### [Presentation Slides](https://docs.google.com/presentation/d/1CKfKLp3JPO2Sw8rWsrGTMdtCjujfiAur/edit?usp=sharing&ouid=104156333389831005794&rtpof=true&sd=true)
 
 | Title                 | Screenshot                                                      |
 | --------------------- | --------------------------------------------------------------- |
