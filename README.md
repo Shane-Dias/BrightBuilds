@@ -15,7 +15,7 @@ The platform is built to engage students, faculty, employers, and the public wit
 - 👥[User Roles and Their Dashboards](#-user-roles-and-their-dashboards)
 - 📸[Detailed Page Descriptions](#-detailed-page-descriptions)
 - 🎥[Demo & Screenshots](#-demo--screenshots)
-- 🛂[Project Setup Guide](#-project-setup-guide)
+- 🛂Project Setup Guide
   - 🔧[Prerequisites](#-prerequisites)
   - 🚀[Getting Started](#-getting-started)
 - 📢[Contribution Guidelines](#-contribution-guidelines)
