@@ -29,6 +29,11 @@ const StudentDashboard = () => {
   // Function to get proper image URL
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
+
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
+
     mediaPath = mediaPath.replace(/\\/g, "/");
     return `http://localhost:5000/${mediaPath}`;
   };
