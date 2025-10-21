@@ -1,25 +1,26 @@
 const multer = require("multer");
-const path = require("path");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Store files in "uploads/" folder
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Create unique filenames
+// Configure Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "mern_uploads", // Folder name in Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    public_id: (req, file) => Date.now() + "-" + file.originalname, // optional
   },
 });
 
-// Middleware for multiple file uploads (array)
+// Multer middlewares
 const uploadMultiple = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
-}).array("media", 3); // 'media' is the field name, and 3 is the max number of files
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+}).array("media", 3);
 
-// Middleware for single file upload (profileImage)
 const uploadSingle = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
-}).single("profileImage"); // 'profileImage' is the field name for a single file
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+}).single("profileImage");
 
 module.exports = { uploadMultiple, uploadSingle };
