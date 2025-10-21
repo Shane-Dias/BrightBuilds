@@ -25,7 +25,7 @@ export const CommentSection = ({ projectDetails }) => {
   const getUserDetails = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/details/${userId}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/details/${userId}`
       );
       if (!response.ok) {
         throw new Error("User not found!");
@@ -65,7 +65,7 @@ export const CommentSection = ({ projectDetails }) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/comments/${projectId}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/${projectId}`
       );
       setComments(res.data);
       console.log("Fetched comments:", res.data);
@@ -105,7 +105,7 @@ export const CommentSection = ({ projectDetails }) => {
     try {
       // 1. Post the comment
       await axios.post(
-        `http://localhost:5000/api/comments/${projectId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/${projectId}`,
         {
           projectId,
           commentText: newComment,
@@ -123,7 +123,7 @@ export const CommentSection = ({ projectDetails }) => {
       // const sentBy = currentUser?.fullName || "A user"; // Add this line to define sentBy
 
       // const notifyPromises = recipients.map((fullName) =>
-      //   axios.post("http://localhost:5000/api/notifications", {
+      //   axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
       //     sentBy,
       //     fullName,
       //     title: "New Comment on Project",
@@ -150,7 +150,7 @@ export const CommentSection = ({ projectDetails }) => {
     try {
       console.log(userName);
       const response = await fetch(
-        `http://localhost:5000/api/users/userDetails/${userName}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/userDetails/${userName}`
       );
       const data = await response.json();
       console.log(data);
@@ -174,7 +174,7 @@ export const CommentSection = ({ projectDetails }) => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/comments/${commentId}/replies`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/${commentId}/replies`,
         {
           replyText,
           projectId,
@@ -198,8 +198,8 @@ export const CommentSection = ({ projectDetails }) => {
   const toggleLike = async (commentId, isReply = false, parentId = null) => {
     try {
       const endpoint = isReply
-        ? `http://localhost:5000/api/comments/${parentId}/replies/${commentId}/like`
-        : `http://localhost:5000/api/comments/${commentId}/like`;
+        ? `${import.meta.env.VITE_BACKEND_URL}/api/comments/${parentId}/replies/${commentId}/like`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/comments/${commentId}/like`;
 
       await axios.post(
         endpoint,

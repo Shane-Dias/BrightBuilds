@@ -32,14 +32,14 @@ const FacultyDashboard = () => {
     }
     
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   // Fetch leaderboard data
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/projects");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const data = await response.json();
         const allProjects = data.data || [];
         
@@ -85,7 +85,7 @@ const FacultyDashboard = () => {
     const fetchFacultyDetails = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/users/details/${id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/details/${id}`
         );
         if (!res.ok) throw new Error("Failed to fetch faculty details");
 
@@ -108,7 +108,7 @@ const FacultyDashboard = () => {
     const fetchMentorProjects = async (mentorName) => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/projects/mentor/${mentorName}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/projects/mentor/${mentorName}`
         );
         if (!res.ok) throw new Error("Failed to fetch mentor projects");
 

@@ -103,7 +103,7 @@ const SignupPage = () => {
       });
 
       // Send to backend
-      const response = await fetch("http://localhost:5000/api/users/signup", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/signup`, {
         method: "POST",
         body: formDataToSend,
         // headers are automatically set by browser for FormData

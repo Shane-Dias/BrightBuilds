@@ -23,13 +23,13 @@ const StudentProjects = ({ username, userId }) => {
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/projects");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const data = await response.json();
         const allProjects = data.data || [];
         
@@ -59,7 +59,7 @@ const StudentProjects = ({ username, userId }) => {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/projects/user/${username}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/projects/user/${username}`
         );
         const data = await res.json();
         

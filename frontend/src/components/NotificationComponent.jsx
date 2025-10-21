@@ -41,7 +41,7 @@ const NotificationComponent = () => {
       setIsLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/api/notifications/${userId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/notifications/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const NotificationComponent = () => {
   // Mark a single notification as read
   const markAsRead = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/notifications/read/${id}`, {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications/read/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -87,7 +87,7 @@ const NotificationComponent = () => {
   const deleteNotification = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/notifications/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/notifications/${id}`,
         {
           method: "DELETE",
           headers: {

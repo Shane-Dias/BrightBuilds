@@ -289,7 +289,7 @@ export default function ProjectUploadForm() {
       }
 
       // Send to backend
-      const response = await fetch("http://localhost:5000/api/create", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create`, {
         method: "POST",
         body: formData,
         // Don't set Content-Type header - the browser will set it automatically with the correct boundary
@@ -304,7 +304,7 @@ export default function ProjectUploadForm() {
           type: "success",
         });
 
-        await fetch("http://localhost:5000/api/notifications", {
+        await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

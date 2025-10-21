@@ -22,7 +22,7 @@ const Leaderboards = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
 
         // Ensure projects are correctly extracted
         setProjects(
@@ -71,7 +71,7 @@ const Leaderboards = () => {
     const notifyPromises = top5.flatMap((project) => {
       const recipients = [...project.teammates, project.mentor];
       return recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: systemSenderId,
           fullName,
           title: "🎉 Your project is in the Top 5 this week!",
@@ -101,7 +101,7 @@ const Leaderboards = () => {
     const notifyPromises = top10.flatMap((project) => {
       const recipients = [...project.teammates, project.mentor];
       return recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: systemSenderId,
           fullName,
           title: "🏆 Top 10 Project!",
@@ -415,7 +415,7 @@ const ProjectCard = ({ project, rank }) => {
       const mediaPath = project.media[0];
       return mediaPath.startsWith("http")
         ? mediaPath
-        : `http://localhost:5000/${mediaPath.replace(/\\/g, "/")}`;
+        : `${import.meta.env.VITE_BACKEND_URL}/${mediaPath.replace(/\\/g, "/")}`;
     }
     // Fallback image
     return "https://via.placeholder.com/300x200?text=No+Image";

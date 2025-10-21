@@ -32,7 +32,7 @@ const Videos = ({ projects = [] }) => {
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const allProjects = response.data.data || [];
 
         const sevenDaysAgo = new Date();
@@ -130,7 +130,7 @@ const Videos = ({ projects = [] }) => {
     mediaPath = mediaPath.replace(/\\/g, "/");
 
     // Return full URL (adjust if backend URL is different)
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   return (
