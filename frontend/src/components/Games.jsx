@@ -35,7 +35,7 @@ const Games = ({ projects = [] }) => {
     const fetchLeaderboards = async () => {
       try {
         // This would be your actual API endpoint
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const allProjects = response.data.data || [];
 
         // Calculate weekly leaderboard (same logic as in Leaderboards.js)
@@ -136,7 +136,7 @@ const Games = ({ projects = [] }) => {
     const formattedPath = mediaPath.replace(/\\/g, "/");
 
     // Construct the full URL - adjust the base URL as needed
-    return `http://localhost:5000/${formattedPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${formattedPath}`;
   };
 
   return (

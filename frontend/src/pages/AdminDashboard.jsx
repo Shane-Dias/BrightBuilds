@@ -76,7 +76,7 @@ const AdminDashboard = () => {
 
       console.log("Making API request to fetch users...");
       const response = await axios.get(
-        `http://localhost:5000/api/users/admin/all-users`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/admin/all-users`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
