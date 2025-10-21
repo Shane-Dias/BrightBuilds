@@ -23,7 +23,7 @@ The platform is built to engage students, faculty, employers, and the public wit
 
 ## 🔗 Live Website
 
-👉 **[BrightBuilds](https://bright-builds.vercel.app/)** (Only frontend is live for now. Full deployment coming soon.)
+👉 **[BrightBuilds](https://bright-builds.vercel.app/)** 
 
 ---
 
