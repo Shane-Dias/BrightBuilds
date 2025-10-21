@@ -123,15 +123,20 @@ const Games = ({ projects = [] }) => {
     );
   }
 
-  // Function to get proper image URL
-  const getImageUrl = (mediaPath) => {
-    if (!mediaPath) return null;
 
-    // Replace backslashes with forward slashes
-    mediaPath = mediaPath.replace(/\\/g, "/");
+    const getImageUrl = (mediaPath) => {
+    if (!mediaPath) return "";
 
-    // Return full URL (adjust if backend URL is different)
-    return `http://localhost:5000/${mediaPath}`;
+    // If the path is already a full URL, return it as is
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
+
+    // Replace backslashes with forward slashes for web URLs
+    const formattedPath = mediaPath.replace(/\\/g, "/");
+
+    // Construct the full URL - adjust the base URL as needed
+    return `http://localhost:5000/${formattedPath}`;
   };
 
   return (

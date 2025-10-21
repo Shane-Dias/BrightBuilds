@@ -122,6 +122,10 @@ const DigitalArt = ({ projects = [] }) => {
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
 
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
+
     // Replace backslashes with forward slashes
     mediaPath = mediaPath.replace(/\\/g, "/");
 
