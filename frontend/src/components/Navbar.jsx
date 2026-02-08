@@ -184,7 +184,11 @@ const Navbar = () => {
       { name: "Logout", action: handleLogout, icon: LogOut },
     ];
 
-    // For all roles, include dashboard option
+    // Hide Dashboard for role 'user', show for all others
+    const currentRole = userData?.role || role;
+    if (currentRole && currentRole.toLowerCase() === "user") {
+      return baseOptions;
+    }
     return [
       {
         name: "Dashboard",

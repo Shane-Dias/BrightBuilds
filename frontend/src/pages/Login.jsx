@@ -223,7 +223,7 @@ const LoginPage = () => {
             </div>
 
             {/* Remember me and Forgot password */}
-            <motion.div
+            {/* <motion.div
               variants={itemVariants}
               className="flex items-center justify-between pt-2"
             >
@@ -250,7 +250,7 @@ const LoginPage = () => {
               >
                 Forgot password?
               </motion.a>
-            </motion.div>
+            </motion.div> */}
 
             {/* Submit button */}
             <motion.div variants={itemVariants}>

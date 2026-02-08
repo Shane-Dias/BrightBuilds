@@ -647,12 +647,14 @@ const UserProfile = () => {
                   <FaEdit /> Edit Profile
                 </button>
               )}
-              <button
-                onClick={() => setShowProjects(!showProjects)}
-                className={`px-8 py-3 bg-gradient-to-r ${showProjects ? 'from-purple-500 to-indigo-600' : 'from-indigo-500 to-purple-600'} text-white font-bold text-lg rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 flex items-center gap-3`}
-              >
-                <FaProjectDiagram /> {showProjects ? 'Hide Projects' : 'View Projects'}
-              </button>
+              {user.role && user.role.toLowerCase() !== 'user' && (
+                <button
+                  onClick={() => setShowProjects(!showProjects)}
+                  className={`px-8 py-3 bg-gradient-to-r ${showProjects ? 'from-purple-500 to-indigo-600' : 'from-indigo-500 to-purple-600'} text-white font-bold text-lg rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 flex items-center gap-3`}
+                >
+                  <FaProjectDiagram /> {showProjects ? 'Hide Projects' : 'View Projects'}
+                </button>
+              )}
             </>
           )}
         </div>

@@ -1,0 +1,35 @@
+@media (max-width: 768px) {
+  .student-dashboard-mobile {
+    padding: 1rem !important;
+    min-width: 0 !important;
+  }
+  .student-dashboard-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .student-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .student-dashboard-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+  .student-dashboard-img {
+    height: 180px !important;
+  }
+  .student-dashboard-card-content {
+    padding: 1rem !important;
+  }
+  .student-dashboard-badges {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  .student-dashboard-action {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}
