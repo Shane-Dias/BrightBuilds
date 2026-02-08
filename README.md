@@ -272,7 +272,7 @@ We welcome contributions! Feel free to fork this repo and open pull requests for
 
 ## 🙏 Acknowledgements
 
-BrightBuilds is the result of dedicated teamwork, creative exploration, and countless hours of problem-solving by a team of three students: Shane Dias, Serene Dmello, and Jacell Jamble.
+BrightBuilds is the result of dedicated teamwork, creative exploration, and countless hours of problem-solving by a team of two students: Shane Dias and Serene Dmello
 
 Built entirely through our own initiative, this platform reflects what’s possible when curiosity meets collaboration — without external mentorship or institutional guidance. We hope BrightBuilds stands as a testament to the spirit of self-driven learning and innovation.
 
