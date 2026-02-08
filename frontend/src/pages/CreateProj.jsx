@@ -292,8 +292,9 @@ export default function ProjectUploadForm() {
       const response = await fetch("http://localhost:5000/api/create", {
         method: "POST",
         body: formData,
-        // Don't set Content-Type header - the browser will set it automatically with the correct boundary
+       
       });
+
 
       if (!response.ok) {
         console.log("Error:", response.statusText);
@@ -571,6 +572,7 @@ export default function ProjectUploadForm() {
                         className="text-red-400 hover:text-red-500"
                       >
                         <FaTrash />
+                        
                       </button>
                     </div>
                   ))}
@@ -592,6 +594,7 @@ export default function ProjectUploadForm() {
               />
               <button
                 type="button"
+              
                 onClick={handleAddMentor}
                 className="bg-green-500 p-3 rounded-lg hover:bg-green-600"
               >
