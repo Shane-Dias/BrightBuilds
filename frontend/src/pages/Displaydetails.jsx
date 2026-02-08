@@ -42,7 +42,7 @@ const UserProfile = () => {
   const getUserDetails = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users/details/${userId.id}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/details/${userId.id}`
       );
       if (!response.ok) {
         throw new Error("User not found!");
@@ -88,7 +88,7 @@ const UserProfile = () => {
       const token = localStorage.getItem('token');
       
       const response = await fetch(
-        `http://localhost:5000/api/users/update/${userId.id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/update/${userId.id}`,
         {
           method: "PUT",
           headers: {
@@ -115,8 +115,11 @@ const UserProfile = () => {
   // Function to get image URL
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   // Effect to trigger fade-in animation on component mount

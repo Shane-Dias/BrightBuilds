@@ -15,10 +15,10 @@ export default function FacultyProfile({ faculty }) {
         /> */}
         <div>
           <h1 className="text-3xl text-white font-lilita font-normal">Welcome, {faculty?.fullName}</h1>
-          <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
-                      <FaChalkboardTeacher className="text-emerald-400 text-xl" />
-                      Faculty Dashboard
-                    </p>
+          <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2 faculty-dashboard-subtitle">
+            <FaChalkboardTeacher className="text-emerald-400 text-xl" />
+            Faculty Dashboard
+          </p>
          
         </div>
       </div>

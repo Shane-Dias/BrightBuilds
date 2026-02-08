@@ -29,14 +29,19 @@ const StudentDashboard = () => {
   // Function to get proper image URL
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
+
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
+
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/projects");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const data = await response.json();
         const allProjects = data.data || [];
         
@@ -67,7 +72,7 @@ const StudentDashboard = () => {
     const fetchUsername = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/users/details/${id}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/details/${id}`
         );
         const data = await res.json();
         console.log(data);
@@ -85,7 +90,7 @@ const StudentDashboard = () => {
     const fetchProjects = async (username) => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/projects/user/${username}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/projects/user/${username}`
         );
         const data = await res.json();
         console.log(data);

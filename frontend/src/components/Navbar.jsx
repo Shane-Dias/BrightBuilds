@@ -44,7 +44,7 @@ const Navbar = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/users/details", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/details`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -69,8 +69,11 @@ const Navbar = () => {
 
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
+    if (mediaPath.startsWith("http")) {
+      return mediaPath;
+    }
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   useEffect(() => {

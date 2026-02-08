@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import "./Leaderboards.mobile.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Particles from "react-tsparticles";
@@ -22,7 +23,7 @@ const Leaderboards = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
 
         // Ensure projects are correctly extracted
         setProjects(
@@ -71,7 +72,7 @@ const Leaderboards = () => {
     const notifyPromises = top5.flatMap((project) => {
       const recipients = [...project.teammates, project.mentor];
       return recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: systemSenderId,
           fullName,
           title: "🎉 Your project is in the Top 5 this week!",
@@ -101,7 +102,7 @@ const Leaderboards = () => {
     const notifyPromises = top10.flatMap((project) => {
       const recipients = [...project.teammates, project.mentor];
       return recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: systemSenderId,
           fullName,
           title: "🏆 Top 10 Project!",
@@ -415,7 +416,7 @@ const ProjectCard = ({ project, rank }) => {
       const mediaPath = project.media[0];
       return mediaPath.startsWith("http")
         ? mediaPath
-        : `http://localhost:5000/${mediaPath.replace(/\\/g, "/")}`;
+        : `${import.meta.env.VITE_BACKEND_URL}/${mediaPath.replace(/\\/g, "/")}`;
     }
     // Fallback image
     return "https://via.placeholder.com/300x200?text=No+Image";
@@ -425,7 +426,7 @@ const ProjectCard = ({ project, rank }) => {
 
   return (
     <motion.div
-      className="relative bg-gray-800 bg-opacity-80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-2xl border border-gray-700"
+      className="relative bg-gray-800 bg-opacity-80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-2xl border border-gray-700 leaderboard-project-card"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -444,7 +445,7 @@ const ProjectCard = ({ project, rank }) => {
       </div> */}
 
       {/* Project Image */}
-      <div className="flex-shrink-0 w-full md:w-48 h-48 rounded-xl overflow-hidden shadow-lg relative">
+      <div className="flex-shrink-0 w-full md:w-48 h-48 rounded-xl overflow-hidden shadow-lg relative leaderboard-project-image">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-30"></div>
         <img
           src={getMediaUrl()}

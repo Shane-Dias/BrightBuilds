@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./FacultyProjects.mobile.css";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -23,13 +24,13 @@ const FacultyProjects = ({ username, userId }) => {
   const getImageUrl = (mediaPath) => {
     if (!mediaPath) return null;
     mediaPath = mediaPath.replace(/\\/g, "/");
-    return `http://localhost:5000/${mediaPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${mediaPath}`;
   };
 
   useEffect(() => {
     const fetchLeaderboards = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/projects");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const data = await response.json();
         const allProjects = data.data || [];
         
@@ -59,7 +60,7 @@ const FacultyProjects = ({ username, userId }) => {
     const fetchProjects = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/projects/mentor/${username}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/projects/mentor/${username}`
         );
         const data = await res.json();
         
@@ -110,16 +111,16 @@ const FacultyProjects = ({ username, userId }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-fit p-8 min-w-fit"
+        className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-fit p-8 min-w-fit faculty-projects-mobile"
       >
         <div className="relative z-10">
-          <h1 className="text-5xl font-bold font-lilita text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12">
+          <h1 className="text-5xl font-bold font-lilita text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12 faculty-projects-title">
             {username}'s Projects
           </h1>
 
           {/* Projects Grid */}
           <motion.div
-            className="grid md:grid-cols-3 gap-8"
+            className="grid md:grid-cols-3 gap-8 faculty-projects-grid"
             initial="hidden"
             animate="visible"
             variants={{
@@ -149,12 +150,12 @@ const FacultyProjects = ({ username, userId }) => {
                   }}
                   onMouseEnter={() => setHoveredGame(project._id)}
                   onMouseLeave={() => setHoveredGame(null)}
-                  className="relative group perspective-1000"
+                  className="relative group perspective-1000 faculty-projects-card"
                 >
                   <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center">
                     {/* Leaderboard Rank Badges - Only show if ranked */}
                     {(rankings.weekly || rankings.overall) && (
-                      <div className="absolute top-2 right-2 z-30 flex flex-col gap-2">
+                      <div className="absolute top-2 right-2 z-30 flex flex-col gap-2 faculty-projects-badges">
                         {rankings.weekly && (
                           <div className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-lg text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300 border border-black/10 backdrop-filter backdrop-blur-sm">
                             <div className="bg-black/10 p-1.5 rounded-full flex items-center justify-center">
@@ -187,13 +188,13 @@ const FacultyProjects = ({ username, userId }) => {
                             : "https://placehold.co/600x400/gray/white?text=No+Image"
                         }
                         alt={project.title}
-                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
+                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110 faculty-projects-img"
                         initial={{ scale: 1 }}
                         whileHover={{ scale: 1.1 }}
                       />
                     </div>
 
-                    <div className="p-5 flex flex-col h-full">
+                    <div className="p-5 flex flex-col h-full faculty-projects-card-content">
                       {/* Project Title and Rating */}
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="text-2xl font-bold text-white truncate">
@@ -260,7 +261,7 @@ const FacultyProjects = ({ username, userId }) => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex space-x-3 mt-auto">
+                      <div className="flex space-x-3 mt-auto faculty-projects-action">
                         <motion.button
                           onClick={() => viewDetails(project._id)}
                           whileHover={{ scale: 1.05 }}

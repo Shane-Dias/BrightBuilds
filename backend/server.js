@@ -12,7 +12,11 @@ const studyRoutes = require("./routes/studyRoutes"); // Add this line
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://bright-builds.vercel.app', 'http://localhost:5173'],
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

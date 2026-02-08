@@ -47,7 +47,7 @@ const ProjectDetails = () => {
   const fetchProjectDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/api/details/${id}`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/details/${id}`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch project details: ${response.status}`);
@@ -95,7 +95,7 @@ const ProjectDetails = () => {
     try {
       // 1. Like the project
       await axios.post(
-        `http://localhost:5000/api/${projectId}/like`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/${projectId}/like`,
         {},
         {
           headers: {
@@ -107,7 +107,7 @@ const ProjectDetails = () => {
       // 2. Send notification to teammates and mentor
       const recipients = [...teammates, mentor];
       const notifyPromises = recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: userId,
           fullName,
           title: `New Like on Project`,
@@ -140,7 +140,7 @@ const ProjectDetails = () => {
     try {
       // 1. Submit rating
       await axios.post(
-        `http://localhost:5000/api/${projectId}/rate`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/${projectId}/rate`,
         { rating: ratingValue },
         {
           headers: {
@@ -152,7 +152,7 @@ const ProjectDetails = () => {
       // 2. Notify mentor and teammates
       const recipients = [...teammates, mentor]; // array of fullNames
       const notifyPromises = recipients.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: userId,
           fullName,
           title: `Project Rated`,
@@ -200,14 +200,14 @@ const ProjectDetails = () => {
     const formattedPath = mediaPath.replace(/\\/g, "/");
 
     // Construct the full URL - adjust the base URL as needed
-    return `http://localhost:5000/${formattedPath}`;
+    return `${import.meta.env.VITE_BACKEND_URL}/${formattedPath}`;
   };
 
   const handleProfileClick = async (userName) => {
     try {
       console.log(userName);
       const response = await fetch(
-        `http://localhost:5000/api/users/userDetails/${userName}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/userDetails/${userName}`
       );
       const data = await response.json();
       console.log(data);

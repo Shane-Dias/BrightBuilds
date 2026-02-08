@@ -16,7 +16,7 @@ const useLeaderboardRankings = () => {
     const fetchLeaderboards = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/projects");
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/projects`);
         const allProjects = response.data.data || [];
         
         // Calculate weekly leaderboard (projects from last 7 days)

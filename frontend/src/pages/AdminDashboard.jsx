@@ -76,7 +76,7 @@ const AdminDashboard = () => {
 
       console.log("Making API request to fetch users...");
       const response = await axios.get(
-        `http://localhost:5000/api/users/admin/all-users`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/admin/all-users`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.delete(
-        `http://localhost:5000/api/users/admin/delete-user/${userId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/admin/delete-user/${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
     const fetchPendingProjects = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/admin/pendingprojects"
+          `${import.meta.env.VITE_BACKEND_URL}/api/admin/pendingprojects`
         );
         setProjects(response.data.data);
       } catch (error) {
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
   ) => {
     try {
       // 1. Update status first
-      await axios.put(`http://localhost:5000/api/admin/update-status/${id}`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/update-status/${id}`, {
         status,
       });
 
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
       console.log("Admin id:", adminId);
 
       const notifyPromises = teammates.map((fullName) =>
-        axios.post("http://localhost:5000/api/notifications", {
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
           sentBy: adminId,
           fullName,
           title: `Project ${status}`,
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
       // Also notify the mentor
       if (mentor) {
         notifyPromises.push(
-          axios.post("http://localhost:5000/api/notifications", {
+          axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/notifications`, {
             sentBy: adminId,
             fullName: mentor,
             title: `Project ${status}`,
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
     try {
       console.log(userName);
       const response = await fetch(
-        `http://localhost:5000/api/users/userDetails/${userName}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/users/userDetails/${userName}`
       );
       const data = await response.json();
       console.log(data);

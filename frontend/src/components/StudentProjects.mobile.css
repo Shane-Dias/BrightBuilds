@@ -1,0 +1,34 @@
+@media (max-width: 768px) {
+  .student-projects-mobile {
+    padding: 1rem !important;
+    min-width: 0 !important;
+  }
+  .student-projects-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .student-projects-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .student-projects-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .student-projects-img {
+    height: 180px !important;
+  }
+  .student-projects-card-content {
+    padding: 1rem !important;
+  }
+  .student-projects-badges {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  .student-projects-action {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}
