@@ -230,10 +230,10 @@ const Chatbot = () => {
       <ShootingStars />
       <StarsBackground />
       
-      <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-neutral-900 to-transparent z-10" />
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-neutral-900 to-transparent z-10" />
+      <div className="absolute top-0 left-0 right-0 h-20 z-10" style={{ background: 'linear-gradient(to bottom, var(--bg-primary), transparent)' }} />
+      <div className="absolute bottom-0 left-0 right-0 h-32 z-10" style={{ background: 'linear-gradient(to top, var(--bg-primary), transparent)' }} />
 
-      <div className="fixed top-0 left-0 right-0 flex items-center justify-between p-4 bg-gradient-to-b from-gray-900 to-transparent z-20">
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between p-4 z-20" style={{ background: 'linear-gradient(to bottom, var(--bg-secondary), transparent)' }}>
         <Button
           variant="ghost"
           className="bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/70 text-gray-200 rounded-full w-10 h-10 p-2"
@@ -249,7 +249,8 @@ const Chatbot = () => {
           <Button 
             variant="ghost" 
             size="icon"
-            className="bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/70 text-gray-200 rounded-full w-10 h-10 p-2"
+            className="hover:bg-gray-700/70 text-gray-200 rounded-full w-10 h-10 p-2"
+            style={{ backgroundColor: 'var(--bg-elevated)' }}
             onClick={handleClearChat}
           >
             <RefreshCw className="h-4 w-4" />
@@ -260,7 +261,7 @@ const Chatbot = () => {
       <Card className="w-11/12 sm:w-4/5 max-w-3xl mx-auto flex flex-col bg-transparent border-none shadow-none h-full">
         <CardHeader className="pt-20 pb-4">
           <div className="flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--accent-primary)' }}>
               <Sparkles className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-white">Project Guide</h2>
@@ -280,7 +281,7 @@ const Chatbot = () => {
             >
               <div className={`flex ${message.type === "user" ? "flex-row-reverse" : "flex-row"} items-end gap-2`}>
                 {message.type === "bot" && (
-                  <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-primary)' }}>
                     <span className="text-xs font-bold text-white">AI</span>
                   </div>
                 )}
@@ -288,11 +289,12 @@ const Chatbot = () => {
                 <div
                   className={`p-4 my-1 max-w-xs sm:max-w-md text-sm md:text-base break-words rounded-2xl shadow-lg ${
                     message.type === "user"
-                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-br-none"
+                      ? "text-white rounded-br-none"
                       : message.isError 
-                        ? "bg-gradient-to-r from-red-600 to-red-500 text-white rounded-bl-none"
-                        : "bg-gradient-to-r from-indigo-600 to-purple-500 text-white rounded-bl-none"
+                        ? "text-white rounded-bl-none"
+                        : "text-white rounded-bl-none"
                   }`}
+                  style={{ backgroundColor: message.type === 'user' ? 'var(--accent-primary)' : message.isError ? 'var(--error)' : 'var(--accent-hover)' }}
                 >
                   {message.type === "bot" && message.formattedContent ? (
                     <div className="ai-content" dangerouslySetInnerHTML={{ __html: message.formattedContent }}></div>
@@ -303,7 +305,7 @@ const Chatbot = () => {
                 </div>
                 
                 {message.type === "user" && (
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-light)' }}>
                     <span className="text-xs font-bold text-white">You</span>
                   </div>
                 )}
@@ -314,10 +316,10 @@ const Chatbot = () => {
           {loading && (
             <div className="flex justify-start mb-4 animate-fadeIn">
               <div className="flex flex-row items-end gap-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-primary)' }}>
                   <span className="text-xs font-bold text-white">AI</span>
                 </div>
-                <div className="p-3 rounded-2xl bg-gradient-to-r from-indigo-600/40 to-purple-500/40 rounded-bl-none">
+                <div className="p-3 rounded-2xl rounded-bl-none" style={{ backgroundColor: 'var(--bg-elevated)' }}>
                   <div className="flex space-x-2">
                     <div className="w-2 h-2 rounded-full bg-blue-300 animate-bounce" style={{ animationDelay: "0s" }}></div>
                     <div className="w-2 h-2 rounded-full bg-blue-300 animate-bounce" style={{ animationDelay: "0.2s" }}></div>
@@ -350,7 +352,7 @@ const Chatbot = () => {
           </div>
         )}
 
-        <CardFooter className="sticky bottom-0 left-0 right-0 w-full bg-gradient-to-t from-neutral-900 to-neutral-900/95 pt-8 pb-6 px-4 z-50">
+        <CardFooter className="sticky bottom-0 left-0 right-0 w-full pt-8 pb-6 px-4 z-50" style={{ background: 'linear-gradient(to top, var(--bg-primary), rgba(10, 11, 13, 0.95))' }}>
           <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-3xl mx-auto">
             <Input
               ref={inputRef}
@@ -358,7 +360,10 @@ const Chatbot = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Type your Project question..."
-              className="border-2 border-blue-500/30 p-4 flex-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-white placeholder-blue-300/50 focus:border-blue-400/60 focus:ring-blue-500/20"
+              className="border-2 p-4 flex-1 rounded-full text-white transition-all"
+              style={{ backgroundColor: 'var(--bg-elevated)', borderColor: 'var(--accent-subtle)' }}
+              onFocus={(e) => e.currentTarget.style.borderColor = 'var(--accent-primary)'}
+              onBlur={(e) => e.currentTarget.style.borderColor = 'var(--accent-subtle)'}
               disabled={loading}
             />
             <Button
@@ -376,7 +381,10 @@ const Chatbot = () => {
             <Button
               type="submit"
               disabled={loading || !query.trim()}
-              className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center disabled:opacity-50 transition-all duration-300"
+              className="text-white rounded-full w-12 h-12 flex items-center justify-center disabled:opacity-50 transition-all duration-300"
+              style={{ backgroundColor: 'var(--accent-primary)' }}
+              onMouseEnter={(e) => !loading && !query.trim() ? null : e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
             >
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
             </Button>

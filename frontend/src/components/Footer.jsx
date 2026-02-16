@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import { useNavigate } from "react-router-dom";
 import { Linkedin, Twitter, Mail, Copyright } from "lucide-react";
 import { FcIdea } from "react-icons/fc";
@@ -30,7 +30,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-900/90 backdrop-blur-lg shadow-2xl border-t border-gray-800">
+    <footer className="shadow-2xl border-t" style={{ backgroundColor: 'var(--bg-secondary)', borderTopColor: 'var(--border-primary)' }}>
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Logo and Tagline */}
@@ -189,7 +189,7 @@ const Footer = () => {
                   placeholder="Your email"
                   className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-white placeholder-gray-500 w-full"
                 />
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 rounded-r-lg text-white font-medium hover:opacity-90 transition-opacity">
+                <button className="px-4 py-2 rounded-r-lg text-white font-medium transition-opacity" style={{ backgroundColor: 'var(--accent-primary)' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
                   Join
                 </button>
               </div>
@@ -227,3 +227,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

@@ -1,9 +1,53 @@
-@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Delius&family=Lilita+One&family=Orbitron:wght@400..900&family=Smooch+Sans:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Delius&family=Lilita+One&family=Orbitron:wght@400..900&family=Smooch+Sans:wght@100..900&family=Sora:wght@300..800&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Sora", "Segoe UI", Tahoma, sans-serif;
+  }
+  body {
+    font-family: inherit;
+  }
+  
+  :root {
+    /* Dark Backgrounds - Deeper, richer blacks */
+    --bg-primary: #080909;
+    --bg-secondary: #0f1211;
+    --bg-tertiary: #161918;
+    --bg-elevated: #1d221f;
+    
+    /* Emerald Green Accents (Pine Teal palette) - Lighter for better contrast */
+    --accent-primary: #2fa76f;
+    --accent-hover: #3fc083;
+    --accent-light: #5dd3a7;
+    --accent-subtle: #1a4d35;
+    --accent-glow: #7adbb4;
+    
+    /* Complementary Amber/Gold accent */
+    --amber-primary: #e6b887;
+    --amber-hover: #d4a574;
+    --amber-light: #f2d4b3;
+    
+    /* Text Colors */
+    --text-primary: #E8EBE6;
+    --text-secondary: #B8C5BB;
+    --text-muted: #8A9489;
+    
+    /* Border Colors */
+    --border-primary: #1d2820;
+    --border-accent: #3fc083;
+    --border-subtle: #0e1912;
+    
+    /* Utility Colors */
+    --success: #3fc083;
+    --warning: #e6b887;
+    --error: #EF5350;
+  }
+}
 
 @keyframes gradientBG {
   0% {

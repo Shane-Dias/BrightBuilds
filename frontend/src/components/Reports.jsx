@@ -52,9 +52,9 @@ const sdgData = [
 ];
 
 const COLORS = [
-  "#34d399", "#60a5fa", "#fbbf24", "#f87171", "#a78bfa",
-  "#2dd4bf", "#fb7185", "#c084fc", "#fde68a", "#facc15",
-  "#38bdf8", "#818cf8", "#4ade80", "#16a34a", "#e879f9"
+  "#5dd3a7", "#3fc083", "#e6b887", "#2fa76f", "#7adbb4",
+  "#2fa76f", "#d4a574", "#1a4d35", "#f2d4b3", "#74dab8",
+  "#5dd3a7", "#3fc083", "#3fc083", "#2fa76f", "#bdedd9"
 ];
 
 const Reports = () => {
@@ -87,15 +87,15 @@ const Reports = () => {
         <h5 className="text-xl font-medium text-white mb-4 flex flex-row gap-4 items-center"><BsGraphUp /> Monthly Project Trends</h5>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={projectTrends}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#4b5563" />
-            <XAxis dataKey="month" stroke="#d1d5db" />
-            <YAxis stroke="#d1d5db" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1d2820" />
+            <XAxis dataKey="month" stroke="#B8C5BB" />
+            <YAxis stroke="#B8C5BB" />
             <Tooltip />
             <Legend />
             <Line
               type="monotone"
               dataKey="projects"
-              stroke="#34d399"
+              stroke="#5dd3a7"
               strokeWidth={3}
               activeDot={{ r: 8 }}
             />

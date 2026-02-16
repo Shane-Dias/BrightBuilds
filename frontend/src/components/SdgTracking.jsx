@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import {
   FaWater,
   FaHeartbeat,
@@ -169,3 +169,4 @@ const SdgTracking = () => {
 };
 
 export default SdgTracking;
+

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -25,7 +25,6 @@ import {
   BarChart2,
   PieChart,
 } from "lucide-react";
-import { loadFull } from "tsparticles";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 // import {
@@ -56,13 +55,6 @@ const AdminDashboard = () => {
   const [selectedRole, setSelectedRole] = useState("");
   // Sample data initialization
 
-  const particlesInit = async (engine) => {
-    await loadFull(engine);
-  };
-
-  const particlesLoaded = async (container) => {
-    console.log("Particles loaded", container);
-  };
   const navigate = useNavigate();
   const viewDetails = (projectId) => {
     navigate(`/details/${projectId}`);
@@ -144,9 +136,9 @@ const AdminDashboard = () => {
           icon: "success",
           title: "Deleted!",
           text: "User has been deleted.",
-          background: "#1f2937",
-          color: "#ffffff",
-          confirmButtonColor: "#10b981", // green-500
+          background: "#0f1211",
+          color: "#E8EBE6",
+          confirmButtonColor: "#3fc083", // Success color
         });
 
         toast.success("User deleted successfully");
@@ -159,8 +151,8 @@ const AdminDashboard = () => {
         icon: "error",
         title: "Error",
         text: error.response?.data?.message || "Failed to delete user",
-        background: "#1f2937",
-        color: "#ffffff",
+        background: "#0f1211",
+        color: "#E8EBE6",
       });
       toast.error(error.response?.data?.message || "Failed to delete user");
     }
@@ -316,7 +308,7 @@ const AdminDashboard = () => {
                       key={project._id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600 transition-colors"
+                      className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600"
                     >
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                         <div>
@@ -656,3 +648,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

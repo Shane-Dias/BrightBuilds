@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import {
   Trophy,
   Globe,
@@ -16,37 +16,37 @@ export default function SDGImpact() {
       icon: <Globe className="w-8 h-8" />,
       title: "Climate Action",
       desc: "Projects tackling climate change and promoting sustainability.",
-      color: "from-blue-600 to-green-600",
+      color: "var(--accent-primary)",
     },
     {
       icon: <Leaf className="w-8 h-8" />,
       title: "Life on Land",
       desc: "Innovations focused on biodiversity conservation and afforestation.",
-      color: "from-green-600 to-emerald-500",
+      color: "var(--accent-light)",
     },
     {
       icon: <Droplets className="w-8 h-8" />,
       title: "Clean Water",
       desc: "Solutions for water conservation and pollution control.",
-      color: "from-cyan-600 to-blue-600",
+      color: "var(--accent-hover)",
     },
     {
       icon: <Heart className="w-8 h-8" />,
       title: "Good Health",
       desc: "Health-tech projects improving well-being and healthcare access.",
-      color: "from-red-600 to-pink-600",
+      color: "#EF5350",
     },
     {
       icon: <BookOpen className="w-8 h-8" />,
       title: "Quality Education",
       desc: "Tech-driven learning solutions for better education.",
-      color: "from-amber-500 to-yellow-400",
+      color: "var(--amber-primary)",
     },
     {
       icon: <Lightbulb className="w-8 h-8" />,
       title: "Innovation & Infrastructure",
       desc: "Cutting-edge innovations for a smarter future.",
-      color: "from-purple-600 to-indigo-600",
+      color: "var(--accent-glow)",
     },
   ];
 
@@ -56,28 +56,28 @@ export default function SDGImpact() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative z-10 py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-fit p-8 rounded-lg"
+      className="relative z-10 py-12 sm:py-16 md:py-20 min-h-fit px-4 sm:px-6 md:p-8 rounded-lg"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
     >
-      <div className="container mx-auto px-6 text-center">
+      <div className="container mx-auto px-4 sm:px-6 text-center">
         {/* Section Title */}
         <motion.h1
-          className="text-7xl font-bold font-smooch text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-center mb-4 sm:mb-6"
+          style={{ color: 'var(--accent-primary)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          Sustainable Development Goals
+          Sustainable Impact
         </motion.h1>
 
-        <p className="text-gray-300 mb-12 max-w-3xl mx-auto">
-          Projects at the Innovation Hub are aligned with UN Sustainable
-          Development Goals, creating impact through interactive experiences
-          that address real-world challenges.
+        <p className="text-base sm:text-lg mb-8 sm:mb-10 md:mb-12 max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
+          Projects aligned with UN SDGs, creating real-world impact through innovation and collaboration.
         </p>
 
         {/* SDG Cards */}
         <motion.div
-          className="grid md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           initial="hidden"
           animate="visible"
           variants={{
@@ -105,31 +105,35 @@ export default function SDGImpact() {
               whileHover={{ scale: 1.05 }}
               className="relative group perspective-1000"
             >
-              <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center p-6">
-                <div className="absolute inset-0 bg-gradient-to-br opacity-10 z-0"></div>
+              <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] p-5 sm:p-6">
+                <div className="absolute inset-0 opacity-5 z-0" style={{ backgroundColor: sdg.color }}></div>
 
                 <div
-                  className={`text-4xl mb-4 w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-gradient-to-r ${sdg.color} p-4 text-white`}
+                  className="text-3xl sm:text-4xl mb-3 sm:mb-4 w-14 h-14 sm:w-16 sm:h-16 mx-auto flex items-center justify-center rounded-full p-3 sm:p-4 text-white"
+                  style={{ backgroundColor: sdg.color }}
                 >
                   {sdg.icon}
                 </div>
 
                 <div className="absolute top-0 right-0 p-2">
-                  <Trophy size={16} className="text-yellow-400" />
+                  <Trophy className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: 'var(--amber-primary)' }} />
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-3">
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">
                   {sdg.title}
                 </h3>
 
-                <p className="text-sm text-gray-300 mb-4 line-clamp-2">
+                <p className="text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4 line-clamp-2">
                   {sdg.desc}
                 </p>
 
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`mt-4 w-full bg-gradient-to-r ${sdg.color} text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium`}
+                  className="mt-4 w-full text-white py-2 px-4 rounded-lg transition-all text-sm font-medium"
+                  style={{ backgroundColor: sdg.color }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
                 >
                   View Projects
                 </motion.button>
@@ -141,3 +145,4 @@ export default function SDGImpact() {
     </motion.section>
   );
 }
+

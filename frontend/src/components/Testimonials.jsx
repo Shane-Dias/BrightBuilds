@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import { Quote, Star, User } from "lucide-react";
 
 export default function Testimonials() {
@@ -36,27 +36,28 @@ export default function Testimonials() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative z-10 py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-black min-h-fit p-8 rounded-lg"
+      className="relative z-10 py-12 sm:py-16 md:py-20 min-h-fit px-4 sm:px-6 md:p-8 rounded-lg"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
     >
-      <div className="container mx-auto px-6 text-center">
+      <div className="container mx-auto px-4 sm:px-6 text-center">
         {/* Section Title */}
         <motion.h1
-          className="text-7xl font-bold font-smooch text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-12"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-center mb-4 sm:mb-6"
+          style={{ color: 'var(--accent-primary)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          Testimonials
+          What Our Community Says
         </motion.h1>
 
-        <p className="text-gray-300 mb-12 max-w-3xl mx-auto">
-          Hear from our community of developers, educators, and industry
-          professionals about their experience with the Projects Innovation Hub.
+        <p className="text-base sm:text-lg mb-8 sm:mb-10 md:mb-12 max-w-2xl mx-auto px-4" style={{ color: 'var(--text-secondary)' }}>
+          Hear from students, educators, and industry professionals.
         </p>
 
         {/* Testimonials Grid */}
         <motion.div
-          className="grid md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           initial="hidden"
           animate="visible"
           variants={{
@@ -84,18 +85,19 @@ export default function Testimonials() {
               whileHover={{ scale: 1.05 }}
               className="relative group perspective-1000"
             >
-              <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] group-hover:rotate-1 origin-center p-6">
+              <div className="relative bg-gray-800/60 rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform transition-all duration-300 group-hover:scale-[1.03] p-5 sm:p-6">
                 {/* Quote Icon */}
                 <div className="absolute top-3 right-3 opacity-20">
-                  <Quote size={32} className="text-blue-400" />
+                  <Quote className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: 'var(--accent-light)' }} />
                 </div>
 
                 {/* User Image */}
-                <div className="flex justify-center mb-6 relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-xl opacity-20 scale-150"></div>
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/20 relative shadow-lg shadow-purple-900/30">
+                <div className="flex justify-center mb-4 sm:mb-6 relative">
+                  <div className="absolute inset-0 rounded-full blur-xl opacity-20 scale-150" style={{ background: 'linear-gradient(to right, var(--accent-primary), var(--amber-primary))' }}></div>
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 relative shadow-lg" style={{ borderColor: 'var(--accent-primary)', boxShadow: '0 10px 30px rgba(47, 167, 111, 0.3)' }}>
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                      className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                      style={{ background: 'linear-gradient(to right, var(--accent-primary), var(--accent-light))' }}
                       initial={{ opacity: 0 }}
                       whileHover={{ opacity: 0.2 }}
                     />
@@ -111,39 +113,38 @@ export default function Testimonials() {
                 </div>
 
                 {/* Rating */}
-                <div className="flex items-center justify-center mb-4 text-yellow-400">
+                <div className="flex items-center justify-center mb-3 sm:mb-4" style={{ color: 'var(--amber-primary)' }}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      size={16}
+                      className="w-3 h-3 sm:w-4 sm:h-4 mx-0.5"
                       fill={
                         i < Math.floor(testimonial.rating)
                           ? "currentColor"
                           : "none"
                       }
-                      className="mx-0.5"
                     />
                   ))}
-                  <span className="ml-2 text-sm text-gray-300">
+                  <span className="ml-2 text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
                     {testimonial.rating.toFixed(1)}
                   </span>
                 </div>
 
                 {/* Feedback text */}
-                <div className="bg-black/20 rounded-xl p-4 mb-4 relative">
-                  <p className="text-gray-300 italic mb-0 relative z-10">
+                <div className="bg-black/20 rounded-xl p-3 sm:p-4 mb-3 sm:mb-4 relative">
+                  <p className="text-xs sm:text-sm text-gray-300 italic mb-0 relative z-10">
                     "{testimonial.feedback}"
                   </p>
                 </div>
 
                 {/* User Details */}
-                <h3 className="text-lg font-semibold text-white mt-4">
+                <h3 className="text-base sm:text-lg font-semibold text-white mt-3 sm:mt-4">
                   {testimonial.name}
                 </h3>
-                <p className="text-sm text-blue-400">{testimonial.role}</p>
+                <p className="text-xs sm:text-sm" style={{ color: 'var(--accent-light)' }}>{testimonial.role}</p>
 
                 {/* Subtle decoration */}
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-purple-600 opacity-50"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1 opacity-50" style={{ background: 'linear-gradient(to right, var(--accent-primary), var(--amber-primary))' }}></div>
               </div>
             </motion.div>
           ))}
@@ -152,3 +153,4 @@ export default function Testimonials() {
     </motion.section>
   );
 }
+

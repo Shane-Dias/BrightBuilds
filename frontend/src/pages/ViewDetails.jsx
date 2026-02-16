@@ -11,7 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "../motionless";
 import { useState, useEffect } from "react";
 import axios from "axios"; // Add axios import
 import CommentSection from "../components/CommentSection";
@@ -230,16 +230,16 @@ const ProjectDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white flex items-center justify-center">
-        <div className="text-2xl">Loading project details...</div>
+      <div className="min-h-screen text-white flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="text-2xl" style={{ color: 'var(--text-secondary)' }}>Loading project details...</div>
       </div>
     );
   }
 
   if (error || !game) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white flex items-center justify-center">
-        <div className="text-2xl text-red-400">
+      <div className="min-h-screen text-white flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <div className="text-2xl" style={{ color: '#ff6b6b' }}>
           {error || "Failed to load project details"}
         </div>
       </div>
@@ -247,7 +247,7 @@ const ProjectDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
+    <div className="min-h-screen text-white" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <ToastContainer position="top-right" autoClose={5000} />
       {popupUrl && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -294,7 +294,7 @@ const ProjectDetails = () => {
           >
             <ChevronLeft size={24} />
           </button>
-          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+          <h1 className="text-4xl font-extrabold" style={{ color: 'var(--accent-primary)' }}>
             {game.title}
           </h1>
         </motion.div>
@@ -349,11 +349,10 @@ const ProjectDetails = () => {
                 {game.media.map((_, index) => (
                   <div
                     key={index}
-                    className={`h-2 w-2 rounded-full ${
-                      index === currentImageIndex
-                        ? "bg-blue-500"
-                        : "bg-white/30"
-                    }`}
+                    className="h-2 w-2 rounded-full"
+                    style={{
+                      backgroundColor: index === currentImageIndex ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.3)',
+                    }}
                   />
                 ))}
               </div>
@@ -364,12 +363,13 @@ const ProjectDetails = () => {
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-6 bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10"
+            className="space-y-6 rounded-3xl p-8 border"
+            style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-accent)' }}
           >
             {/* Rating and Like Section */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-4">
-                <div className="flex items-center text-yellow-400">
+                <div className="flex items-center" style={{ color: 'var(--amber-primary)' }}>
                   <Star size={24} fill="currentColor" className="mr-2" />
                   <span className="text-2xl font-bold">
                     {typeof game.rating === "number"
@@ -379,7 +379,10 @@ const ProjectDetails = () => {
                 </div>
                 <button
                   onClick={() => handleLike(id)}
-                  className="flex items-center text-pink-500 hover:text-pink-400 transition-colors"
+                  className="flex items-center transition-colors"
+                  style={{
+                    color: liked ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  }}
                 >
                   <Heart
                     size={24}
@@ -389,14 +392,14 @@ const ProjectDetails = () => {
                   {likeCount}
                 </button>
               </div>
-              <div className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+              <div className="px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--accent-light)', color: 'var(--bg-primary)' }}>
                 {game.category || "Project"}
               </div>
             </div>
 
             {/* Rate This Project */}
-            <div className="mt-4 bg-white/10 rounded-xl p-4 border border-white/10">
-              <h3 className="text-lg font-semibold mb-2">Rate This Project</h3>
+            <div className="mt-4 rounded-xl p-4 border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Rate This Project</h3>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((val) => (
                   <button
@@ -404,16 +407,15 @@ const ProjectDetails = () => {
                     onClick={() => handleRate(id, val)}
                     onMouseEnter={() => setHoveredRating(val)}
                     onMouseLeave={() => setHoveredRating(0)}
-                    className={`text-2xl transition-transform ${
-                      val <= (hoveredRating || userRating)
-                        ? "text-yellow-400"
-                        : "text-gray-400"
-                    } hover:scale-110`}
+                    className="text-2xl transition-transform hover:scale-110"
+                    style={{
+                      color: val <= (hoveredRating || userRating) ? 'var(--amber-primary)' : 'var(--text-secondary)',
+                    }}
                   >
                     ★
                   </button>
                 ))}
-                <span className="ml-2 text-gray-300">
+                <span className="ml-2" style={{ color: 'var(--text-secondary)' }}>
                   {userRating > 0 ? `Your rating: ${userRating}/5` : ""}
                 </span>
               </div>
@@ -427,32 +429,60 @@ const ProjectDetails = () => {
             {/* Game Details Grid */}
             <div className="grid grid-cols-2 gap-4">
               <DetailCard
-                icon={<Users className="text-blue-400" size={20} />}
+                icon={<Users style={{ color: 'var(--accent-primary)' }} size={20} />}
                 title="Contributors"
                 content={
-                  game.teammates && game.teammates.length > 0
-                    ? game.teammates.map((teammate, index) => (
-                        <React.Fragment key={teammate}>
-                          <span
-                            className="inline-flex items-center gap-1 text-yellow-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-yellow-300/30 hover:border-yellow-300 shadow-sm hover:shadow"
-                            onClick={() => handleProfileClick(teammate)}
-                          >
-                            {teammate}
-                          </span>
-                          {index < game.teammates.length - 1 ? ", " : ""}
-                        </React.Fragment>
-                      ))
-                    : "None"
+                  game.teammates && game.teammates.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {game.teammates.map((teammate) => (
+                        <span
+                          key={teammate}
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border shadow-sm hover:shadow"
+                          onClick={() => handleProfileClick(teammate)}
+                          style={{
+                            color: 'var(--accent-primary)',
+                            backgroundColor: 'var(--bg-secondary)',
+                            borderColor: 'var(--accent-primary)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)';
+                            e.currentTarget.style.borderColor = 'var(--accent-light)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                            e.currentTarget.style.borderColor = 'var(--accent-primary)';
+                          }}
+                        >
+                          {teammate}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "None"
+                  )
                 }
               />
               <DetailCard
-                icon={<School className="text-green-400" size={20} />}
+                icon={<School style={{ color: 'var(--amber-primary)' }} size={20} />}
                 title="Mentor"
                 content={
                   game.mentor ? (
                     <span
-                      className="inline-flex items-center gap-1 text-green-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-green-300/30 hover:border-green-300 shadow-sm hover:shadow"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border shadow-sm hover:shadow"
                       onClick={() => handleProfileClick(game.mentor)}
+                      style={{
+                        color: 'var(--amber-primary)',
+                        backgroundColor: 'var(--bg-secondary)',
+                        borderColor: 'var(--amber-primary)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--bg-tertiary)';
+                        e.currentTarget.style.borderColor = 'var(--amber-light)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--bg-secondary)';
+                        e.currentTarget.style.borderColor = 'var(--amber-primary)';
+                      }}
                     >
                       {game.mentor}
                     </span>
@@ -462,16 +492,7 @@ const ProjectDetails = () => {
                 }
               />
               <DetailCard
-                icon={<Code className="text-purple-400" size={20} />}
-                title="Tech Stack"
-                content={
-                  game.techStack && game.techStack.length > 0
-                    ? game.techStack.join(", ")
-                    : "N/A"
-                }
-              />
-              <DetailCard
-                icon={<MdDateRange  className="text-yellow-400" size={20} />}
+                icon={<MdDateRange style={{ color: 'var(--amber-primary)' }} size={20} />}
                 title="Created On"
                 content={new Date(game.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -488,7 +509,10 @@ const ProjectDetails = () => {
                   href={game.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+                  className="flex-1 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                 >
                   <Code className="mr-2" size={18} />
                   GitHub
@@ -497,7 +521,10 @@ const ProjectDetails = () => {
               {game.hostedLink && (
                 <button
                   onClick={() => setPopupUrl(game.hostedLink)}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+                  className="flex-1 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--amber-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--amber-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--amber-primary)'}
                 >
                   <ExternalLink className="mr-2" size={18} />
                   Live Demo
@@ -514,10 +541,10 @@ const ProjectDetails = () => {
           className="mt-12 grid md:grid-cols-2 gap-8"
         >
           <div
-            className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10"
-            style={{ overflow: "auto" }}
+            className="rounded-3xl p-8 border"
+            style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)', overflow: "auto" }}
           >
-            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-6">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--accent-primary)' }}>
               Sustainable Development Goals
             </h2>
             <div className="flex flex-wrap gap-4">
@@ -525,21 +552,26 @@ const ProjectDetails = () => {
                 game.sdgs.map((sdg, index) => (
                   <div
                     key={index}
-                    className="bg-green-500/10 border border-green-500/30 text-green-300 px-4 py-2 rounded-lg"
+                    className="px-4 py-2 rounded-lg border"
+                    style={{
+                      backgroundColor: 'var(--bg-tertiary)',
+                      borderColor: 'var(--accent-light)',
+                      color: 'var(--accent-light)',
+                    }}
                   >
                     {sdg}
                   </div>
                 ))
               ) : (
-                <div className="text-gray-400">No SDGs specified</div>
+                <div style={{ color: 'var(--text-secondary)' }}>No SDGs specified</div>
               )}
             </div>
           </div>
           <div
-            className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10"
-            style={{ overflow: "auto" }}
+            className="rounded-3xl p-8 border"
+            style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)', overflow: "auto" }}
           >
-            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-6">
+            <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--amber-primary)' }}>
               Tech Stack
             </h2>
             <div className="flex flex-wrap gap-4">
@@ -547,13 +579,18 @@ const ProjectDetails = () => {
                 game.techStack.map((tech, index) => (
                   <div
                     key={index}
-                    className="bg-blue-500/10 border border-blue-500/30 text-blue-300 px-4 py-2 rounded-lg"
+                    className="px-4 py-2 rounded-lg border"
+                    style={{
+                      backgroundColor: 'var(--bg-tertiary)',
+                      borderColor: 'var(--amber-primary)',
+                      color: 'var(--amber-light)',
+                    }}
                   >
                     {tech}
                   </div>
                 ))
               ) : (
-                <div className="text-gray-400">No tech stack specified</div>
+                <div style={{ color: 'var(--text-secondary)' }}>No tech stack specified</div>
               )}
             </div>
           </div>
@@ -574,13 +611,14 @@ const ProjectDetails = () => {
 
 // Reusable Detail Card Component
 const DetailCard = ({ icon, title, content }) => (
-  <div className="bg-white/10 rounded-xl p-4 flex items-center space-x-4 border border-white/10 overflow-auto">
+  <div className="rounded-xl p-4 flex items-start space-x-4 border" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}>
     <div className="flex-shrink-0">{icon}</div>
     <div>
-      <p className="text-xs text-gray-400 uppercase">{title}</p>
-      <p className="text-sm text-white truncate">{content}</p>
+      <p className="text-xs uppercase" style={{ color: 'var(--text-secondary)' }}>{title}</p>
+      <div className="text-sm" style={{ color: 'var(--text-primary)' }}>{content}</div>
     </div>
   </div>
 );
 
 export default ProjectDetails;
+

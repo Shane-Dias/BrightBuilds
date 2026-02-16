@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "../motionless";
 import {
   Bell,
   X,
@@ -186,7 +186,10 @@ const NotificationComponent = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:shadow-purple-500/30 transition-all duration-300"
+          className="relative flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-all duration-300"
+          style={{ backgroundColor: 'var(--accent-primary)' }}
+          onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 20px rgba(47, 167, 111, 0.3)'}
+          onMouseLeave={(e) => e.currentTarget.style.boxShadow = ''}
         >
           <Bell size={24} />
 
@@ -212,12 +215,13 @@ const NotificationComponent = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 z-50 w-full sm:w-96 max-h-[80vh] bg-gray-900/95 backdrop-blur-md shadow-xl rounded-tr-2xl overflow-hidden"
+            className="fixed bottom-0 left-0 z-50 w-full sm:w-96 max-h-[80vh] shadow-xl rounded-tr-2xl overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-secondary)' }}
           >
             {/* Drawer Header */}
             <div className="flex items-center justify-between bg-gray-800 px-6 py-4 border-b border-gray-700">
               <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--accent-primary)' }}>
                   <Bell size={20} className="text-white" />
                 </div>
                 <h2 className="text-xl font-semibold text-white">
@@ -337,7 +341,10 @@ const NotificationComponent = () => {
             <div className="border-t border-gray-700 p-4 text-center">
               <button
                 onClick={() => setIsOpen(false)}
-                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-purple-500/20"
+                className="px-6 py-2 text-white rounded-lg transition-all duration-300 shadow-md"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent-hover)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(47, 167, 111, 0.2)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = ''; }}
               >
                 Close
               </button>
@@ -350,3 +357,4 @@ const NotificationComponent = () => {
 };
 
 export default NotificationComponent;
+

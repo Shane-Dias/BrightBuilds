@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "../motionless";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -165,61 +166,30 @@ const SignupPage = () => {
     tap: { scale: 0.97 },
   };
 
-  const dropdownVariants = {
-    closed: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut",
-      },
-    },
-    open: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeInOut",
-      },
-    },
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 py-12 pt-24">
+    <div
+      className="flex items-center justify-center min-h-screen py-12 pt-24 px-4"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
+    >
       <AutoScrollToTop />
       <ToastContainer position="top-right" autoClose={5000} />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative w-full max-w-3xl p-8 mx-4 overflow-hidden rounded-lg shadow-xl bg-gray-800 border border-gray-700"
+        className="relative w-full max-w-3xl p-6 sm:p-8 mx-4 overflow-hidden rounded-2xl shadow-xl border"
+        style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
       >
         {/* Glowing background effects */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{
-              x: [0, 10, 0],
-              y: [0, -10, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 8,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-24 -left-24 w-48 h-48 bg-purple-600 rounded-full opacity-20 blur-3xl"
-          ></motion.div>
-          <motion.div
-            animate={{
-              x: [0, -15, 0],
-              y: [0, 15, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 10,
-              ease: "easeInOut",
-            }}
-            className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-500 rounded-full opacity-20 blur-3xl"
-          ></motion.div>
+          <div
+            className="absolute -top-24 -left-24 w-48 h-48 rounded-full opacity-20 blur-3xl"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+          ></div>
+          <div
+            className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full opacity-20 blur-3xl"
+            style={{ backgroundColor: 'var(--amber-primary)' }}
+          ></div>
         </div>
 
         {/* Signup form */}
@@ -232,11 +202,12 @@ const SignupPage = () => {
           >
             <motion.h2
               variants={itemVariants}
-              className="text-3xl font-bold text-white mb-2"
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--text-primary)' }}
             >
               Create Your Account
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-gray-400">
+            <motion.p variants={itemVariants} style={{ color: 'var(--text-secondary)' }}>
               Join our community today
             </motion.p>
           </motion.div>
@@ -246,7 +217,7 @@ const SignupPage = () => {
             initial="hidden"
             animate="visible"
             onSubmit={handleSubmit}
-            className="space-y-6"
+            className="space-y-6 signup-form"
           >
             {/* Profile Image Upload */}
             <motion.div
@@ -256,7 +227,8 @@ const SignupPage = () => {
               <div className="relative">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="w-28 h-28 rounded-full bg-gray-700 border-2 border-gray-600 flex items-center justify-center overflow-hidden cursor-pointer"
+                  className="w-28 h-28 rounded-full border-2 flex items-center justify-center overflow-hidden cursor-pointer"
+                  style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-accent)' }}
                   onClick={() => fileInputRef.current.click()}
                 >
                   {previewUrl ? (
@@ -266,13 +238,14 @@ const SignupPage = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Upload size={32} className="text-gray-400" />
+                    <Upload size={32} style={{ color: 'var(--text-secondary)' }} />
                   )}
                 </motion.div>
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-2 shadow-lg"
+                  className="absolute -bottom-2 -right-2 rounded-full p-2 shadow-lg border"
+                  style={{ backgroundColor: 'var(--accent-primary)', borderColor: 'var(--bg-primary)' }}
                   onClick={() => fileInputRef.current.click()}
                 >
                   <Upload size={16} className="text-white" />
@@ -284,7 +257,7 @@ const SignupPage = () => {
                   accept="image/*"
                   className="hidden"
                 />
-                <p className="text-xs text-gray-400 text-center mt-2">
+                <p className="text-xs text-center mt-2" style={{ color: 'var(--text-secondary)' }}>
                   Upload profile photo
                 </p>
               </div>
@@ -295,24 +268,26 @@ const SignupPage = () => {
               <motion.div variants={itemVariants} className="group">
                 <label
                   htmlFor="fullName"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   User Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <User size={18} className="text-gray-500" />
+                    <User size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.input
                     whileFocus={{
-                      boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
+                      boxShadow: "0 0 0 3px rgba(47, 167, 111, 0.35)",
                     }}
                     id="fullName"
                     name="fullName"
                     type="text"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-accent)' }}
                     placeholder="Enter your user name"
                     required
                   />
@@ -323,17 +298,18 @@ const SignupPage = () => {
               <motion.div variants={itemVariants} className="group">
                 <label
                   htmlFor="age"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Age
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Calendar size={18} className="text-gray-500" />
+                    <Calendar size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.input
                     whileFocus={{
-                      boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
+                      boxShadow: "0 0 0 3px rgba(47, 167, 111, 0.35)",
                     }}
                     id="age"
                     name="age"
@@ -342,78 +318,80 @@ const SignupPage = () => {
                     max="120"
                     value={formData.age}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-accent)' }}
                     placeholder="Your age"
                     required
                   />
                 </div>
               </motion.div>
-
               {/* Gender Dropdown */}
               <motion.div variants={itemVariants} className="group relative">
                 <label
                   htmlFor="gender"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Gender
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <User size={18} className="text-gray-500" />
+                    <User size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.button
                     type="button"
-                    onClick={() => setGenderOpen(!genderOpen)}
-                    className="flex items-center justify-between w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    onClick={() => {
+                      setGenderOpen((prev) => !prev);
+                      setRoleOpen(false);
+                    }}
+                    className="flex items-center justify-between w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
                   >
                     <span
-                      className={
-                        formData.gender ? "text-white" : "text-gray-400"
-                      }
+                      style={{
+                        color: formData.gender ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      }}
                     >
                       {formData.gender || "Select gender"}
                     </span>
                     <ChevronDown
                       size={18}
-                      className={`text-gray-400 transition-transform duration-300 ${
+                      className={`transition-transform duration-300 ${
                         genderOpen ? "transform rotate-180" : ""
                       }`}
+                      style={{ color: 'var(--text-secondary)' }}
                     />
                   </motion.button>
 
-                  <motion.div
-                    variants={dropdownVariants}
-                    initial="closed"
-                    animate={genderOpen ? "open" : "closed"}
-                    className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg overflow-hidden"
-                  >
-                    <div className="py-1">
-                      {genderOptions.map((option) => (
-                        <motion.div
-                          key={option}
-                          whileHover={{
-                            backgroundColor: "rgba(59, 130, 246, 0.2)",
-                          }}
-                          className="px-3 py-2 cursor-pointer flex items-center"
-                          onClick={() => {
-                            setFormData({ ...formData, gender: option });
-                            setGenderOpen(false);
-                          }}
-                        >
-                          {formData.gender === option && (
-                            <Check size={16} className="text-blue-400 mr-2" />
-                          )}
-                          <span
-                            className={`${
-                              formData.gender === option ? "pl-0" : "pl-6"
-                            } text-white`}
+                  {genderOpen && (
+                    <div
+                      className="absolute z-10 w-full mt-1 rounded-lg shadow-lg overflow-hidden border"
+                      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
+                    >
+                      <div className="py-1">
+                        {genderOptions.map((option) => (
+                          <div
+                            key={option}
+                            className="px-3 py-2 cursor-pointer flex items-center hover:bg-[var(--bg-tertiary)]"
+                            onClick={() => {
+                              setFormData({ ...formData, gender: option });
+                              setGenderOpen(false);
+                            }}
                           >
-                            {option}
-                          </span>
-                        </motion.div>
-                      ))}
+                            {formData.gender === option && (
+                              <Check size={16} className="mr-2" style={{ color: 'var(--accent-primary)' }} />
+                            )}
+                            <span
+                              className={formData.gender === option ? "pl-0" : "pl-6"}
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {option}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </motion.div>
+                  )}
                 </div>
               </motion.div>
 
@@ -421,65 +399,68 @@ const SignupPage = () => {
               <motion.div variants={itemVariants} className="group relative">
                 <label
                   htmlFor="role"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Role
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Building size={18} className="text-gray-500" />
+                    <Building size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.button
                     type="button"
-                    onClick={() => setRoleOpen(!roleOpen)}
-                    className="flex items-center justify-between w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    onClick={() => {
+                      setRoleOpen((prev) => !prev);
+                      setGenderOpen(false);
+                    }}
+                    className="flex items-center justify-between w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
                   >
                     <span
-                      className={formData.role ? "text-white" : "text-gray-400"}
+                      style={{
+                        color: formData.role ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      }}
                     >
                       {formData.role || "Select role"}
                     </span>
                     <ChevronDown
                       size={18}
-                      className={`text-gray-400 transition-transform duration-300 ${
+                      className={`transition-transform duration-300 ${
                         roleOpen ? "transform rotate-180" : ""
                       }`}
+                      style={{ color: 'var(--text-secondary)' }}
                     />
                   </motion.button>
-
-                  <motion.div
-                    variants={dropdownVariants}
-                    initial="closed"
-                    animate={roleOpen ? "open" : "closed"}
-                    className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg overflow-hidden"
-                  >
-                    <div className="py-1">
-                      {roleOptions.map((option) => (
-                        <motion.div
-                          key={option}
-                          whileHover={{
-                            backgroundColor: "rgba(59, 130, 246, 0.2)",
-                          }}
-                          className="px-3 py-2 cursor-pointer flex items-center"
-                          onClick={() => {
-                            setFormData({ ...formData, role: option });
-                            setRoleOpen(false);
-                          }}
-                        >
-                          {formData.role === option && (
-                            <Check size={16} className="text-blue-400 mr-2" />
-                          )}
-                          <span
-                            className={`${
-                              formData.role === option ? "pl-0" : "pl-6"
-                            } text-white`}
+                  {roleOpen && (
+                    <div
+                      className="absolute z-10 w-full mt-1 rounded-lg shadow-lg overflow-hidden border"
+                      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
+                    >
+                      <div className="py-1">
+                        {roleOptions.map((option) => (
+                          <div
+                            key={option}
+                            className="px-3 py-2 cursor-pointer flex items-center hover:bg-[var(--bg-tertiary)]"
+                            onClick={() => {
+                              setFormData({ ...formData, role: option });
+                              setRoleOpen(false);
+                            }}
                           >
-                            {option}
-                          </span>
-                        </motion.div>
-                      ))}
+                            {formData.role === option && (
+                              <Check size={16} className="mr-2" style={{ color: 'var(--accent-primary)' }} />
+                            )}
+                            <span
+                              className={formData.role === option ? "pl-0" : "pl-6"}
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {option}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </motion.div>
+                  )}
                 </div>
               </motion.div>
 
@@ -653,7 +634,7 @@ const SignupPage = () => {
 
             {/* Social Media Section */}
             <motion.div variants={itemVariants} className="pt-4">
-              <h3 className="text-lg font-medium text-white mb-4">
+              <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--text-primary)' }}>
                 Social Media Profiles
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -824,7 +805,10 @@ const SignupPage = () => {
                 whileTap="tap"
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-800 relative overflow-hidden"
+                className="w-full py-3 px-4 rounded-lg text-white font-medium flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 relative overflow-hidden"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
+                onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--accent-primary)')}
               >
                 {isLoading ? (
                   <motion.span
@@ -863,7 +847,6 @@ const SignupPage = () => {
                     Create Account
                   </motion.span>
                 )}
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 shine"></span>
               </motion.button>
             </motion.div>
           </motion.form>
@@ -875,13 +858,16 @@ const SignupPage = () => {
             transition={{ delay: 0.8, duration: 0.5 }}
             className="mt-8 text-center"
           >
-            <p className="text-sm text-gray-400">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Already have an account?{" "}
               <motion.a
                 href="login"
-                whileHover={{ scale: 1.05, color: "#93c5fd" }}
+                whileHover={{ scale: 1.05, color: "#5dd3a7" }}
                 whileTap={{ scale: 0.95 }}
-                className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                className="font-medium transition-colors duration-200"
+                style={{ color: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-light)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
               >
                 Sign in
               </motion.a>
@@ -890,31 +876,17 @@ const SignupPage = () => {
         </div>
       </motion.div>
 
-      {/* Add this CSS for the shine effect */}
       <style jsx>{`
-        @keyframes shine {
-          to {
-            transform: translateX(100%);
-          }
+        .signup-form label {
+          color: var(--text-secondary);
         }
-        .shine {
-          overflow: hidden;
+        .signup-form input {
+          background-color: var(--bg-secondary);
+          border-color: var(--border-accent);
+          color: var(--text-primary);
         }
-        .shine::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 100%
-          );
-          transform: skewX(-25deg);
-          animation: shine 6s infinite;
+        .signup-form input::placeholder {
+          color: var(--text-secondary);
         }
       `}</style>
     </div>
@@ -922,3 +894,4 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+

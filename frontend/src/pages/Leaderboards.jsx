@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./Leaderboards.mobile.css";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "../motionless";
 import { useNavigate } from "react-router-dom";
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
 import axios from "axios";
 import AutoScrollToTop from "../components/AutoScrollToTop";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useLeaderboardRankings from "../hooks/useLeaderboardRankings";
-import RankingBadge from "../components/RankingBadge";
+import { Trophy, Medal, Star } from "lucide-react";
 
 const Leaderboards = () => {
   const [activeTab, setActiveTab] = useState("thisWeek");
@@ -40,14 +37,6 @@ const Leaderboards = () => {
     };
 
     fetchProjects();
-  }, []);
-
-  const particlesInit = useCallback(async (engine) => {
-    await loadSlim(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container) => {
-    console.log("Particles container loaded", container);
   }, []);
 
   // Get this week's projects (last 7 days)
@@ -117,161 +106,117 @@ const Leaderboards = () => {
   };
 
   const role = localStorage.getItem("role");
-  const token = localStorage.getItem("token");
 
   return (
-    <div className="relative bg-gradient-to-br from-gray-900 to-black min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <AutoScrollToTop />
       <ToastContainer position="top-right" autoClose={5000} />
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        loaded={particlesLoaded}
-        options={{
-          background: {
-            color: {
-              value: "transparent",
-            },
-          },
-          fpsLimit: 120,
-          interactivity: {
-            events: {
-              onClick: {
-                enable: true,
-                mode: "pull",
-              },
-              onHover: {
-                enable: true,
-                mode: "attract",
-              },
-              resize: true,
-            },
-            modes: {
-              push: {
-                quantity: 4,
-              },
-              repulse: {
-                distance: 200,
-                duration: 0.4,
-              },
-            },
-          },
-          particles: {
-            color: {
-              value: "#ffffff",
-            },
-            links: {
-              color: "#ffffff",
-              distance: 150,
-              enable: false,
-              opacity: 0.3,
-              width: 1,
-            },
-            move: {
-              direction: "bottom",
-              enable: true,
-              outModes: {
-                default: "out",
-              },
-              random: false,
-              speed: 2,
-              straight: false,
-            },
-            number: {
-              density: {
-                enable: true,
-                area: 800,
-              },
-              value: 80,
-            },
-            opacity: {
-              value: 0.3,
-            },
-            shape: {
-              type: "polygon",
-            },
-            size: {
-              value: { min: 1, max: 5 },
-            },
-          },
-          detectRetina: true,
-        }}
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          zIndex: 0,
-        }}
-      />
 
-      <div className="relative z-10 container mx-auto px-4 py-16">
-        <motion.h1
-          className="text-5xl font-lilita mt-10 md:text-6xl font-bold text-center mb-8 md:mb-12 text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500"
-          initial={{ opacity: 0, y: -50 }}
+      <div className="relative z-10 container mx-auto px-4 pt-20 pb-12">
+        {/* Title Section */}
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
         >
-          Project Leaderboards
-        </motion.h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Trophy className="w-10 h-10" style={{ color: 'var(--amber-primary)' }} />
+            <h1 
+              className="text-5xl md:text-6xl font-bold"
+              style={{
+                color: '#FFD700'
+              }}
+            >
+              Project Leaderboards
+            </h1>
+            <Trophy className="w-10 h-10" style={{ color: 'var(--accent-primary)' }} />
+          </div>
+          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+            Celebrating the most impactful and highly-rated projects
+          </p>
+        </motion.div>
         {role === "Admin" && (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full py-4">
-            <button
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full py-6 mb-4">
+            <motion.button
               onClick={notifyTopOverallProjects}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50 w-full sm:w-auto"
-              aria-label="Notify top 10 projects overall"
+              className="px-6 py-3 text-white rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 flex-1 sm:flex-none font-medium"
+              style={{ backgroundColor: 'var(--accent-primary)', borderColor: 'var(--accent-hover)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              Notify Top 10 Projects Overall
-            </button>
+              <Trophy className="w-5 h-5" />
+              Notify Top 10 Overall
+            </motion.button>
 
-            <button
+            <motion.button
               onClick={notifyTop5Projects}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 disabled:opacity-50 w-full sm:w-auto"
-              aria-label="Notify Top 5 Projects This Week"
+              className="px-6 py-3 text-white rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 flex-1 sm:flex-none font-medium"
+              style={{ backgroundColor: 'var(--amber-primary)', borderColor: 'var(--amber-hover)' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--amber-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--amber-primary)'}
+              whileHover={{ scale: 1.05 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
             >
-              Notify Top 5 Projects This Week
-            </button>
+              <Star className="w-5 h-5" />
+              Notify Top 5 This Week
+            </motion.button>
           </div>
         )}
         {/* Competitive Tab Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-gray-800 rounded-full p-1 flex space-x-1 shadow-lg">
+        <div className="flex justify-center mb-12">
+          <div className="bg-gray-800/20 rounded-full p-2 flex gap-2 border-2" style={{ borderColor: 'var(--border-accent)' }}>
             <motion.button
               onClick={() => setActiveTab("thisWeek")}
-              className={`px-6 py-3 rounded-full transition-all duration-300 relative ${
+              className={`px-8 py-3 rounded-full transition-all duration-300 relative font-semibold ${
                 activeTab === "thisWeek"
                   ? "text-white"
-                  : "text-gray-400 hover:text-white"
+                  : "text-gray-400 hover:text-gray-300"
               }`}
               whileHover={{ scale: 1.05 }}
             >
               {activeTab === "thisWeek" && (
                 <motion.span
                   layoutId="tabIndicator"
-                  className="absolute inset-0 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full z-0"
+                  className="absolute inset-0 rounded-full z-0"
+                  style={{ backgroundColor: 'var(--amber-primary)' }}
                   initial={false}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <span className="relative z-10 font-medium">This Week</span>
+              <span className="relative z-10 flex items-center gap-2">
+                <Star className="w-4 h-4" />
+                This Week
+              </span>
             </motion.button>
             <motion.button
               onClick={() => setActiveTab("overall")}
-              className={`px-6 py-3 rounded-full transition-all duration-300 relative ${
+              className={`px-8 py-3 rounded-full transition-all duration-300 relative font-semibold ${
                 activeTab === "overall"
                   ? "text-white"
-                  : "text-gray-400 hover:text-white"
+                  : "text-gray-400 hover:text-gray-300"
               }`}
               whileHover={{ scale: 1.05 }}
             >
               {activeTab === "overall" && (
                 <motion.span
                   layoutId="tabIndicator"
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500 to-green-500 rounded-full z-0"
+                  className="absolute inset-0 rounded-full z-0"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
                   initial={false}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <span className="relative z-10 font-medium">Overall</span>
+              <span className="relative z-10 flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                Overall
+              </span>
             </motion.button>
           </div>
         </div>
@@ -280,7 +225,7 @@ const Leaderboards = () => {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-500 bg-opacity-20 border border-red-500 text-red-100 p-4 rounded-lg text-center">
+          <div className="border text-red-100 p-4 rounded-lg text-center" style={{ backgroundColor: 'rgba(239, 83, 80, 0.2)', borderColor: 'var(--error)' }}>
             Error loading projects. Please try again later.
           </div>
         ) : (
@@ -316,14 +261,22 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-bold text-white mb-6 text-center">{title}</h2>
+      <h2 
+        className="text-3xl font-bold text-center mb-10 flex items-center justify-center gap-3"
+        style={{ color: 'var(--accent-primary)' }}
+      >
+        <Star className="w-6 h-6" />
+        {title}
+        <Star className="w-6 h-6" />
+      </h2>
 
       {projects.length === 0 ? (
-        <div className="text-center text-gray-400 p-8 bg-gray-800 bg-opacity-50 rounded-lg">
-          {emptyMessage}
+        <div className="text-center p-12 rounded-2xl border-2" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}>
+          <Trophy className="w-16 h-16 mx-auto mb-4 opacity-30" style={{ color: 'var(--accent-light)' }} />
+          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>{emptyMessage}</p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="space-y-6">
           {projects.map((project, index) => (
             <ProjectCard
               key={project._id || index}
@@ -341,74 +294,6 @@ const ProjectList = ({ projects, title, emptyMessage }) => {
 const ProjectCard = ({ project, rank }) => {
   const navigate = useNavigate();
 
-  // Map backend category to the frontend category format
-  const getCategoryKey = (category) => {
-    const map = {
-      Website: "website",
-      Game: "game",
-      Video: "video",
-      Documentary: "documentary",
-      "Digital Art": "digitalart",
-    };
-    return map[category] || "website"; // Default to website if not found
-  };
-
-  const categoryColors = {
-    game: "from-blue-500 to-indigo-600",
-    website: "from-green-500 to-teal-600",
-    video: "from-purple-500 to-pink-600",
-    documentary: "from-yellow-500 to-orange-600",
-    digitalart: "from-red-500 to-pink-600",
-  };
-
-  // Map SDG names to numbers for the color mapping
-  const getSdgNumber = (sdgName) => {
-    const sdgMap = {
-      "No Poverty": 1,
-      "Zero Hunger": 2,
-      "Good Health and Well-being": 3,
-      "Quality Education": 4,
-      "Gender Equality": 5,
-      "Clean Water and Sanitation": 6,
-      "Affordable and Clean Energy": 7,
-      "Decent Work and Economic Growth": 8,
-      "Industry, Innovation, and Infrastructure": 9,
-      "Reduced Inequality": 10,
-      "Sustainable Cities and Communities": 11,
-      "Responsible Consumption and Production": 12,
-      "Climate Action": 13,
-      "Life Below Water": 14,
-      "Life on Land": 15,
-      "Peace, Justice and Strong Institutions": 16,
-      "Partnerships for the Goals": 17,
-    };
-    return sdgMap[sdgName] || 1;
-  };
-
-  const sdgInfo = {
-    1: { name: "No Poverty", color: "bg-red-500" },
-    2: { name: "Zero Hunger", color: "bg-orange-500" },
-    3: { name: "Good Health", color: "bg-green-500" },
-    4: { name: "Quality Education", color: "bg-blue-500" },
-    5: { name: "Gender Equality", color: "bg-yellow-500" },
-    6: { name: "Clean Water", color: "bg-teal-500" },
-    7: { name: "Clean Energy", color: "bg-indigo-500" },
-    8: { name: "Economic Growth", color: "bg-purple-500" },
-    9: { name: "Innovation", color: "bg-pink-500" },
-    10: { name: "Reduced Inequalities", color: "bg-gray-500" },
-    11: { name: "Sustainable Cities", color: "bg-lime-500" },
-    12: { name: "Responsible Consumption", color: "bg-emerald-500" },
-    13: { name: "Climate Action", color: "bg-cyan-500" },
-    14: { name: "Life Below Water", color: "bg-sky-500" },
-    15: { name: "Life on Land", color: "bg-fuchsia-500" },
-    16: { name: "Peace & Justice", color: "bg-violet-500" },
-    17: { name: "Partnerships", color: "bg-rose-500" },
-  };
-
-  // Get the primary SDG for display (first one in the array)
-  const primarySdg =
-    project.sdgs && project.sdgs.length > 0 ? getSdgNumber(project.sdgs[0]) : 1;
-
   // Get media URL (first image in the array)
   const getMediaUrl = () => {
     if (project.media && project.media.length > 0) {
@@ -422,27 +307,55 @@ const ProjectCard = ({ project, rank }) => {
     return "https://via.placeholder.com/300x200?text=No+Image";
   };
 
-  const categoryKey = getCategoryKey(project.category);
+  const getRankBadge = (rank) => {
+    if (rank === 1) return { icon: "🥇", color: "#FFD700", label: "1st Place" };
+    if (rank === 2) return { icon: "🥈", color: "#C0C0C0", label: "2nd Place" };
+    if (rank === 3) return { icon: "🥉", color: "#CD7F32", label: "3rd Place" };
+    return { icon: rank, color: 'var(--accent-primary)', label: `#${rank}` };
+  };
+
+  const badge = getRankBadge(rank);
 
   return (
     <motion.div
-      className="relative bg-gray-800 bg-opacity-80 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-2xl border border-gray-700 leaderboard-project-card"
-      initial={{ opacity: 0, y: 50 }}
+      className="relative rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-xl border-2 overflow-hidden"
+      style={{ 
+        backgroundColor: 'var(--bg-secondary)', 
+        borderColor: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'var(--border-accent)',
+      }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ 
+        scale: 1.02,
+        boxShadow: rank <= 3 ? '0 20px 40px rgba(47, 167, 111, 0.2)' : '0 15px 30px rgba(47, 167, 111, 0.1)'
+      }}
     >
-      {/* Rank Badge with Gradient */}
-      <div
-        className={`absolute -top-4 -left-4 w-16 h-16 rounded-full bg-gradient-to-br ${categoryColors[categoryKey]} flex items-center justify-center text-2xl font-bold text-white shadow-lg z-10`}
-      >
-        {rank}
-      </div>
+      {/* Decorative gradient border for top 3 */}
+      {rank <= 3 && (
+        <div 
+          className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r"
+          style={{ 
+            background: rank === 1 
+              ? 'linear-gradient(90deg, #FFD700, #FFA500)' 
+              : rank === 2 
+              ? 'linear-gradient(90deg, #C0C0C0, #A9A9A9)'
+              : 'linear-gradient(90deg, #CD7F32, #B87333)'
+          }}
+        ></div>
+      )}
 
-      {/* Leaderboard Badge */}
-      {/* <div className="absolute top-4 right-4 z-20">
-        <RankingBadge type={leaderboardType} rank={rank} />
-      </div> */}
+      {/* Rank Badge */}
+      <div
+        className="absolute -top-4 -left-4 w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold shadow-xl z-10 border-4"
+        style={{ 
+          backgroundColor: rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'var(--accent-primary)',
+          borderColor: 'var(--bg-secondary)',
+          color: rank <= 3 ? '#000' : '#fff'
+        }}
+      >
+        <span>{badge.icon}</span>
+      </div>
 
       {/* Project Image */}
       <div className="flex-shrink-0 w-full md:w-48 h-48 rounded-xl overflow-hidden shadow-lg relative leaderboard-project-image">
@@ -459,98 +372,81 @@ const ProjectCard = ({ project, rank }) => {
         />
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-2xl max-w-52 font-bold text-white truncate ">
+      <div className="flex-1 flex flex-col gap-4">
+        {/* Title and Category */}
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold text-white truncate mb-2 leading-tight">
               {project.title}
             </h3>
-            <div className="flex items-center gap-2 mt-1">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className={`w-5 h-5 ${
-                    i < Math.floor(project.rating)
-                      ? "text-yellow-400 fill-current"
-                      : "text-gray-400 fill-current"
-                  }`}
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-              <span className="text-xl font-bold text-yellow-400">
+            {/* Star Rating */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={18}
+                    className={i < Math.floor(project.rating) ? "fill-current" : ""}
+                    style={{ 
+                      color: i < Math.floor(project.rating) ? 'var(--amber-primary)' : 'var(--accent-light)'
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="text-lg font-bold ml-1" style={{ color: 'var(--amber-primary)' }}>
                 {project.rating.toFixed(1)}
               </span>
             </div>
           </div>
-          <span
-            className={`bg-gradient-to-r ${categoryColors[categoryKey]} text-white text-base px-6 py-2 rounded-full`}
+          <motion.span
+            className="px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap"
+            style={{ 
+              backgroundColor: 'var(--accent-primary)', 
+              color: 'white',
+            }}
+            whileHover={{ scale: 1.05 }}
           >
             {project.category}
-          </span>
+          </motion.span>
         </div>
 
-        <p className="text-gray-300 leading-relaxed line-clamp-2 max-h-12 overflow-hidden">
-          {project.description.length > 100
-            ? project.description.slice(0, 100) + "..."
+        {/* Description */}
+        <p className="text-gray-300 text-sm leading-relaxed line-clamp-2">
+          {project.description.length > 120
+            ? project.description.slice(0, 120) + "..."
             : project.description}
         </p>
 
-        <div className="flex flex-col items-start">
-          <motion.button
-            onClick={() => navigate(`/details/${project._id}`)}
-            className="px-6 -ml-1 py-2 bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-full hover:from-red-600 hover:to-yellow-600 transition-all shadow-lg flex items-center gap-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                clipRule="evenodd"
-              />
-            </svg>
-            View Details
-          </motion.button>
-
-          <div className="flex flex-col items-start gap-4">
-            <div className="flex items-center gap-1 mt-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-red-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span className="text-white font-medium">{project.likes}</span>
-            </div>
-
-            <div className="text-sm text-gray-400">
-              <span className="font-medium text-white">SDG:</span>{" "}
-              {project.sdgs && project.sdgs.length > 0 ? (
-                <span className="inline-block bg-green-500/10 px-2 py-1 rounded-full text-green-300">
-                  {project.sdgs[0]}
-                </span>
-              ) : (
-                "N/A"
-              )}
-            </div>
+        {/* Stats Row */}
+        <div className="flex gap-6 items-center text-sm">
+          <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+            <Medal className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
+            <span><strong className="text-white">{project.likes}</strong> likes</span>
           </div>
+          {project.sdgs && project.sdgs.length > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full" style={{ backgroundColor: 'rgba(47, 167, 111, 0.1)', borderLeft: '2px solid var(--accent-primary)' }}>
+              <span style={{ color: 'var(--accent-primary)' }} className="text-xs font-semibold">{project.sdgs[0]}</span>
+            </div>
+          )}
         </div>
+
+        {/* View Details Button */}
+        <motion.button
+          onClick={() => navigate(`/details/${project._id}`)}
+          className="px-6 py-2 rounded-lg transition-all shadow-md flex items-center gap-2 font-medium text-white self-start mt-2"
+          style={{ 
+            backgroundColor: 'var(--accent-primary)',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
+          whileHover={{ scale: 1.05 }}
+        >
+          View Project
+        </motion.button>
       </div>
     </motion.div>
   );
 };
 
 export default Leaderboards;
+
