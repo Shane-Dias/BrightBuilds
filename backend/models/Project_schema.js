@@ -11,11 +11,13 @@ const projectSchema = new mongoose.Schema({
   },
   github: {
     type: String,
-    required: true,
+    required: false,
+    default: "",
   },
   hostedLink: {
     type: String,
-    required: true,
+    required: false,
+    default: "",
   },
   media: [String], // We'll store file paths
   mentor: {

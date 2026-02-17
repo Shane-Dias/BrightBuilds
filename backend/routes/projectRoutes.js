@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
 const auth = require("../middleware/authenticateUser");
+const isAdmin = require("../middleware/adminMiddleware");
 
 const {
   createProject,
@@ -13,7 +14,9 @@ const {
   getMentorProjectsByUsername,
   likeProject,
   rateProject,
-  getProjectsGroupedBySDG
+  getProjectsGroupedBySDG,
+  getAdminAnalyticsSummary,
+  getDebugInfo
 } = require("../controllers/projectController");
 
 router.route("/create").post(upload.uploadMultiple, createProject);
@@ -27,5 +30,7 @@ router.route("/projects/mentor/:username").get(getMentorProjectsByUsername);
 router.post("/:projectId/like", auth, likeProject);
 router.post("/:projectId/rate", auth, rateProject);
 router.get("/sdg-summary", getProjectsGroupedBySDG);
+router.get("/analytics/debug", auth, getDebugInfo);
+router.get("/analytics/summary", auth, isAdmin, getAdminAnalyticsSummary);
 
 module.exports = router;

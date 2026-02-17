@@ -1,4 +1,5 @@
 const Project = require("../models/Project_schema");
+const User = require("../models/User_schema");
 
 // 🟢 Create Project (Initially Marked as "Pending")
 exports.createProject = async (req, res, next) => {
@@ -135,20 +136,20 @@ exports.getProjectsByUsername = async (req, res) => {
 exports.getMentorProjectsByUsername = async (req, res) => {
   try {
     const { username } = req.params;
+    console.log("Fetching projects for mentor:", username);
 
-    // Find projects where teammates array contains the given username
+    // Find projects where mentor field matches the given username/fullName
     const projects = await Project.find({ mentor: username });
+    console.log("Found projects:", projects.length);
 
-    if (!projects.length) {
-      return res
-        .status(404)
-        .json({ message: "No projects found for this user." });
-    }
-
-    res.status(200).json({ success: true, projects });
+    res.status(200).json({ 
+      success: true, 
+      projects: projects || [],
+      message: projects.length === 0 ? "No projects found for this mentor" : null
+    });
   } catch (error) {
-    console.error("❌ Error fetching projects:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error("❌ Error fetching mentor projects:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -240,5 +241,132 @@ exports.getProjectsGroupedBySDG = async (req, res) => {
   } catch (err) {
     console.error("Error grouping by SDG", err);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const buildMonthlySeries = (startDate, endDate, aggregates) => {
+  const result = [];
+  const cursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
+  while (cursor <= end) {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth() + 1;
+    const label = cursor.toLocaleString("en-US", { month: "short" });
+    const match = aggregates.find(
+      (item) => item._id.year === year && item._id.month === month
+    );
+    result.push({ month: label, count: match ? match.count : 0 });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  return result;
+};
+
+exports.getDebugInfo = async (req, res) => {
+  try {
+    console.log("Debug endpoint called");
+    console.log("req.userId:", req.userId);
+
+    const user = await User.findById(req.userId);
+    console.log("User found:", !!user);
+    console.log("User data:", user ? { _id: user._id, email: user.email, role: user.role } : null);
+
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        auth: { userId: req.userId, userFound: false },
+        message: "User not found in database"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      auth: {
+        userId: req.userId,
+        userFound: true,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.role === "Admin"
+      }
+    });
+  } catch (error) {
+    console.error("Debug endpoint error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+exports.getAdminAnalyticsSummary = async (req, res) => {
+  try {
+    console.log("Starting getAdminAnalyticsSummary...");
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    console.log("Date range:", start, "to", now);
+
+    const [
+      totalProjects,
+      totalUsers,
+      projectsByStatusRaw,
+      usersByRoleRaw,
+      projectsByMonthRaw,
+    ] = await Promise.all([
+      Project.countDocuments(),
+      User.countDocuments(),
+      Project.aggregate([
+        { $group: { _id: "$status", count: { $sum: 1 } } },
+      ]),
+      User.aggregate([{ $group: { _id: "$role", count: { $sum: 1 } } }]),
+      Project.aggregate([
+        { $match: { createdAt: { $gte: start } } },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { "_id.year": 1, "_id.month": 1 } },
+      ]),
+    ]);
+
+    console.log("Aggregation results received");
+    console.log("Total projects:", totalProjects);
+    console.log("Total users:", totalUsers);
+
+    const projectsByStatus = ["pending", "approved", "rejected"].map(
+      (status) => {
+        const match = projectsByStatusRaw.find((item) => item._id === status);
+        return { status, count: match ? match.count : 0 };
+      }
+    );
+
+    const usersByRole = usersByRoleRaw.map((role) => ({
+      role: role._id || "Unknown",
+      count: role.count,
+    }));
+
+    const projectsByMonth = buildMonthlySeries(start, now, projectsByMonthRaw);
+
+    console.log("Response data prepared successfully");
+    res.status(200).json({
+      success: true,
+      data: {
+        totals: {
+          projects: totalProjects,
+          users: totalUsers,
+        },
+        projectsByStatus,
+        usersByRole,
+        projectsByMonth,
+      },
+    });
+  } catch (error) {
+    console.error("Error building admin analytics summary:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
