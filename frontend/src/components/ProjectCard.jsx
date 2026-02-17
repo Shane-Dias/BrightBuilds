@@ -3,7 +3,7 @@ import { motion } from "../motionless";
 import { Star, Heart, ExternalLink, Globe, Trophy, Award, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ProjectCard = ({ project, onHover, isHovered, getImageUrl, leaderboardRank, leaderboardType, showStatusBadge = false }) => {
+const ProjectCard = ({ project, onHover, isHovered, getImageUrl, leaderboardRank, leaderboardType, showStatusBadge = false, rankings = {} }) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
@@ -17,17 +17,14 @@ const ProjectCard = ({ project, onHover, isHovered, getImageUrl, leaderboardRank
     return getImageUrl ? getImageUrl(project.media[0]) : project.media[0];
   };
 
-  // Determine badge styling based on rank type
-  const getBadgeStyle = () => {
-    if (leaderboardType === "thisWeek") {
-      return { backgroundColor: 'var(--accent-primary)', label: "This Week" };
-    } else if (leaderboardType === "overall") {
-      return { backgroundColor: '#FFD700', label: "Overall" };
-    }
-    return null;
-  };
-
-  const badgeStyle = getBadgeStyle();
+  // Get both overall and weekly rankings
+  const overallRank = rankings.overall || leaderboardRank;
+  const weeklyRank = rankings.weekly;
+  
+  // If leaderboardType is provided (backward compatibility), use that
+  // Otherwise determine from rankings object
+  const hasOverall = !!overallRank;
+  const hasWeekly = !!weeklyRank;
 
   const getStatusBadgeStyle = () => {
     switch (project?.status) {
@@ -88,11 +85,12 @@ const ProjectCard = ({ project, onHover, isHovered, getImageUrl, leaderboardRank
           {/* Status Badge */}
           {statusBadge && (
             <div
-              className="absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold"
+              className="absolute top-3 left-3 rounded-full px-2.5 py-1 text-xs font-bold z-10"
               style={{
                 backgroundColor: statusBadge.color,
                 color: statusBadge.label === "Approved" ? "white" : "black",
                 boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+                zIndex: 10,
               }}
             >
               <span className="inline-flex items-center gap-1">
@@ -102,25 +100,42 @@ const ProjectCard = ({ project, onHover, isHovered, getImageUrl, leaderboardRank
             </div>
           )}
 
-          {/* Leaderboard Badge */}
-          {badgeStyle && leaderboardRank && (
-            <div
-              className="absolute top-3 right-3 rounded-full px-2.5 py-1 text-xs font-bold flex items-center justify-center gap-1.5"
-              style={{
-                backgroundColor: badgeStyle.backgroundColor,
-                color: leaderboardType === "overall" ? '#000' : 'white',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                border: leaderboardType === "overall" ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
-              }}
-            >
-              {leaderboardType === "overall" ? (
+          {/* Leaderboard Badges */}
+          <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+            {/* Overall Rank Badge */}
+            {hasOverall && (
+              <div
+                className="rounded-full px-2.5 py-1 text-xs font-bold flex items-center justify-center gap-1.5"
+                style={{
+                  backgroundColor: '#FFD700',
+                  color: '#000',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                  border: 'none',
+                  zIndex: 10,
+                }}
+              >
                 <Trophy size={14} fill="currentColor" />
-              ) : (
+                #{overallRank} Overall
+              </div>
+            )}
+            
+            {/* Weekly Rank Badge */}
+            {hasWeekly && (
+              <div
+                className="rounded-full px-2.5 py-1 text-xs font-bold flex items-center justify-center gap-1.5"
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  color: 'white',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  zIndex: 10,
+                }}
+              >
                 <Award size={14} fill="currentColor" />
-              )}
-              #{leaderboardRank} {badgeStyle.label}
-            </div>
-          )}
+                #{weeklyRank} This Week
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Content Container */}

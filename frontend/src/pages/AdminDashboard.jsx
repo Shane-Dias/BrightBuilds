@@ -278,22 +278,31 @@ const AdminDashboard = () => {
         return (
           <>
             <AutoScrollToTop />
-            <div className="bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-800">
+            <div
+              className="rounded-2xl p-5 sm:p-6 shadow-lg border"
+              style={{ backgroundColor: "var(--bg-secondary)", borderColor: "var(--border-accent)" }}
+            >
               <ToastContainer position="top-right" autoClose={5000} />
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-xl sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
                   Project Moderation
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative w-full sm:w-64">
                     <Search
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                      style={{ color: "var(--text-secondary)" }}
                       size={18}
                     />
                     <input
                       type="text"
                       placeholder="Search projects..."
-                      className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
+                      style={{
+                        backgroundColor: "var(--bg-tertiary)",
+                        borderColor: "var(--border-accent)",
+                        color: "var(--text-primary)",
+                      }}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -308,28 +317,19 @@ const AdminDashboard = () => {
                       key={project._id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-gray-800 rounded-xl p-5 shadow-md border border-gray-700 hover:border-gray-600"
+                      className="rounded-xl p-4 sm:p-5 shadow-md border"
+                      style={{ backgroundColor: "var(--bg-tertiary)", borderColor: "var(--border-primary)" }}
                     >
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                         <div>
-                          <h4 className="text-lg font-medium text-white">
+                          <h4 className="text-lg font-medium" style={{ color: "var(--text-primary)" }}>
                             {project.title}
                           </h4>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                             by {project.teammates.join(", ")}
                           </p>
                         </div>
                         <div className="flex items-center space-x-4">
-                          <div className="flex flex-wrap gap-1 max-w-xs">
-                            {project.sdgs.map((sdg) => (
-                              <span
-                                key={sdg}
-                                className="px-3 py-2 rounded-lg bg-blue-600 flex items-center justify-center text-xs font-bold text-white"
-                              >
-                                {sdg}
-                              </span>
-                            ))}
-                          </div>
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
                               project.status === "pending"
@@ -350,7 +350,8 @@ const AdminDashboard = () => {
                                   : project._id
                               )
                             }
-                            className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-gray-700"
+                            className="p-1 rounded-full hover:bg-black/20"
+                            style={{ color: "var(--text-secondary)" }}
                             aria-label={
                               expandedProject === project._id
                                 ? "Collapse details"
@@ -370,13 +371,23 @@ const AdminDashboard = () => {
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="mt-4 pt-4 border-t border-gray-700"
+                          className="mt-4 pt-4 border-t"
+                          style={{ borderColor: "var(--border-primary)" }}
                         >
-                          <p className="text-gray-300 mb-4 leading-relaxed">
+                          <p
+                            className="mb-4 leading-relaxed"
+                            style={{
+                              color: "var(--text-secondary)",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
                             {project.description}
                           </p>
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                            <div className="text-sm text-gray-400">
+                            <div className="text-sm" style={{ color: "var(--text-secondary)" }}>
                               Submitted on:{" "}
                               {new Date(project.createdAt).toLocaleDateString(
                                 "en-US",
@@ -398,7 +409,8 @@ const AdminDashboard = () => {
                                     project.mentor
                                   )
                                 }
-                                className="px-4 py-2 bg-green-600/30 hover:bg-green-600/50 rounded-lg text-green-400 font-medium flex items-center gap-2 transition-colors"
+                                className="px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+                                style={{ backgroundColor: "rgba(63, 192, 131, 0.2)", color: "var(--accent-primary)" }}
                               >
                                 <CheckCircle2 size={16} /> Approve
                               </button>
@@ -412,7 +424,8 @@ const AdminDashboard = () => {
                                     project.mentor
                                   )
                                 }
-                                className="px-4 py-2 bg-red-600/30 hover:bg-red-600/50 rounded-lg text-red-400 font-medium flex items-center gap-2 transition-colors"
+                                className="px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+                                style={{ backgroundColor: "rgba(239, 83, 80, 0.2)", color: "var(--error)" }}
                               >
                                 <XCircle size={16} /> Reject
                               </button>
@@ -420,7 +433,8 @@ const AdminDashboard = () => {
                           </div>
                           <button
                             onClick={() => viewDetails(project._id)}
-                            className="bg-black text-lg rounded-lg px-5 py-3 mt-4"
+                            className="text-sm sm:text-base rounded-lg px-5 py-3 mt-4"
+                            style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
                           >
                             View Details
                           </button>
@@ -430,8 +444,8 @@ const AdminDashboard = () => {
                   ))
                 ) : (
                   <div className="text-center py-10">
-                    <Search className="mx-auto text-gray-500 mb-2" size={32} />
-                    <p className="text-gray-400">
+                    <Search className="mx-auto mb-2" size={32} style={{ color: "var(--text-secondary)" }} />
+                    <p style={{ color: "var(--text-secondary)" }}>
                       No projects found matching your criteria
                     </p>
                   </div>
@@ -443,28 +457,42 @@ const AdminDashboard = () => {
 
       case "userManagement":
         return (
-          <div className="bg-white/5 rounded-xl p-6 shadow-lg">
+          <div
+            className="rounded-2xl p-5 sm:p-6 shadow-lg border"
+            style={{ backgroundColor: "var(--bg-secondary)", borderColor: "var(--border-accent)" }}
+          >
             <AutoScrollToTop />
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-semibold text-white">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+              <h3 className="text-xl sm:text-2xl font-semibold" style={{ color: "var(--text-primary)" }}>
                 User Management
               </h3>
-              <div className="flex items-center space-x-4">
-                <div className="relative w-64">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="relative w-full sm:w-64">
                   <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                    style={{ color: "var(--text-secondary)" }}
                     size={18}
                   />
                   <input
                     type="text"
                     placeholder="Search users..."
-                    className="w-full pl-10 pr-4 py-2 bg-gray-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      borderColor: "var(--border-accent)",
+                      color: "var(--text-primary)",
+                    }}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 <select
-                  className="bg-gray-800 text-white rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  className="rounded-lg py-2 px-4 border focus:outline-none focus:ring-2"
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
                   onChange={(e) => setSelectedRole(e.target.value)}
                   value={selectedRole}
                 >
@@ -478,13 +506,13 @@ const AdminDashboard = () => {
             </div>
 
             {loading ? (
-              <div className="text-center py-8 text-white">
+              <div className="text-center py-8" style={{ color: "var(--text-secondary)" }}>
                 Loading users...
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-800 text-gray-300">
+                <table className="w-full min-w-[640px]">
+                  <thead style={{ backgroundColor: "var(--bg-tertiary)", color: "var(--text-secondary)" }}>
                     <tr>
                       <th className="py-3 px-4 text-left rounded-tl-lg">
                         Name
@@ -496,22 +524,28 @@ const AdminDashboard = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-700">
+                  <tbody style={{ borderTop: "1px solid var(--border-primary)" }}>
                     {filteredUsers.length > 0 ? (
                       filteredUsers.map((user) => (
                         <tr
                           key={user.id}
-                          className="hover:bg-gray-800/50 transition-colors"
+                          className="transition-colors"
+                          style={{ borderBottom: "1px solid var(--border-primary)" }}
                         >
-                          <td className="py-3 px-4 text-white">
+                          <td className="py-3 px-4" style={{ color: "var(--text-primary)" }}>
                             <span
-                              className="inline-flex items-center gap-1 text-yellow-300 bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border border-yellow-300/30 hover:border-yellow-300 shadow-sm hover:shadow"
+                              className="inline-flex items-center gap-1 px-3 py-1 rounded-md transition-all duration-200 cursor-pointer font-medium border shadow-sm hover:shadow"
+                              style={{
+                                color: "var(--accent-primary)",
+                                backgroundColor: "rgba(47, 167, 111, 0.1)",
+                                borderColor: "rgba(47, 167, 111, 0.4)",
+                              }}
                               onClick={() => handleProfileClick(user.name)}
                             >
                               {user.name}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-gray-400">
+                          <td className="py-3 px-4" style={{ color: "var(--text-secondary)" }}>
                             {user.email}
                           </td>
                           <td className="py-3 px-4">
@@ -532,7 +566,8 @@ const AdminDashboard = () => {
                           <td className="py-3 px-4">
                             <div className="flex space-x-2">
                               <button
-                                className="p-1.5 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                                className="p-1.5 rounded-lg transition-colors"
+                                style={{ backgroundColor: "var(--bg-tertiary)" }}
                                 onClick={() => deleteUser(user.id)}
                               >
                                 <Trash2 size={16} className="text-red-400" />
@@ -545,7 +580,8 @@ const AdminDashboard = () => {
                       <tr>
                         <td
                           colSpan="4"
-                          className="py-8 text-center text-gray-400"
+                          className="py-8 text-center"
+                          style={{ color: "var(--text-secondary)" }}
                         >
                           No users found matching your search
                         </td>
@@ -580,22 +616,33 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden pt-20">
+    <div
+      className="min-h-screen text-white relative overflow-hidden pt-20"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       {/* Dashboard Content */}
       <AutoScrollToTop />
       <div className="relative z-10">
         {/* Main Content */}
-        <main className="container mx-auto px-6 py-8">
+        <main className="container mx-auto px-4 sm:px-6 py-8">
           {/* Navigation Tabs */}
           <div className="flex overflow-x-auto pb-2 mb-8 scrollbar-hide">
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveTab("projectModeration")}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                className="px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 text-sm sm:text-base"
+                style={
                   activeTab === "projectModeration"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                }`}
+                    ? {
+                        backgroundColor: "var(--accent-primary)",
+                        color: "var(--bg-primary)",
+                      }
+                    : {
+                        backgroundColor: "var(--bg-secondary)",
+                        color: "var(--text-secondary)",
+                        border: "1px solid var(--border-primary)",
+                      }
+                }
               >
                 <FileCheck size={18} />
                 <span>Project Moderation</span>
@@ -603,11 +650,19 @@ const AdminDashboard = () => {
 
               <button
                 onClick={() => setActiveTab("userManagement")}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                className="px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 text-sm sm:text-base"
+                style={
                   activeTab === "userManagement"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                }`}
+                    ? {
+                        backgroundColor: "var(--accent-primary)",
+                        color: "var(--bg-primary)",
+                      }
+                    : {
+                        backgroundColor: "var(--bg-secondary)",
+                        color: "var(--text-secondary)",
+                        border: "1px solid var(--border-primary)",
+                      }
+                }
               >
                 <Users size={18} />
                 <span>User Management</span>
@@ -615,11 +670,19 @@ const AdminDashboard = () => {
 
               <button
                 onClick={() => setActiveTab("reports")}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                className="px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 text-sm sm:text-base"
+                style={
                   activeTab === "reports"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                }`}
+                    ? {
+                        backgroundColor: "var(--accent-primary)",
+                        color: "var(--bg-primary)",
+                      }
+                    : {
+                        backgroundColor: "var(--bg-secondary)",
+                        color: "var(--text-secondary)",
+                        border: "1px solid var(--border-primary)",
+                      }
+                }
               >
                 <FileText size={18} />
                 <span>Reports</span>
@@ -627,11 +690,19 @@ const AdminDashboard = () => {
 
               <button
                 onClick={() => setActiveTab("sdgTracking")}
-                className={`px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 ${
+                className="px-4 py-2 rounded-lg transition-colors flex items-center space-x-2 text-sm sm:text-base"
+                style={
                   activeTab === "sdgTracking"
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                }`}
+                    ? {
+                        backgroundColor: "var(--accent-primary)",
+                        color: "var(--bg-primary)",
+                      }
+                    : {
+                        backgroundColor: "var(--bg-secondary)",
+                        color: "var(--text-secondary)",
+                        border: "1px solid var(--border-primary)",
+                      }
+                }
               >
                 <Goal size={18} />
                 <span>SDG Tracking</span>

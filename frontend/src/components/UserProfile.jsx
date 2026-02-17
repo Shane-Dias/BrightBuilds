@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaArrowAltCircleRight, FaUser, FaChartLine } from "react-icons/fa";
+import { FaPlus, FaUser, FaChartLine } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
 
 export default function UserProfile({ userProfile, profilePic }) {
@@ -63,7 +63,7 @@ export default function UserProfile({ userProfile, profilePic }) {
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-primary)')}
               >
-                <FaArrowAltCircleRight className="text-xl" />
+                <FaPlus className="text-xl" />
                 <span className="font-bold text-sm">Add New Project</span>
               </button>
             </Link>

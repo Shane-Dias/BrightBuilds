@@ -109,17 +109,6 @@ const DigitalArt = ({ projects = [] }) => {
         >
           {filteredAndSortedArtworks.map(artwork => {
             const rankings = getProjectRankings(artwork._id);
-            let leaderboardRank = null;
-            let leaderboardType = null;
-
-            if (rankings.overall) {
-              leaderboardRank = rankings.overall;
-              leaderboardType = "overall";
-            } else if (rankings.weekly) {
-              leaderboardRank = rankings.weekly;
-              leaderboardType = "thisWeek";
-            }
-
             return (
               <ProjectCard
                 key={artwork._id}
@@ -127,8 +116,7 @@ const DigitalArt = ({ projects = [] }) => {
                 onHover={setHoveredArtwork}
                 isHovered={hoveredArtwork === artwork._id}
                 getImageUrl={getImageUrl}
-                leaderboardRank={leaderboardRank}
-                leaderboardType={leaderboardType}
+                rankings={rankings}
               />
             );
           })}

@@ -109,16 +109,6 @@ const Videos = ({ projects = [] }) => {
         >
           {filteredAndSortedVideos.map((video) => {
             const rankings = getProjectRankings(video._id);
-            let leaderboardRank = null;
-            let leaderboardType = null;
-
-            if (rankings.overall) {
-              leaderboardRank = rankings.overall;
-              leaderboardType = "overall";
-            } else if (rankings.weekly) {
-              leaderboardRank = rankings.weekly;
-              leaderboardType = "thisWeek";
-            }
 
             return (
               <ProjectCard
@@ -127,8 +117,7 @@ const Videos = ({ projects = [] }) => {
                 onHover={setHoveredVideo}
                 isHovered={hoveredVideo === video._id}
                 getImageUrl={getImageUrl}
-                leaderboardRank={leaderboardRank}
-                leaderboardType={leaderboardType}
+                rankings={rankings}
               />
             );
           })}

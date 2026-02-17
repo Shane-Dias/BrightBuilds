@@ -40,39 +40,37 @@ const FacultyDashboard = () => {
 
         if (data && data.fullName) {
           console.log("mentor name", data.fullName);
-
           setFaculty(data);
-          console.log("faculty name from state", faculty);
 
-          await fetchMentorProjects(data.fullName);
+          // Fetch mentor projects after setting faculty
+          try {
+            const projectRes = await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/api/projects/mentor/${data.fullName}`
+            );
+            
+            const projectData = await projectRes.json();
+            console.log("Mentor projects response:", projectData);
+
+            if (projectData.success && Array.isArray(projectData.projects)) {
+              setMentorProjects(projectData.projects);
+              console.log("Mentor projects fetched:", projectData.projects.length);
+            } else {
+              console.warn("Unexpected response format:", projectData);
+              setMentorProjects([]);
+            }
+          } catch (error) {
+            console.error("Error fetching mentor projects:", error);
+            setMentorProjects([]);
+          }
         }
       } catch (error) {
         console.error("Error fetching faculty details:", error);
       }
     };
 
-    const fetchMentorProjects = async (mentorName) => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/projects/mentor/${mentorName}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch mentor projects");
-
-        const data = await res.json();
-        console.log("Mentor projects response:", data);
-
-        if (data.success && Array.isArray(data.projects)) {
-          setMentorProjects(data.projects);
-          console.log("Mentor projects:", data.projects);
-        } else {
-          console.warn("Unexpected data format in mentor projects:", data);
-        }
-      } catch (error) {
-        console.error("Error fetching mentor projects:", error);
-      }
-    };
-
-    fetchFacultyDetails();
+    if (id) {
+      fetchFacultyDetails();
+    }
   }, [id]);
 
   const filteredProjects =
@@ -153,16 +151,6 @@ const FacultyDashboard = () => {
               >
                 {filteredProjects.map(project => {
                   const rankings = getProjectRankings(project._id);
-                  let leaderboardRank = null;
-                  let leaderboardType = null;
-
-                  if (rankings.overall) {
-                    leaderboardRank = rankings.overall;
-                    leaderboardType = "overall";
-                  } else if (rankings.weekly) {
-                    leaderboardRank = rankings.weekly;
-                    leaderboardType = "thisWeek";
-                  }
 
                   return (
                     <ProjectCard
@@ -171,8 +159,7 @@ const FacultyDashboard = () => {
                       onHover={setHoveredProject}
                       isHovered={hoveredProject === project._id}
                       getImageUrl={getImageUrl}
-                      leaderboardRank={leaderboardRank}
-                      leaderboardType={leaderboardType}
+                      rankings={rankings}
                       showStatusBadge
                     />
                   );

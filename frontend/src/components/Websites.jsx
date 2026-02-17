@@ -149,16 +149,6 @@ const Websites = ({ projects = [] }) => {
         >
           {filteredAndSortedWebsites.map((website) => {
             const rankings = getProjectRankings(website._id);
-            let leaderboardRank = null;
-            let leaderboardType = null;
-
-            if (rankings.overall) {
-              leaderboardRank = rankings.overall;
-              leaderboardType = "overall";
-            } else if (rankings.weekly) {
-              leaderboardRank = rankings.weekly;
-              leaderboardType = "thisWeek";
-            }
 
             return (
               <ProjectCard
@@ -167,8 +157,7 @@ const Websites = ({ projects = [] }) => {
                 onHover={setHoveredWebsite}
                 isHovered={hoveredWebsite === website._id}
                 getImageUrl={getImageUrl}
-                leaderboardRank={leaderboardRank}
-                leaderboardType={leaderboardType}
+                rankings={rankings}
               />
             );
           })}

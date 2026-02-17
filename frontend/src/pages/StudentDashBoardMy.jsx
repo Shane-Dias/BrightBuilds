@@ -139,16 +139,6 @@ const StudentDashboard = () => {
               >
                 {filteredProjects.map(project => {
                   const rankings = getProjectRankings(project._id);
-                  let leaderboardRank = null;
-                  let leaderboardType = null;
-
-                  if (rankings.overall) {
-                    leaderboardRank = rankings.overall;
-                    leaderboardType = "overall";
-                  } else if (rankings.weekly) {
-                    leaderboardRank = rankings.weekly;
-                    leaderboardType = "thisWeek";
-                  }
 
                   return (
                     <ProjectCard
@@ -157,8 +147,7 @@ const StudentDashboard = () => {
                       onHover={setHoveredProject}
                       isHovered={hoveredProject === project._id}
                       getImageUrl={getImageUrl}
-                      leaderboardRank={leaderboardRank}
-                      leaderboardType={leaderboardType}
+                      rankings={rankings}
                       showStatusBadge
                     />
                   );

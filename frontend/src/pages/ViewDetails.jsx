@@ -236,6 +236,11 @@ const ProjectDetails = () => {
     );
   }
 
+  const hasLink = (value) => {
+    if (typeof value !== "string") return false;
+    return value.trim().length > 0;
+  };
+
   if (error || !game) {
     return (
       <div className="min-h-screen text-white flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -504,7 +509,7 @@ const ProjectDetails = () => {
 
             {/* Action Buttons */}
             <div className="flex space-x-4 pt-4">
-              {game.github && (
+              {hasLink(game.github) && (
                 <a
                   href={game.github}
                   target="_blank"
@@ -518,7 +523,7 @@ const ProjectDetails = () => {
                   GitHub
                 </a>
               )}
-              {game.hostedLink && (
+              {hasLink(game.hostedLink) && (
                 <button
                   onClick={() => setPopupUrl(game.hostedLink)}
                   className="flex-1 text-white py-3 px-6 rounded-lg transition-all flex items-center justify-center"

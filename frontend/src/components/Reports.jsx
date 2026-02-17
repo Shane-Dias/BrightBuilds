@@ -1,10 +1,9 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,123 +13,285 @@ import {
 } from "recharts";
 import html2canvas from "html2canvas";
 import { Download } from "lucide-react";
-import { BsGraphUp } from "react-icons/bs";
-import { GiPieChart } from "react-icons/gi";
-// 🔹 Realistic Project Trends (Sample Data)
-const projectTrends = [
-    { month: "Jan", projects: 3 },
-    { month: "Feb", projects: 2 },
-    { month: "Mar", projects: 5 },
-    { month: "Apr", projects: 8 },
-    { month: "May", projects: 7 },
-    { month: "Jun", projects: 12 },
-    { month: "Jul", projects: 15 },
-    { month: "Aug", projects: 19 },
-    { month: "Sep", projects: 17 },
-    { month: "Oct", projects: 21 },
-    { month: "Nov", projects: 24 },
-    { month: "Dec", projects: 26 }
-];
-
-// 🔹 Sample SDG Distribution Data (1–15)
-const sdgData = [
-  { name: "SDG 1 (No Poverty)", value: 8 },
-  { name: "SDG 2 (Zero Hunger)", value: 6 },
-  { name: "SDG 3 (Good Health)", value: 10 },
-  { name: "SDG 4 (Quality Education)", value: 12 },
-  { name: "SDG 5 (Gender Equality)", value: 7 },
-  { name: "SDG 6 (Clean Water)", value: 14 },
-  { name: "SDG 7 (Affordable Energy)", value: 5 },
-  { name: "SDG 8 (Decent Work)", value: 4 },
-  { name: "SDG 9 (Industry & Innovation)", value: 6 },
-  { name: "SDG 10 (Reduced Inequalities)", value: 3 },
-  { name: "SDG 11 (Sustainable Cities)", value: 8 },
-  { name: "SDG 12 (Responsible Consumption)", value: 9 },
-  { name: "SDG 13 (Climate Action)", value: 7 },
-  { name: "SDG 14 (Life Below Water)", value: 6 },
-  { name: "SDG 15 (Life on Land)", value: 5 },
-];
-
-const COLORS = [
-  "#5dd3a7", "#3fc083", "#e6b887", "#2fa76f", "#7adbb4",
-  "#2fa76f", "#d4a574", "#1a4d35", "#f2d4b3", "#74dab8",
-  "#5dd3a7", "#3fc083", "#3fc083", "#2fa76f", "#bdedd9"
-];
 
 const Reports = () => {
   const chartRef = useRef(null);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchAnalytics = async () => {
+    setLoading(true);
+    setError(null);
+    setSummary(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found. Please log in again.");
+      }
+
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/analytics/summary`;
+      console.log("Fetching analytics from:", url);
+      
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        let errorMsg = `HTTP ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) {
+          const text = await response.text();
+          errorMsg = text || errorMsg;
+        }
+        throw new Error(errorMsg);
+      }
+
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (!data.success) {
+        throw new Error(data.message || "Server returned success: false");
+      }
+
+      if (!data.data) {
+        throw new Error("No data returned from server");
+      }
+
+      setSummary(data.data);
+    } catch (err) {
+      console.error("Analytics error", err);
+      setError(err.message || "Failed to load analytics. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
 
   const downloadChart = async () => {
-    const canvas = await html2canvas(chartRef.current);
-    const dataURL = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = dataURL;
-    link.download = "dashboard-charts.png";
-    link.click();
+    if (!chartRef.current) return;
+    try {
+      const canvas = await html2canvas(chartRef.current);
+      const dataURL = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = dataURL;
+      link.download = "admin-dashboard-analytics.png";
+      link.click();
+    } catch (err) {
+      console.error("Error downloading chart:", err);
+    }
   };
 
   return (
-    <div className="space-y-10" ref={chartRef}>
+    <div className="space-y-6">
       {/* Header & Download */}
-      <div className="flex justify-between items-center mb-4">
-        <h4 className="text-2xl font-semibold text-white">📊 Admin Insights</h4>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h4 className="text-xl sm:text-2xl font-semibold" style={{ color: "var(--text-primary)" }}>
+          📊 Admin Analytics
+        </h4>
         <button
-          className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
           onClick={downloadChart}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+          style={{
+            backgroundColor: "var(--accent-primary)",
+            color: "white",
+          }}
         >
-          <Download size={18} className="text-gray-300" />
+          <Download size={18} />
+          <span className="text-sm">Download</span>
         </button>
       </div>
 
-      {/* 🔹 Project Trend Line Chart */}
-      <div className="bg-gray-800/50 rounded-xl p-6 w-full shadow-lg">
-        <h5 className="text-xl font-medium text-white mb-4 flex flex-row gap-4 items-center"><BsGraphUp /> Monthly Project Trends</h5>
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={projectTrends}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1d2820" />
-            <XAxis dataKey="month" stroke="#B8C5BB" />
-            <YAxis stroke="#B8C5BB" />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="projects"
-              stroke="#5dd3a7"
-              strokeWidth={3}
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {/* Loading State */}
+      {loading && (
+        <div
+          className="rounded-xl p-8 text-center"
+          style={{ backgroundColor: "var(--bg-secondary)" }}
+        >
+          <p style={{ color: "var(--text-secondary)" }}>Loading analytics...</p>
+        </div>
+      )}
 
-      {/* 🔹 SDG Distribution Pie Chart */}
-      <div className="bg-gray-800/50 rounded-xl p-6 w-full shadow-lg pb-14">
-        <h5 className="text-xl font-medium text-white mb-4 flex flex-row gap-4 items-center"><GiPieChart /> SDG Distribution (by Focus Area)</h5>
-        <ResponsiveContainer width="100%" height={500}>
-          <PieChart>
-            <Pie
-              data={sdgData}
-              cx="50%"
-              cy="50%"
-              outerRadius={180}
-              dataKey="value"
-              label={({ name, percent }) =>
-                `${name.split(" ")[0]} - ${(percent * 100).toFixed(1)}%`
-              }
-              labelLine={false}
+      {/* Error State */}
+      {error && (
+        <div
+          className="rounded-xl p-6 border space-y-4"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            borderColor: "var(--error)",
+          }}
+        >
+          <div>
+            <p style={{ color: "var(--error)", fontWeight: "bold", marginBottom: "0.5rem" }}>
+              Error Loading Analytics
+            </p>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", wordBreak: "break-word" }}>
+              {error}
+            </p>
+          </div>
+          <button
+            onClick={fetchAnalytics}
+            disabled={loading}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{
+              backgroundColor: "var(--accent-primary)",
+              color: "white",
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Charts Container */}
+      {!loading && !error && summary && (
+        <div ref={chartRef} className="space-y-6">
+          {/* 4 Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                label: "Total Projects",
+                value: summary.totals.projects,
+              },
+              {
+                label: "Pending",
+                value:
+                  summary.projectsByStatus.find((item) => item.status === "pending")
+                    ?.count || 0,
+              },
+              {
+                label: "Approved",
+                value:
+                  summary.projectsByStatus.find((item) => item.status === "approved")
+                    ?.count || 0,
+              },
+              {
+                label: "Total Users",
+                value: summary.totals.users,
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-xl p-4 border"
+                style={{
+                  backgroundColor: "var(--bg-secondary)",
+                  borderColor: "var(--border-primary)",
+                }}
+              >
+                <p className="text-sm mb-2" style={{ color: "var(--text-secondary)" }}>
+                  {stat.label}
+                </p>
+                <p
+                  className="text-3xl font-bold"
+                  style={{ color: "var(--accent-primary)" }}
+                >
+                  {stat.value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Charts Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Projects by Month */}
+            <div
+              className="rounded-xl p-5 border"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                borderColor: "var(--border-primary)",
+              }}
             >
-              {sdgData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend verticalAlign="bottom" height={36} />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+              <h5
+                className="text-lg font-medium mb-4"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Projects Created (Last 6 Months)
+              </h5>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={summary.projectsByMonth}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="var(--border-primary)"
+                  />
+                  <XAxis dataKey="month" stroke="var(--text-secondary)" />
+                  <YAxis stroke="var(--text-secondary)" allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--bg-primary)",
+                      border: "1px solid var(--border-primary)",
+                      color: "var(--text-primary)",
+                      borderRadius: "6px",
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    name="Projects"
+                    stroke="var(--accent-primary)"
+                    strokeWidth={3}
+                    dot={{ fill: "var(--accent-primary)", r: 5 }}
+                    activeDot={{ r: 7 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Users by Role */}
+            <div
+              className="rounded-xl p-5 border"
+              style={{
+                backgroundColor: "var(--bg-secondary)",
+                borderColor: "var(--border-primary)",
+              }}
+            >
+              <h5
+                className="text-lg font-medium mb-4"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Users by Role
+              </h5>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={summary.usersByRole}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="var(--border-primary)"
+                  />
+                  <XAxis dataKey="role" stroke="var(--text-secondary)" />
+                  <YAxis stroke="var(--text-secondary)" allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--bg-primary)",
+                      border: "1px solid var(--border-primary)",
+                      color: "var(--text-primary)",
+                      borderRadius: "6px",
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="count"
+                    name="Users"
+                    fill="var(--amber-primary)"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
