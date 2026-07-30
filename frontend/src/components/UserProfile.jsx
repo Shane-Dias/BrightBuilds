@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaArrowAltCircleRight, FaUser, FaChartLine } from "react-icons/fa";
+import { FaPlus, FaUser, FaChartLine } from "react-icons/fa";
 import { PiStudentBold } from "react-icons/pi";
 
 export default function UserProfile({ userProfile, profilePic }) {
@@ -24,8 +24,10 @@ export default function UserProfile({ userProfile, profilePic }) {
   };
 
   return (
-    <div className="flex  flex-col md:flex-row justify-between items-center px-4 md:px-16 py-8 md:py-12 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg">
-      <div className="flex pt-10 flex-col md:flex-row items-center md:space-x-6 mb-6 md:mb-0">
+    <div className="w-full border-b" style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border-accent)' }}>
+      <div className="container mx-auto px-4 sm:px-8 pt-24 pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col md:flex-row items-center md:space-x-6">
         {/* <div
           onClick={handleProfileClick}
           className="group relative cursor-pointer mb-4 md:mb-0 transition-transform hover:scale-105"
@@ -42,24 +44,31 @@ export default function UserProfile({ userProfile, profilePic }) {
           </div>
         </div> */}
 
-        <div className="text-center md:text-left">
-          <h1 className="text-2xl md:text-3xl text-white font-lilita font-normal">
-            Welcome, {userProfile || "User"}
-          </h1>
-          <p className="text-gray-400 flex items-center justify-center md:justify-start gap-2">
-            <PiStudentBold className="text-emerald-400 text-xl" />
-            Student Dashboard
-          </p>
-        </div>
-      </div>
+            <div className="text-center md:text-left">
+              <h1 className="text-2xl md:text-3xl font-lilita font-normal" style={{ color: 'var(--text-primary)' }}>
+                Welcome, {userProfile || "User"}
+              </h1>
+              <p className="flex items-center justify-center md:justify-start gap-2 mt-1" style={{ color: 'var(--text-secondary)' }}>
+                <PiStudentBold className="text-xl" style={{ color: 'var(--accent-primary)' }} />
+                Student Dashboard
+              </p>
+            </div>
+          </div>
 
-      <div className="flex gap-3 mt-7">
-        <Link to={"/create"} className="transition-transform hover:scale-105">
-          <button className="bg-emerald-500 hover:bg-emerald-600 text-black px-5 py-3 rounded-xl flex items-center space-x-2 transition-colors shadow-lg">
-            <FaArrowAltCircleRight className="text-xl" />
-            <span className="font-bold text-sm">Add New Project</span>
-          </button>
-        </Link>
+          <div className="flex gap-3">
+            <Link to={"/create"} className="transition-transform hover:scale-105">
+              <button
+                className="px-5 py-3 rounded-xl flex items-center space-x-2 transition-colors shadow-lg"
+                style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--accent-primary)')}
+              >
+                <FaPlus className="text-xl" />
+                <span className="font-bold text-sm">Add New Project</span>
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

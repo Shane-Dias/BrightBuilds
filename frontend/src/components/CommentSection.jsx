@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "../motionless";
 import { Heart, MessageSquare, User, Send, Lock } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -226,8 +226,8 @@ export const CommentSection = ({ projectDetails }) => {
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-lg rounded-3xl p-4 md:p-8 border border-white/10">
-      <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 mb-6 md:mb-8">
+    <div className="rounded-3xl p-4 md:p-8 border" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-primary)' }}>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8" style={{ color: 'var(--accent-primary)' }}>
         Community Discussions
       </h2>
 
@@ -264,7 +264,10 @@ export const CommentSection = ({ projectDetails }) => {
               </div>
               <button
                 onClick={handleAddComment}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 md:px-6 py-2 rounded-lg transition-all flex items-center text-sm md:text-base"
+                className="text-white px-4 md:px-6 py-2 rounded-lg transition-all flex items-center text-sm md:text-base"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                 disabled={!newComment.trim()}
               >
                 <Send size={16} className="mr-1 md:mr-2" />
@@ -406,7 +409,10 @@ export const CommentSection = ({ projectDetails }) => {
                                 </button>
                                 <button
                                   onClick={() => handleAddReply(comment._id)}
-                                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-all flex items-center text-xs md:text-sm"
+                                  className="text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-all flex items-center text-xs md:text-sm"
+                                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                                   disabled={!replyText.trim()}
                                 >
                                   <Send size={14} className="mr-1 md:mr-2" />
@@ -524,3 +530,4 @@ export const CommentSection = ({ projectDetails }) => {
 };
 
 export default CommentSection;
+

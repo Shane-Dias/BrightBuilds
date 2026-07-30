@@ -5,9 +5,9 @@ const AutoScrollToTop = () => {
     if (window.pageYOffset > 0) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, []); // Runs only once when the component mounts
+  }, []); 
 
-  return null; // No UI needed
+  return null; 
 };
 
 export default AutoScrollToTop;

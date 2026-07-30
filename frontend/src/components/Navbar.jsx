@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "../motionless";
 import { useNavigate, NavLink, Link } from "react-router-dom";
 import { FaClipboardList } from "react-icons/fa";
 import {
@@ -184,7 +184,11 @@ const Navbar = () => {
       { name: "Logout", action: handleLogout, icon: LogOut },
     ];
 
-    // For all roles, include dashboard option
+    // Hide Dashboard for role 'user', show for all others
+    const currentRole = userData?.role || role;
+    if (currentRole && currentRole.toLowerCase() === "user") {
+      return baseOptions;
+    }
     return [
       {
         name: "Dashboard",
@@ -209,7 +213,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-md shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-50 shadow-lg border-b" style={{ backgroundColor: 'var(--bg-primary)', borderBottomColor: 'var(--border-primary)' }}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo and Website Name */}
         <div className="flex items-center space-x-3 group">
@@ -231,7 +235,7 @@ const Navbar = () => {
               rotate: [0, 5, -5, 0],
               transition: { duration: 0.5 },
             }}
-            className="p-2 bg-white rounded-xl shadow-lg shadow-amber-400/20 group-hover:shadow-amber-400/30 transition-all duration-300 backdrop-blur-sm bg-white/30"
+            className="p-2 bg-white rounded-xl shadow-lg transition-all duration-300"
           >
             <motion.div
               animate={{
@@ -259,7 +263,7 @@ const Navbar = () => {
                 stiffness: 300,
               },
             }}
-            className="text-3xl font-delius font-extrabold bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 text-transparent bg-clip-text tracking-tighter"
+            className="text-3xl font-delius font-extrabold text-transparent bg-clip-text tracking-tighter" style={{ backgroundImage: 'linear-gradient(to right, #f59e0b, #f97316, #f59e0b)', backgroundClip: 'text', WebkitBackgroundClip: 'text' }}
           >
             <Link to={"/"}>BrightBuilds</Link>
           </motion.h1>
@@ -298,14 +302,14 @@ const Navbar = () => {
                   {isActive && (
                     <motion.div
                       layoutId="navbar-underline"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5"
+                      style={{ backgroundColor: 'var(--accent-primary)' }}
                     />
                   )}
 
                   <span
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 
-                    rounded-lg opacity-0 group-hover:opacity-100 
-                    transition-opacity duration-300 -z-10"
+                    className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"
+                    style={{ backgroundColor: 'var(--accent-primary)', opacity: '0.1' }}
                   />
                 </>
               )}
@@ -319,15 +323,10 @@ const Navbar = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate("/login")}
-            className="
-              hidden md:flex items-center space-x-2 
-              bg-gradient-to-r from-blue-600 to-purple-600 
-              text-white px-4 py-2 rounded-full 
-              hover:from-blue-700 hover:to-purple-700 
-              transition-all duration-300 
-              shadow-lg hover:shadow-xl
-              group
-            "
+            className="hidden md:flex items-center space-x-2 text-white px-4 py-2 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl group"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
           >
             <LogIn
               size={20}
@@ -358,7 +357,7 @@ const Navbar = () => {
                       e.target.src = ""; // Clear src to prevent infinite loop
                       // Replace with fallback content
                       e.target.parentNode.innerHTML = `
-                        <div class="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                        <div class="h-full w-full flex items-center justify-center" style="background-color: var(--accent-primary)">
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
@@ -368,7 +367,7 @@ const Navbar = () => {
                     }}
                   />
                 ) : (
-                  <div className="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                  <div className="h-full w-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-primary)' }}>
                     <User size={20} className="text-white" />
                   </div>
                 )}
@@ -438,7 +437,8 @@ const Navbar = () => {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed top-16 left-0 right-0 bg-gray-900/95 backdrop-blur-md shadow-lg z-40 overflow-hidden"
+              className="fixed top-16 left-0 right-0 shadow-lg z-40 overflow-hidden"
+              style={{ backgroundColor: 'var(--bg-secondary)' }}
             >
               <div className="container mx-auto px-4 py-4 flex flex-col">
                 {/* Mobile Navigation Links */}
@@ -472,13 +472,10 @@ const Navbar = () => {
                         navigate("/login");
                         setIsMobileMenuOpen(false);
                       }}
-                      className="
-                        w-full flex items-center justify-center space-x-2 
-                        bg-gradient-to-r from-blue-600 to-purple-600 
-                        text-white px-4 py-3 rounded-lg 
-                        transition-all duration-300 
-                        shadow-lg
-                      "
+                      className="w-full flex items-center justify-center space-x-2 text-white px-4 py-3 rounded-lg transition-all duration-300 shadow-lg"
+                      style={{ backgroundColor: 'var(--accent-primary)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                     >
                       <LogIn size={20} />
                       <span>Login</span>
@@ -501,7 +498,7 @@ const Navbar = () => {
                                 e.target.onerror = null;
                                 e.target.src = "";
                                 e.target.parentNode.innerHTML = `
-                                  <div class="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                                  <div class="h-full w-full flex items-center justify-center" style="background-color: var(--accent-primary)">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                       <circle cx="12" cy="7" r="4"></circle>
@@ -511,7 +508,7 @@ const Navbar = () => {
                               }}
                             />
                           ) : (
-                            <div className="h-full w-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                            <div className="h-full w-full flex items-center justify-center" style={{ backgroundColor: 'var(--accent-primary)' }}>
                               <User size={20} className="text-white" />
                             </div>
                           )}
@@ -567,3 +564,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

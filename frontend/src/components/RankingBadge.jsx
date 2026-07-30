@@ -1,6 +1,6 @@
 import React from "react";
 import { Trophy } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 
 /**
  * Reusable component for displaying leaderboard ranking badges

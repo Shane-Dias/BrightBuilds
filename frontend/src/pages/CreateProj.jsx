@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaPlus,
   FaTrash,
@@ -45,6 +45,7 @@ export default function ProjectUploadForm() {
   const [sdgs, setSdgs] = useState([]);
   const [teammates, setTeammates] = useState([]);
   const [mentor, setMentor] = useState("");
+  const [currentUserName, setCurrentUserName] = useState("");
   const [notification, setNotification] = useState(null);
   const [form, setForm] = useState({
     title: "",
@@ -196,6 +197,40 @@ export default function ProjectUploadForm() {
 
   const navigate = useNavigate();
 
+  const normalizeName = (value) => value.trim().toLowerCase();
+
+  const addUniqueTeammate = (list, name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return list;
+    const normalized = normalizeName(trimmed);
+    if (list.some((item) => normalizeName(item) === normalized)) {
+      return list;
+    }
+    return [...list, trimmed];
+  };
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    const fetchUserProfile = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/users/details/${userId}`
+        );
+        const data = await res.json();
+        if (data?.fullName) {
+          setCurrentUserName(data.fullName);
+          setTeammates((prev) => addUniqueTeammate(prev, data.fullName));
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   const handleMediaUpload = (e) => {
     // Add file type validation in handleMediaUpload
     const validTypes = ["image/jpeg", "image/png", "video/mp4"];
@@ -232,13 +267,14 @@ export default function ProjectUploadForm() {
   };
 
   const handleAddTeammate = () => {
-    if (form.newTeammate.trim() && !teammates.includes(form.newTeammate)) {
-      setTeammates([...teammates, form.newTeammate]);
-      setForm({ ...form, newTeammate: "" });
-    }
+    if (!form.newTeammate.trim()) return;
+    setTeammates((prev) => addUniqueTeammate(prev, form.newTeammate));
+    setForm({ ...form, newTeammate: "" });
   };
 
   const handleRemoveTeammate = (index) => {
+    const teammate = teammates[index];
+    if (normalizeName(teammate) === normalizeName(currentUserName)) return;
     setTeammates(teammates.filter((_, i) => i !== index));
   };
 
@@ -253,10 +289,22 @@ export default function ProjectUploadForm() {
     e.preventDefault();
     const userId = localStorage.getItem("userId");
 
-    if (!form.title || !form.description || media.length === 0) {
+    if (!form.title || !form.description || !form.category || media.length === 0) {
       setNotification({
         message:
           "Please fill in all required fields including category and upload at least one media file.",
+        type: "error",
+      });
+      return;
+    }
+
+    const finalTeammates = currentUserName
+      ? addUniqueTeammate(teammates, currentUserName)
+      : teammates;
+
+    if (finalTeammates.length === 0) {
+      setNotification({
+        message: "Please add at least one contributor username.",
         type: "error",
       });
       return;
@@ -274,7 +322,7 @@ export default function ProjectUploadForm() {
       formData.append("mentor", mentor || "");
       // Append arrays as JSON strings
       formData.append("sdgs", JSON.stringify(sdgs));
-      formData.append("teammates", JSON.stringify(teammates));
+      formData.append("teammates", JSON.stringify(finalTeammates));
       formData.append("techStack", JSON.stringify(techStack));
       formData.append("category", form.category);
 
@@ -292,8 +340,9 @@ export default function ProjectUploadForm() {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create`, {
         method: "POST",
         body: formData,
-        // Don't set Content-Type header - the browser will set it automatically with the correct boundary
+       
       });
+
 
       if (!response.ok) {
         console.log("Error:", response.statusText);
@@ -351,27 +400,33 @@ export default function ProjectUploadForm() {
     onSelectHandler,
     expanded,
     setExpanded,
-    selectedColor,
-    defaultColor
+    selectedStyle
   ) => {
     const displayedItems = expanded
       ? availableItems
       : availableItems.slice(0, 10);
 
     return (
-      <div className="mt-6">
-        <label className="block text-xl mb-2">{title}</label>
+      <div className="mt-8">
+        <label className="block text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
+          {title}
+        </label>
         <div className="flex flex-wrap gap-2">
           {displayedItems.map((item) => (
             <button
               type="button"
               key={item}
               onClick={() => onSelectHandler(item)}
-              className={`px-3 py-1 rounded-lg transition-all duration-200 ${
+              className="px-3 py-1 rounded-lg border text-sm transition-all duration-200"
+              style={
                 selectedItems.includes(item)
-                  ? `${selectedColor} text-black`
-                  : `bg-gray-700 border ${defaultColor} hover:bg-gray-600`
-              }`}
+                  ? selectedStyle
+                  : {
+                      backgroundColor: "var(--bg-tertiary)",
+                      borderColor: "var(--border-primary)",
+                      color: "var(--text-secondary)",
+                    }
+              }
             >
               {item}
               {selectedItems.includes(item) && (
@@ -383,7 +438,12 @@ export default function ProjectUploadForm() {
             <button
               type="button"
               onClick={() => setExpanded(true)}
-              className="px-3 py-1 rounded-lg bg-gray-700 border border-gray-500 hover:bg-gray-600 flex items-center gap-2"
+              className="px-3 py-1 rounded-lg border flex items-center gap-2 text-sm"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                borderColor: "var(--border-accent)",
+                color: "var(--text-primary)",
+              }}
             >
               Show More <FaChevronDown />
             </button>
@@ -392,7 +452,12 @@ export default function ProjectUploadForm() {
             <button
               type="button"
               onClick={() => setExpanded(false)}
-              className="px-3 py-1 rounded-lg bg-gray-700 border border-gray-500 hover:bg-gray-600 flex items-center gap-2"
+              className="px-3 py-1 rounded-lg border flex items-center gap-2 text-sm"
+              style={{
+                backgroundColor: "var(--bg-tertiary)",
+                borderColor: "var(--border-accent)",
+                color: "var(--text-primary)",
+              }}
             >
               Show Less <FaChevronUp />
             </button>
@@ -402,8 +467,15 @@ export default function ProjectUploadForm() {
     );
   };
 
+  const inputBaseClass =
+    "w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] transition-all duration-200 placeholder:text-[var(--text-secondary)]";
+  const labelClass = "block text-sm font-semibold mb-2";
+
   return (
-    <div className="min-h-screen   -ml-5 -mr-5 md:mx-0 md:w-full px-10 py-16 bg-gray-900 text-white pt-24 ">
+    <div
+      className="min-h-screen pt-24 pb-16 px-4 sm:px-6"
+      style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
+    >
       <AutoScrollToTop />
       {/* Notification Component */}
       {notification && (
@@ -414,241 +486,366 @@ export default function ProjectUploadForm() {
         />
       )}
 
-      <h2 className="text-4xl font-bold font-lilita text-center text-amber-400 mb-8">
-        Upload Your Project
-      </h2>
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto p-8 bg-gray-800 font-smooch font-bold text-xl tracking-wide leading-relaxed rounded-2xl shadow-lg border border-amber-400"
-      >
-        <div className="md:grid font-smooch font-bold text-lg md:grid-cols-2 grid-cols-1 gap-5 md:gap-6">
-          <div>
-            <label className="block text-xl mb-2">Project Title *</label>
-            <input
-              type="text"
-              className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              placeholder="Enter project title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="block mt-4 text-xl mb-2">Project Description *</label>
-            <textarea
-              className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              rows="3"
-              placeholder="Enter project description"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              required
-            ></textarea>
-          </div>
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <h2
+            className="text-3xl sm:text-4xl font-bold font-lilita"
+            style={{ color: "var(--accent-primary)" }}
+          >
+            Upload Your Project
+          </h2>
+          <p className="mt-2 text-sm sm:text-base" style={{ color: "var(--text-secondary)" }}>
+            Fill the essentials and submit for review. 
+          </p>
         </div>
 
-        {/* Media Upload */}
-        <div className="mt-6">
-          <label className="block text-xl mb-2">Upload Media *</label>
-          <input
-            type="file"
-            multiple
-            className="w-full p-2 bg-gray-700 rounded-xl file:mr-4 file:rounded-full file:border-0 file:bg-amber-400 file:px-4 file:py-2 file:text-sm hover:file:bg-amber-500"
-            onChange={handleMediaUpload}
-            required
-          />
-          <div className="flex gap-4 mt-4">
-            {media.map((file, index) => (
-              <div
-                key={index}
-                className="relative w-24 h-24 bg-gray-600 flex items-center justify-center rounded-lg overflow-hidden"
-              >
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt="upload"
-                  className="object-cover w-full h-full"
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-2xl border shadow-xl p-6 sm:p-8 md:p-10"
+          style={{
+            backgroundColor: "var(--bg-secondary)",
+            borderColor: "var(--border-accent)",
+          }}
+        >
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                  Project Title <span style={{ color: "var(--accent-primary)" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  className={inputBaseClass}
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
+                  placeholder="Enter project title"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
                 />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMedia(index)}
-                  className="absolute top-1 right-1 bg-red-500 p-1 rounded-full text-sm hover:bg-red-600"
-                >
-                  ✖
-                </button>
               </div>
-            ))}
-          </div>
-        </div>
+              <div>
+                <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                  Project Category <span style={{ color: "var(--accent-primary)" }}>*</span>
+                </label>
+                <select
+                  className={inputBaseClass}
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  required
+                >
+                  <option value="">Select a category</option>
+                  <option value="Game">Game</option>
+                  <option value="Website">Website</option>
+                  <option value="Video">Video</option>
+                  <option value="Documentary">Documentary</option>
+                  <option value="Digital Art">Digital Art</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                  Project Description <span style={{ color: "var(--accent-primary)" }}>*</span>
+                </label>
+                <textarea
+                  className={`${inputBaseClass} min-h-[140px]`}
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
+                  rows="4"
+                  placeholder="Summarize your project, goals, and outcomes"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  required
+                ></textarea>
+              </div>
+            </div>
+
+            {/* Media Upload */}
+            <div>
+              <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                Upload Media <span style={{ color: "var(--accent-primary)" }}>*</span>
+              </label>
+              <input
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,video/mp4"
+                className="w-full rounded-xl border p-2 text-sm file:mr-4 file:rounded-full file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold file:bg-[var(--accent-primary)] file:text-[var(--bg-primary)] hover:file:bg-[var(--accent-hover)]"
+                style={{
+                  backgroundColor: "var(--bg-tertiary)",
+                  borderColor: "var(--border-accent)",
+                  color: "var(--text-primary)",
+                }}
+                onChange={handleMediaUpload}
+                required
+              />
+              <p className="mt-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+                Accepted: JPG, PNG, MP4
+              </p>
+              <div className="flex flex-wrap gap-3 mt-4">
+                {media.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative w-24 h-24 rounded-lg overflow-hidden border"
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      borderColor: "var(--border-primary)",
+                    }}
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="upload"
+                      className="object-cover w-full h-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveMedia(index)}
+                      className="absolute top-1 right-1 p-1 rounded-full text-xs"
+                      style={{ backgroundColor: "var(--error)", color: "white" }}
+                    >
+                      ✖
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
 
         {/* Tech Stack Selection with Expand/Collapse */}
-        {renderSelectableList(
-          "Select Tech Stack",
-          availableTechStacks,
-          techStack,
-          handleTechStackSelect,
-          expandTechStack,
-          setExpandTechStack,
-          "bg-amber-500",
-          "border-amber-400"
-        )}
+            {renderSelectableList(
+              "Select Tech Stack",
+              availableTechStacks,
+              techStack,
+              handleTechStackSelect,
+              expandTechStack,
+              setExpandTechStack,
+              {
+                backgroundColor: "var(--accent-primary)",
+                borderColor: "var(--accent-primary)",
+                color: "var(--bg-primary)",
+              }
+            )}
 
         {/* SDG Selection with Expand/Collapse */}
-        {renderSelectableList(
-          "Select SDGs",
-          availableSDGs,
-          sdgs,
-          handleSDGSelect,
-          expandSDGs,
-          setExpandSDGs,
-          "bg-green-500",
-          "border-green-400"
-        )}
+            {renderSelectableList(
+              "Select SDGs",
+              availableSDGs,
+              sdgs,
+              handleSDGSelect,
+              expandSDGs,
+              setExpandSDGs,
+              {
+                backgroundColor: "var(--amber-primary)",
+                borderColor: "var(--amber-primary)",
+                color: "var(--bg-primary)",
+              }
+            )}
 
-        {/* Project Category SELEction */}
-
-        <div className="mt-4">
-          <h1 className="text-xl font-semibold text-white mb-2">
-            Select Project Category
-          </h1>
-          <select
-            className="w-full p-3 border border-blue-400 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-            required
-          >
-            <option value="">Select a category</option>
-            <option value="Game">Game</option>
-            <option value="Website">Website</option>
-            <option value="Video">Video</option>
-            <option value="Documentary">Documentary</option>
-            <option value="Digital Art">Digital Art</option>
-          </select>
-          {form.category && (
-            <p className="mt-2 text-lg text-green-600 font-medium">
-              Selected Category: {form.category}
-            </p>
-          )}
-        </div>
-
-        {/* Teammates & Mentor */}
-        <div className="mt-6 grid md:grid-cols-2 md:gap-6">
-          <div>
-            <label className="block text-xl mb-2">
-              Enter usernames of contributers{" "}
-            </label>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                className="flex-grow p-3 bg-gray-700 rounded-xl"
-                placeholder="Include your username too"
-                value={form.newTeammate}
-                onChange={(e) =>
-                  setForm({ ...form, newTeammate: e.target.value })
-                }
-              />
-              <button
-                type="button"
-                onClick={handleAddTeammate}
-                className="bg-amber-500 p-3 rounded-lg hover:bg-amber-600"
-              >
-                <FaPlus />
-              </button>
-            </div>
-            {teammates.length > 0 && (
-              <div className="mt-4">
-                <h3 className="text-md font-semibold mb-2">Teammates:</h3>
-                <div className="flex flex-wrap gap-2">
-                  {teammates.map((teammate, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-700 px-3 py-1 rounded-lg flex items-center gap-2"
-                    >
-                      {teammate}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTeammate(index)}
-                        className="text-red-400 hover:text-red-500"
-                      >
-                        <FaTrash />
-                      </button>
+            {/* Contributors & Mentor */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                  Contributors (usernames)
+                </label>
+                <p className="text-xs mb-2" style={{ color: "var(--text-secondary)" }}>
+                  Your username is added automatically.
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    className={inputBaseClass}
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      borderColor: "var(--border-accent)",
+                      color: "var(--text-primary)",
+                    }}
+                    placeholder="Add a collaborator username"
+                    value={form.newTeammate}
+                    onChange={(e) =>
+                      setForm({ ...form, newTeammate: e.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddTeammate}
+                    className="p-3 rounded-lg border"
+                    style={{
+                      backgroundColor: "var(--accent-primary)",
+                      borderColor: "var(--accent-primary)",
+                      color: "var(--bg-primary)",
+                    }}
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+                {teammates.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+                      Contributors
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {teammates.map((teammate, index) => (
+                        <div
+                          key={index}
+                          className="px-3 py-1 rounded-lg flex items-center gap-2 border text-sm"
+                          style={{
+                            backgroundColor: "var(--bg-tertiary)",
+                            borderColor: "var(--border-primary)",
+                            color: "var(--text-primary)",
+                          }}
+                        >
+                          {teammate}
+                          {normalizeName(teammate) ===
+                            normalizeName(currentUserName) && (
+                            <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                              (You)
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTeammate(index)}
+                            className="text-xs"
+                            style={{ color: "var(--error)" }}
+                            aria-label={`Remove ${teammate}`}
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div>
-            <label className="block text-xl mb-2">Enter mentor username</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                className="flex-grow p-3 bg-gray-700 rounded-xl"
-                placeholder="Note: Name should be the username of the mentor"
-                value={form.newMentor}
-                onChange={(e) =>
-                  setForm({ ...form, newMentor: e.target.value })
-                }
-              />
+              <div>
+                <label className={labelClass} style={{ color: "var(--text-primary)" }}>
+                  Mentor username
+                </label>
+                <div className="flex mt-8 items-center gap-2">
+                  <input
+                    type="text"
+                    className={inputBaseClass}
+                    style={{
+                      backgroundColor: "var(--bg-tertiary)",
+                      borderColor: "var(--border-accent)",
+                      color: "var(--text-primary)",
+                    }}
+                    placeholder="Optional mentor username"
+                    value={form.newMentor}
+                    onChange={(e) =>
+                      setForm({ ...form, newMentor: e.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddMentor}
+                    className="p-3 rounded-lg border"
+                    style={{
+                      backgroundColor: "var(--accent-light)",
+                      borderColor: "var(--accent-light)",
+                      color: "var(--bg-primary)",
+                    }}
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+                {mentor && (
+                  <div className="mt-4">
+                    <h3 className="text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+                      Current Mentor
+                    </h3>
+                    <div
+                      className="px-3 py-1 rounded-lg inline-block border text-sm"
+                      style={{
+                        backgroundColor: "var(--bg-tertiary)",
+                        borderColor: "var(--border-primary)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
+                      {mentor}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Additional Project Links */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2" style={{ color: "var(--text-primary)" }}>
+                  <FaGithub />
+                  <label className="text-sm font-semibold">GitHub Repository</label>
+                  <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    Optional
+                  </span>
+                </div>
+                <input
+                  type="url"
+                  className={inputBaseClass}
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
+                  placeholder="https://github.com/your-repo"
+                  value={form.github}
+                  onChange={(e) => setForm({ ...form, github: e.target.value })}
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-2" style={{ color: "var(--text-primary)" }}>
+                  <FaExternalLinkAlt />
+                  <label className="text-sm font-semibold">Live Project Link</label>
+                  <span className="text-xs" style={{ color: "var(--text-secondary)" }}>
+                    Optional
+                  </span>
+                </div>
+                <input
+                  type="url"
+                  className={inputBaseClass}
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    borderColor: "var(--border-accent)",
+                    color: "var(--text-primary)",
+                  }}
+                  placeholder="https://yourproject.com"
+                  value={form.hostedLink}
+                  onChange={(e) => setForm({ ...form, hostedLink: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2 text-center">
               <button
-                type="button"
-                onClick={handleAddMentor}
-                className="bg-green-500 p-3 rounded-lg hover:bg-green-600"
+                type="submit"
+                className="px-10 py-3 rounded-xl text-base font-semibold transition-colors duration-300 inline-flex items-center justify-center gap-3"
+                style={{
+                  backgroundColor: "var(--accent-primary)",
+                  color: "var(--bg-primary)",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "var(--accent-hover)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "var(--accent-primary)")
+                }
               >
-                <FaPlus />
+                Submit Project <FaCheck />
               </button>
             </div>
-            {mentor && (
-              <div className="mt-4">
-                <h3 className="text-md font-semibold mb-2">Current Mentor:</h3>
-                <div className="bg-gray-700 px-3 py-1 rounded-lg inline-block">
-                  {mentor}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-
-        {/* Additional Project Links */}
-        <div className="mt-6 grid md:grid-cols-2 gap-4 md:gap-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <FaGithub />
-              <label className="block text-xl mb-2">GitHub Repository</label>
-            </div>
-            <input
-              type="url"
-              className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              placeholder="Enter GitHub link"
-              value={form.github}
-              onChange={(e) => setForm({ ...form, github: e.target.value })}
-            />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <FaExternalLinkAlt />
-              <label className="block text-xl mb-2">Hosted Project Link</label>
-            </div>
-            <input
-              type="url"
-              className="w-full p-3 bg-gray-700 rounded-xl border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-400"
-              placeholder="Enter hosted project link"
-              value={form.hostedLink}
-              onChange={(e) => setForm({ ...form, hostedLink: e.target.value })}
-            />
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="mt-8 text-center">
-          <button
-            type="submit"
-            className="bg-green-500 text-black px-10 py-3 rounded-xl text-xl font-bold hover:bg-green-600 transition-colors duration-300 flex items-center justify-center mx-auto gap-3"
-          >
-            Submit Project <FaCheck />
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

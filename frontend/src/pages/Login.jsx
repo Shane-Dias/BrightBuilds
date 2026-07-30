@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "../motionless";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Lock, User, LogIn, EyeOff, Eye } from "lucide-react";
@@ -84,41 +84,29 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+    <div
+      className="flex items-center justify-center min-h-screen px-4 py-12 pt-24"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
+    >
       <ToastContainer position="top-right" autoClose={5000} />
       <AutoScrollToTop />
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative w-full max-w-md p-8 mx-4 overflow-hidden rounded-lg shadow-xl bg-gray-800 border border-gray-700"
+        className="relative w-full max-w-md p-6 sm:p-8 mx-4 overflow-hidden rounded-2xl shadow-xl border"
+        style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
       >
         {/* Glowing background effects */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <motion.div
-            animate={{
-              x: [0, 10, 0],
-              y: [0, -10, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 8,
-              ease: "easeInOut",
-            }}
-            className="absolute -top-24 -left-24 w-48 h-48 bg-purple-600 rounded-full opacity-20 blur-3xl"
-          ></motion.div>
-          <motion.div
-            animate={{
-              x: [0, -15, 0],
-              y: [0, 15, 0],
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 10,
-              ease: "easeInOut",
-            }}
-            className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-500 rounded-full opacity-20 blur-3xl"
-          ></motion.div>
+          <div
+            className="absolute -top-24 -left-24 w-48 h-48 rounded-full opacity-20 blur-3xl"
+            style={{ backgroundColor: 'var(--accent-primary)' }}
+          ></div>
+          <div
+            className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full opacity-20 blur-3xl"
+            style={{ backgroundColor: 'var(--amber-primary)' }}
+          ></div>
         </div>
 
         {/* Login form */}
@@ -131,11 +119,12 @@ const LoginPage = () => {
           >
             <motion.h2
               variants={itemVariants}
-              className="text-3xl font-bold text-white mb-2"
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--text-primary)' }}
             >
               Welcome Back
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-gray-400">
+            <motion.p variants={itemVariants} style={{ color: 'var(--text-secondary)' }}>
               Sign in to continue
             </motion.p>
           </motion.div>
@@ -152,23 +141,25 @@ const LoginPage = () => {
               <motion.div variants={itemVariants} className="group">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <User size={18} className="text-gray-500" />
+                    <User size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.input
                     whileFocus={{
-                      boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
+                      boxShadow: "0 0 0 3px rgba(47, 167, 111, 0.35)",
                     }}
                     id="email"
                     type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="block w-full pl-10 pr-3 py-2.5 border rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-accent)' }}
                     placeholder="Enter your email"
                     required
                   />
@@ -179,23 +170,25 @@ const LoginPage = () => {
               <motion.div variants={itemVariants} className="group">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-400 mb-1"
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Lock size={18} className="text-gray-500" />
+                    <Lock size={18} style={{ color: 'var(--text-secondary)' }} />
                   </div>
                   <motion.input
                     whileFocus={{
-                      boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.5)",
+                      boxShadow: "0 0 0 3px rgba(47, 167, 111, 0.35)",
                     }}
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-10 py-2.5 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="block w-full pl-10 pr-10 py-2.5 border rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent transition-all duration-200"
+                    style={{ borderColor: 'var(--border-accent)' }}
                     placeholder="Enter your password"
                     required
                   />
@@ -209,12 +202,14 @@ const LoginPage = () => {
                     {showPassword ? (
                       <EyeOff
                         size={18}
-                        className="text-gray-500 hover:text-gray-300 transition-colors duration-200"
+                        className="transition-colors duration-200"
+                        style={{ color: 'var(--text-secondary)' }}
                       />
                     ) : (
                       <Eye
                         size={18}
-                        className="text-gray-500 hover:text-gray-300 transition-colors duration-200"
+                        className="transition-colors duration-200"
+                        style={{ color: 'var(--text-secondary)' }}
                       />
                     )}
                   </motion.button>
@@ -223,7 +218,7 @@ const LoginPage = () => {
             </div>
 
             {/* Remember me and Forgot password */}
-            <motion.div
+            {/* <motion.div
               variants={itemVariants}
               className="flex items-center justify-between pt-2"
             >
@@ -250,7 +245,7 @@ const LoginPage = () => {
               >
                 Forgot password?
               </motion.a>
-            </motion.div>
+            </motion.div> */}
 
             {/* Submit button */}
             <motion.div variants={itemVariants}>
@@ -261,7 +256,10 @@ const LoginPage = () => {
                 whileTap="tap"
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-800 relative overflow-hidden"
+                className="w-full py-2.5 px-4 rounded-lg text-white font-medium flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 relative overflow-hidden"
+                style={{ backgroundColor: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--accent-hover)')}
+                onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--accent-primary)')}
               >
                 {isLoading ? (
                   <motion.span
@@ -301,7 +299,6 @@ const LoginPage = () => {
                     Sign In
                   </motion.span>
                 )}
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 shine"></span>
               </motion.button>
             </motion.div>
           </motion.form>
@@ -313,13 +310,16 @@ const LoginPage = () => {
             transition={{ delay: 0.8, duration: 0.5 }}
             className="mt-8 text-center"
           >
-            <p className="text-sm text-gray-400">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Don't have an account?{" "}
               <motion.a
                 href="/signup"
-                whileHover={{ scale: 1.05, color: "#93c5fd" }}
+                whileHover={{ scale: 1.05, color: "#5dd3a7" }}
                 whileTap={{ scale: 0.95 }}
-                className="font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                className="font-medium transition-colors duration-200"
+                style={{ color: 'var(--accent-primary)' }}
+                onMouseEnter={(e) => e.target.style.color = 'var(--accent-light)'}
+                onMouseLeave={(e) => e.target.style.color = 'var(--accent-primary)'}
               >
                 Sign up
               </motion.a>
@@ -328,35 +328,9 @@ const LoginPage = () => {
         </div>
       </motion.div>
 
-      {/* Add this CSS for the shine effect */}
-      <style jsx>{`
-        @keyframes shine {
-          to {
-            transform: translateX(100%);
-          }
-        }
-        .shine {
-          overflow: hidden;
-        }
-        .shine::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(
-            to right,
-            transparent 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 100%
-          );
-          transform: skewX(-25deg);
-          animation: shine 6s infinite;
-        }
-      `}</style>
     </div>
   );
 };
 
 export default LoginPage;
+

@@ -1,0 +1,23 @@
+@media (max-width: 768px) {
+  .leaderboard-project-card {
+    flex-direction: column !important;
+    width: 92vw !important;
+    max-width: 92vw !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 0.75rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  .leaderboard-project-image {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 92vw !important;
+    height: 150px !important;
+    border-radius: 0.75rem !important;
+  }
+}

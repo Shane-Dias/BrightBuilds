@@ -1,0 +1,42 @@
+  .faculty-dashboard-subtitle {
+    justify-content: flex-start !important;
+    text-align: left !important;
+    margin-left: 0.25rem !important;
+  }
+@media (max-width: 768px) {
+  .faculty-dashboard-mobile {
+    padding: 1rem !important;
+  }
+  .faculty-dashboard-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .faculty-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .faculty-dashboard-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .faculty-dashboard-img {
+    height: 180px !important;
+  }
+  .faculty-dashboard-card-content {
+    padding: 1rem !important;
+  }
+  .faculty-dashboard-badges {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  .faculty-dashboard-status {
+    font-size: 0.9rem !important;
+    padding: 0.25rem 0.75rem !important;
+  }
+  .faculty-dashboard-action {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}

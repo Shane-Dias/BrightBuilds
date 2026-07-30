@@ -178,8 +178,8 @@ const UserProfile = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-indigo-900 text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-xl text-amber-400">Loading profile...</p>
+          <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--accent-primary)', borderTopColor: 'transparent' }}></div>
+          <p className="text-xl" style={{ color: 'var(--accent-primary)' }}>Loading profile...</p>
         </div>
       </div>
     );
@@ -189,14 +189,17 @@ const UserProfile = () => {
   if (error || !userData) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-indigo-900 text-white flex items-center justify-center">
-        <div className="max-w-md p-8 bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-2xl border border-red-500/50 text-center">
-          <h3 className="text-2xl font-bold text-red-500 mb-4">Error</h3>
+        <div className="max-w-md p-8 rounded-3xl shadow-2xl border text-center" style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--error)' }}>
+          <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--error)' }}>Error</h3>
           <p className="text-gray-300 mb-6">
             {error || "Failed to load user profile"}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-red-500 hover:bg-red-600 rounded-xl text-white transition-colors"
+            className="px-6 py-2 rounded-xl text-white transition-colors"
+            style={{ backgroundColor: 'var(--error)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E53935'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--error)'}
           >
             Try Again
           </button>
@@ -252,7 +255,7 @@ const UserProfile = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-indigo-900 text-white pt-12 pb-16 px-4 sm:px-6 relative">
+    <div className="min-h-screen text-white pt-12 pb-16 px-4 sm:px-6 relative" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <AutoScrollToTop/>
       
       {/* Background gradient circles */}
@@ -260,26 +263,28 @@ const UserProfile = () => {
       <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-600 rounded-full filter blur-3xl opacity-20"></div>
 
       <h2
-        className={`text-5xl pt-8 font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-12 transition-opacity duration-2000 ease-in-out ${
+        className={`text-3xl sm:text-4xl lg:text-5xl pt-8 font-bold text-center mb-8 sm:mb-12 transition-opacity duration-2000 ease-in-out ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
+        style={{ color: 'var(--accent-primary)' }}
       >
         User Profile
       </h2>
 
       {/* User Profile Card */}
       <div
-        className={`max-w-4xl mx-auto p-8 bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-2xl border border-amber-400/50 transition-all duration-3000 ease-in-out ${
+        className={`max-w-4xl mx-auto p-5 sm:p-8 rounded-3xl shadow-2xl border transition-all duration-3000 ease-in-out ${
           isVisible
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-10"
         }`}
+        style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-accent)' }}
       >
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 mb-8 sm:mb-10">
           {/* Profile Image */}
           <div className="relative group">
-            <div className="w-36 h-36 rounded-full bg-gradient-to-br from-amber-400 to-pink-500 p-1">
+            <div className="w-36 h-36 rounded-full p-1" style={{ backgroundColor: 'var(--accent-primary)' }}>
               <div className="w-full h-full rounded-full bg-gray-700 overflow-hidden flex items-center justify-center">
                 {user.profileImage ? (
                   <img
@@ -288,71 +293,71 @@ const UserProfile = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="text-5xl text-amber-400 font-bold">
+                  <div className="text-5xl font-bold" style={{ color: 'var(--accent-primary)' }}>
                     {user.fullName.charAt(0)}
                   </div>
                 )}
               </div>
             </div>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-300" style={{ backgroundColor: 'var(--accent-primary)' }}></div>
           </div>
 
           {/* User Name and Brief Info */}
-          <div className="text-center md:text-left md:flex-1">
+          <div className="text-center md:text-left md:flex-1 min-w-0">
             {isEditing ? (
               <input
                 type="text"
                 name="fullName"
                 value={editedData.fullName || ''}
                 onChange={handleInputChange}
-                className="text-3xl font-bold bg-transparent border-b border-amber-400 mb-2 w-full focus:outline-none focus:border-pink-500"
+                className="text-2xl sm:text-3xl font-bold bg-transparent border-b border-amber-400 mb-2 w-full max-w-full focus:outline-none focus:border-pink-500"
               />
             ) : (
-              <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 mb-2">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-2 break-words" style={{ color: 'var(--accent-primary)' }}>
                 {user.fullName}
               </h3>
             )}
             
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-xl text-gray-300 mb-4">
+            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 text-base sm:text-lg text-gray-300 mb-4">
               {isEditing ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0">
                   <FaGraduationCap className="text-green-400" />
                   <input
                     type="text"
                     name="currentPursuit"
                     value={editedData.currentPursuit || ''}
                     onChange={handleInputChange}
-                    className="bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500"
+                    className="bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500 w-full min-w-0"
                   />
                 </div>
               ) : (
-                <p className="flex items-center gap-2">
+                <p className="flex items-center gap-2 min-w-0">
                   <FaGraduationCap className="text-green-400" />
-                  <span>{user.currentPursuit}</span>
+                  <span className="break-words">{user.currentPursuit}</span>
                 </p>
               )}
               
               {isEditing ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0">
                   <FaBriefcase className="text-blue-400" />
                   <input
                     type="text"
                     name="role"
                     value={editedData.role || ''}
                     onChange={handleInputChange}
-                    className="bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500"
+                    className="bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500 w-full min-w-0"
                   />
                 </div>
               ) : (
-                <p className="flex items-center gap-2">
+                <p className="flex items-center gap-2 min-w-0">
                   <FaBriefcase className="text-blue-400" />
-                  <span>{user.role}</span>
+                  <span className="break-words">{user.role}</span>
                 </p>
               )}
             </div>
             
             {isEditing ? (
-              <div className="flex items-center justify-center md:justify-start gap-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-2">
                 <FaGlobe className="text-teal-400" />
                 <input
                   type="text"
@@ -360,7 +365,7 @@ const UserProfile = () => {
                   value={editedData.city || ''}
                   onChange={handleInputChange}
                   placeholder="City"
-                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-24"
+                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-full sm:w-24"
                 />
                 <input
                   type="text"
@@ -368,13 +373,13 @@ const UserProfile = () => {
                   value={editedData.state || ''}
                   onChange={handleInputChange}
                   placeholder="State"
-                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-24"
+                  className="bg-transparent border-b border-teal-400 focus:outline-none focus:border-pink-500 w-full sm:w-24"
                 />
               </div>
             ) : (
-              <p className="flex items-center justify-center md:justify-start gap-2 text-gray-400">
+              <p className="flex items-center justify-center md:justify-start gap-2 text-gray-400 min-w-0">
                 <FaGlobe className="text-teal-400" />
-                <span>
+                <span className="break-words">
                   {user.city}
                   {user.state ? `, ${user.state}` : ""}
                 </span>
@@ -508,18 +513,18 @@ const UserProfile = () => {
         {/* User Details Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Personal Information Card */}
-          <div className="bg-gray-700/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/50 shadow-lg">
+          <div className="bg-gray-700/50 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border border-gray-600/50 shadow-lg">
             <h4 className="text-2xl font-bold text-amber-400 mb-6 flex items-center gap-2">
               <FaUser /> Personal Information
             </h4>
 
             <div className="space-y-5">
               {personalInfoFields.map((field) => (
-                <div key={field.id} className="flex items-center gap-4">
+                <div key={field.id} className="flex items-start gap-4 min-w-0">
                   <div className="p-3 bg-gray-800/70 rounded-full text-amber-400">
                     {field.icon}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-gray-400 text-sm">{field.label}</p>
                     {isEditing ? (
                       <input
@@ -527,10 +532,10 @@ const UserProfile = () => {
                         name={field.id}
                         value={field.value}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border-b border-amber-400 focus:outline-none focus:border-pink-500"
+                        className="w-full bg-transparent border-b border-amber-400 focus:outline-none focus:border-pink-500 min-w-0"
                       />
                     ) : (
-                      <p className="font-medium">
+                      <p className="font-medium break-words">
                         {user[field.id] || "Not specified"}
                       </p>
                     )}
@@ -541,18 +546,18 @@ const UserProfile = () => {
           </div>
 
           {/* Education Card */}
-          <div className="bg-gray-700/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/50 shadow-lg">
+          <div className="bg-gray-700/50 backdrop-blur-sm rounded-2xl p-5 sm:p-6 border border-gray-600/50 shadow-lg">
             <h4 className="text-2xl font-bold text-green-400 mb-6 flex items-center gap-2">
               <FaGraduationCap /> Education & Career
             </h4>
 
             <div className="space-y-5">
               {educationCareerFields.map((field) => (
-                <div key={field.id} className="flex items-center gap-4">
+                <div key={field.id} className="flex items-start gap-4 min-w-0">
                   <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
                     {field.icon}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-gray-400 text-sm">{field.label}</p>
                     {isEditing ? (
                       <input
@@ -560,10 +565,10 @@ const UserProfile = () => {
                         name={field.id}
                         value={field.value}
                         onChange={handleInputChange}
-                        className="w-full bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500"
+                        className="w-full bg-transparent border-b border-green-400 focus:outline-none focus:border-pink-500 min-w-0"
                       />
                     ) : (
-                      <p className="font-medium">
+                      <p className="font-medium break-words">
                         {user[field.id] || "Not specified"}
                       </p>
                     )}
@@ -571,13 +576,13 @@ const UserProfile = () => {
                 </div>
               ))}
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4 min-w-0">
                 <div className="p-3 bg-gray-800/70 rounded-full text-green-400">
                   <FaCalendarAlt />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-gray-400 text-sm">Member Since</p>
-                  <p className="font-medium">{formatDate(user.createdAt)}</p>
+                  <p className="font-medium break-words">{formatDate(user.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -586,25 +591,25 @@ const UserProfile = () => {
 
         {/* Social Media section - Only visible when editing */}
         {isEditing && (
-          <div className="mt-6 bg-gray-700/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/50 shadow-lg">
+          <div className="mt-6 rounded-2xl p-5 sm:p-6 border shadow-lg" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-primary)' }}>
             <h4 className="text-2xl font-bold text-blue-400 mb-6 flex items-center gap-2">
               <FaGlobe /> Social Media Links
             </h4>
             
             <div className="space-y-5">
               {socialMediaFields.map((field) => (
-                <div key={field.id} className="flex items-center gap-4">
+                <div key={field.id} className="flex items-start gap-4 min-w-0">
                   <div className="p-3 bg-gray-800/70 rounded-full text-blue-400">
                     {field.icon}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="text-gray-400 text-sm">{field.label}</p>
                     <input
                       type="text"
                       name={field.id}
                       value={field.value}
                       onChange={handleInputChange}
-                      className="w-full bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500"
+                      className="w-full bg-transparent border-b border-blue-400 focus:outline-none focus:border-pink-500 min-w-0"
                       placeholder={`Enter your ${field.label} URL`}
                     />
                   </div>
@@ -621,7 +626,10 @@ const UserProfile = () => {
               <button
                 onClick={handleSave}
                 disabled={saveLoading}
-                className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-green-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-green-500/20 flex items-center gap-3"
+                className="px-8 py-3 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center gap-3"
+                style={{ backgroundColor: 'var(--success)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2fa76f'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--success)'}
               >
                 {saveLoading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -632,7 +640,10 @@ const UserProfile = () => {
               </button>
               <button
                 onClick={toggleEditMode}
-                className="px-8 py-3 bg-gradient-to-r from-gray-500 to-red-500 text-white font-bold text-lg rounded-xl hover:from-gray-600 hover:to-red-600 transition-all duration-300 shadow-lg hover:shadow-red-500/20 flex items-center gap-3"
+                className="px-8 py-3 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center gap-3"
+                style={{ backgroundColor: 'var(--error)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e53935'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--error)'}
               >
                 <FaTimes /> Cancel
               </button>
@@ -642,17 +653,25 @@ const UserProfile = () => {
               {isProfileOwner && (
                 <button
                   onClick={toggleEditMode}
-                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-lg rounded-xl hover:from-amber-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-amber-500/20 flex items-center gap-3"
+                  className="px-8 py-3 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center gap-3"
+                  style={{ backgroundColor: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-primary)'}
                 >
                   <FaEdit /> Edit Profile
                 </button>
               )}
-              <button
-                onClick={() => setShowProjects(!showProjects)}
-                className={`px-8 py-3 bg-gradient-to-r ${showProjects ? 'from-purple-500 to-indigo-600' : 'from-indigo-500 to-purple-600'} text-white font-bold text-lg rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 flex items-center gap-3`}
-              >
-                <FaProjectDiagram /> {showProjects ? 'Hide Projects' : 'View Projects'}
-              </button>
+              {user.role && user.role.toLowerCase() !== 'user' && (
+                <button
+                  onClick={() => setShowProjects(!showProjects)}
+                  className="px-8 py-3 text-white font-bold text-lg rounded-xl transition-all duration-300 shadow-lg flex items-center gap-3"
+                  style={{ backgroundColor: showProjects ? 'var(--accent-hover)' : 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = showProjects ? 'var(--accent-hover)' : 'var(--accent-primary)'}
+                >
+                  <FaProjectDiagram /> {showProjects ? 'Hide Projects' : 'View Projects'}
+                </button>
+              )}
             </>
           )}
         </div>
@@ -661,9 +680,10 @@ const UserProfile = () => {
       {/* Projects Section - Separated from user profile card */}
       {showProjects && (
         <div 
-          className={`min-w-full mx-auto mt-12 p-8 bg-gray-800/70 backdrop-blur-md rounded-3xl shadow-2xl border border-indigo-400/50 transition-all duration-1000 ease-in-out ${
+          className={`w-full mx-auto mt-12 p-5 sm:p-8 rounded-3xl shadow-2xl border transition-all duration-1000 ease-in-out ${
             isVisible && showProjects ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-10"
           }`}
+          style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--accent-primary)' }}
         >
           {user.role==='Student'?<div className="min-h-96">
             <StudentProjects username={user.fullName} userId={userId.id} />
